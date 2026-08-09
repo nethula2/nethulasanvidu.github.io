@@ -1,0 +1,13 @@
+{
+  "name": "portfolio-website",
+  "version": "1.0.0",
+  "description": "Nethula Sanvidu Portfolio Website",
+  "main": "index.html",
+  "dependencies": {
+    "@supabase/supabase-js": "^2.43.2",
+    "cloudinary": "^2.2.0"
+  },
+  "devDependencies": {
+    "vercel": "^58.7.1"
+  }
+}
