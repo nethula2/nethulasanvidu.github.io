@@ -32,27 +32,7 @@ module.exports = async (req, res) => {
     return res.status(200).json(data || []);
   } catch (error) {
     console.error('Error fetching reviews:', error);
-    
-    // Return high-quality fallback placeholder reviews in case Supabase is not initialized
-    const placeholders = [
-      {
-        id: 'placeholder-1',
-        name: 'Sarah Jenkins',
-        avatar_url: '',
-        rating: 5,
-        comment: 'Absolutely stunning portfolio. The attention to detail in animations and typography is incredible!',
-        created_at: new Date().toISOString()
-      },
-      {
-        id: 'placeholder-2',
-        name: 'Michael Chen',
-        avatar_url: '',
-        rating: 5,
-        comment: 'Nethula is a fast learner and a highly creative developer. The Vercel Serverless setup is extremely smooth.',
-        created_at: new Date(Date.now() - 86400000).toISOString()
-      }
-    ];
-    
-    return res.status(200).json(placeholders);
+    // Never return fake/mock reviews. Return empty array so no fake reviews appear.
+    return res.status(200).json([]);
   }
 };

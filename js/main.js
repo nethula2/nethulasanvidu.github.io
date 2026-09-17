@@ -556,14 +556,16 @@ async function loadReviews() {
             throw new Error(`Server returned ${response.status}`);
         }
 
-        allLoadedReviews = await response.json();
+        const data = await response.json();
+        // Filter out any mock/placeholder reviews
+        allLoadedReviews = (Array.isArray(data) ? data : []).filter(
+            r => r && !r.id?.toString().startsWith('placeholder-') && r.name !== 'Sarah Jenkins' && r.name !== 'Michael Chen'
+        );
         renderReviewsFeed();
     } catch (err) {
         console.error("Failed to load reviews:", err);
-        const feed = document.getElementById("reviews-feed");
-        if (feed) {
-            feed.innerHTML = `<div class="empty-gallery" style="color: #ff5f56;">Failed to decrypt transmissions feed.</div>`;
-        }
+        allLoadedReviews = [];
+        renderReviewsFeed();
     }
 }
 

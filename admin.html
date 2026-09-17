@@ -990,7 +990,10 @@
                     throw new Error(`Status ${response.status}`);
                 }
 
-                const reviews = await response.json();
+                const data = await response.json();
+                const reviews = (Array.isArray(data) ? data : []).filter(
+                    r => r && !r.id?.toString().startsWith('placeholder-') && r.name !== 'Sarah Jenkins' && r.name !== 'Michael Chen'
+                );
                 grid.innerHTML = '';
 
                 if (reviews.length === 0) {
@@ -1021,20 +1024,18 @@
                         avatarHtml = `<div class="avatar-placeholder" style="width: 32px; height: 32px; border-radius: 50%; background: #555; color: #fff; display: flex; align-items: center; justify-content: center; font-size: 0.8rem; font-weight: 700; margin-bottom: 0;">${review.name.charAt(0).toUpperCase()}</div>`;
                     }
 
-                    const isPlaceholder = review.id && review.id.startsWith('placeholder-');
-
                     card.innerHTML = `
                         <div style="display: flex; align-items: center; gap: 12px; width: 100%; margin-bottom: 12px;">
                             ${avatarHtml}
                             <div style="flex-grow: 1;">
-                                <div style="font-weight: 700; color: #fff; font-size: 0.9rem;">${review.name} ${isPlaceholder ? '<span style="color: #ffbd2e; font-size: 0.7rem; font-weight: 400; margin-left: 5px;">(DEMO)</span>' : ''}</div>
+                                <div style="font-weight: 700; color: #fff; font-size: 0.9rem;">${review.name}</div>
                                 <div style="font-size: 0.65rem; color: #666;">${dateStr}</div>
                             </div>
                             <div style="color: #ffc107; font-size: 0.8rem; display: flex; gap: 3px;">${starsHtml}</div>
                         </div>
                         <p style="color: #ccc; font-size: 0.85rem; line-height: 1.5; margin-bottom: 15px; width: 100%; word-break: break-word;">${review.comment}</p>
-                        <button class="btn-delete" onclick="deleteAdminReview('${review.id}', this)" ${isPlaceholder ? 'disabled style="opacity: 0.5; pointer-events: none;"' : ''} style="width: auto; padding: 8px 15px;">
-                            <i class="ri-delete-bin-line"></i> ${isPlaceholder ? 'CANNOT DELETE DEMO' : 'DELETE REVIEW'}
+                        <button class="btn-delete" onclick="deleteAdminReview('${review.id}', this)" style="width: auto; padding: 8px 15px;">
+                            <i class="ri-delete-bin-line"></i> DELETE REVIEW
                         </button>
                     `;
                     grid.appendChild(card);
