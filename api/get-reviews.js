@@ -10,18 +10,12 @@ const SUPABASE_ANON_KEY = process.env.SUPABASE_ANON_KEY || process.env.SUPABASE_
 
 const supabase = createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 
-// Track if Supabase is unreachable/paused to prevent slow DNS/connection hangs
-const STATUS_FILE = path.join(__dirname, '..', 'data', '.supabase_offline');
-function isOfflineCached() { try { if (fs.existsSync(STATUS_FILE)) { const t = parseInt(fs.readFileSync(STATUS_FILE, 'utf8'), 10); if (Date.now() - t < OFFLINE_COOLDOWN_MS) return true; } } catch(e){} return false; }
-function setOfflineCached() { try { fs.writeFileSync(STATUS_FILE, Date.now().toString(), 'utf8'); } catch(e){} }
-const OFFLINE_COOLDOWN_MS = 60000; // 1 minute cooldown before retrying paused Supabase
-
-function getLocalReviews() {
-  const targetFile = fs.existsSync(PRIMARY_FILE) ? PRIMARY_FILE : (fs.existsSync(CACHE_FILE) ? CACHE_FILE : null);
+function getCachedReviews() {
+  const targetFile = fs.existsSync(CACHE_FILE) ? CACHE_FILE : (fs.existsSync(PRIMARY_FILE) ? PRIMARY_FILE : null);
   if (targetFile) {
     try {
       const cached = JSON.parse(fs.readFileSync(targetFile, 'utf8'));
-      if (Array.isArray(cached) && cached.length > 0) {
+      if (Array.isArray(cached)) {
         return cached;
       }
     } catch (e) {
@@ -29,6 +23,17 @@ function getLocalReviews() {
     }
   }
   return [];
+}
+
+const FAKE_NAMES = ['sarah jenkins', 'michael chen', 'kavindu perera', 'tharusha senanayake', 'dilan jayasuriya'];
+
+function filterOutFake(reviews) {
+  if (!Array.isArray(reviews)) return [];
+  return reviews.filter(r => {
+    if (!r || !r.name) return false;
+    const nameLower = r.name.toLowerCase().trim();
+    return !FAKE_NAMES.some(fake => nameLower.includes(fake));
+  });
 }
 
 module.exports = async (req, res) => {
@@ -45,21 +50,14 @@ module.exports = async (req, res) => {
     return res.status(200).end();
   }
 
-  const now = Date.now();
-  // If Supabase was detected offline recently, immediately serve local reviews (zero latency)
-  if (isOfflineCached()) {
-    return res.status(200).json(getLocalReviews());
-  }
-
   try {
-    // Race Supabase query against a 1200ms timeout
     const fetchPromise = supabase
       .from('reviews')
       .select('*')
       .order('created_at', { ascending: false });
 
     const timeoutPromise = new Promise((_, reject) =>
-      setTimeout(() => reject(new Error('Supabase request timed out (paused project)')), 1200)
+      setTimeout(() => reject(new Error('Supabase request timeout (paused project)')), 2500)
     );
 
     const { data, error } = await Promise.race([fetchPromise, timeoutPromise]);
@@ -68,21 +66,20 @@ module.exports = async (req, res) => {
       throw new Error(error.message);
     }
 
-    if (data && Array.isArray(data) && data.length > 0) {
+    if (data && Array.isArray(data)) {
+      const cleanData = filterOutFake(data);
       try {
         fs.mkdirSync(path.dirname(CACHE_FILE), { recursive: true });
-        fs.writeFileSync(CACHE_FILE, JSON.stringify(data, null, 2), 'utf8');
-      } catch (cacheErr) {
-        console.warn('Could not update reviews cache:', cacheErr.message);
-      }
-      return res.status(200).json(data);
+        fs.writeFileSync(CACHE_FILE, JSON.stringify(cleanData, null, 2), 'utf8');
+      } catch (cacheErr) {}
+      return res.status(200).json(cleanData);
     }
 
-    // If Supabase returned empty table, fallback to local reviews
-    return res.status(200).json(getLocalReviews());
+    return res.status(200).json([]);
   } catch (error) {
-    setOfflineCached();
-    // Return verified local client reviews immediately
-    return res.status(200).json(getLocalReviews());
+    console.warn('Supabase fetch failed (project may be paused):', error.message);
+    // Never return fake reviews. Only return clean cached real reviews or empty array.
+    const cached = filterOutFake(getCachedReviews());
+    return res.status(200).json(cached);
   }
 };

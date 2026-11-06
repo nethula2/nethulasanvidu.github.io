@@ -1129,7 +1129,7 @@
                     <div class="nav-scrubber-track" id="dock-timeline-ticks">
                         <!-- 20 Interactive Timeline Ticks Injected Here -->
                     </div>
-                    <span class="scrubber-num">20</span>
+                    <span class="scrubber-num" id="dock-max-num">47</span>
                 </div>
 
                 <button type="button" class="btn-nav-arrow" id="btn-glide-next" title="Next Artwork" aria-label="Next">
@@ -1285,28 +1285,30 @@
         // ==========================================================================
         // 1. CURATED ARTWORK INVENTORY (ADAPTIVE FRAME CLASSIFICATION)
         // ==========================================================================
-        const EXHIBITION_ARTWORKS = [
-            { src: 'assets/azzaro most wanted1.webp', type: 'POSTER', frameClass: 'frame-portrait', id: '01' },
-            { src: 'assets/DA Gem Final.webp', type: 'LOGO', frameClass: 'frame-square', id: '02' },
-            { src: 'assets/logic gates classified mcq thumbnail new.webp', type: 'POSTER', frameClass: 'frame-landscape', id: '03' },
-            { src: 'assets/lumelabslogo.webp', type: 'LOGO', frameClass: 'frame-banner', id: '04' },
-            { src: 'assets/number system thumb.webp', type: 'POSTER', frameClass: 'frame-landscape', id: '05' },
-            { src: 'assets/apex-logo.webp', type: 'LOGO', frameClass: 'frame-banner', id: '06' },
-            { src: 'assets/apex-branding.webp', type: 'POSTER', frameClass: 'frame-square', id: '07' },
-            { src: 'assets/project-27.webp', type: 'LOGO', frameClass: 'frame-square', id: '08' },
-            { src: 'assets/lume-branding.webp', type: 'POSTER', frameClass: 'frame-square', id: '09' },
-            { src: 'assets/project-28.webp', type: 'LOGO', frameClass: 'frame-landscape', id: '10' },
-            { src: 'assets/project-1.webp', type: 'POSTER', frameClass: 'frame-square', id: '11' },
-            { src: 'assets/smk logo with the background.webp', type: 'LOGO', frameClass: 'frame-square', id: '12' },
-            { src: 'assets/project-2.webp', type: 'POSTER', frameClass: 'frame-square', id: '13' },
-            { src: 'assets/project-3.webp', type: 'POSTER', frameClass: 'frame-portrait', id: '14' },
-            { src: 'assets/project-4.webp', type: 'POSTER', frameClass: 'frame-square', id: '15' },
-            { src: 'assets/project-5.webp', type: 'POSTER', frameClass: 'frame-banner', id: '16' },
-            { src: 'assets/project-7.webp', type: 'POSTER', frameClass: 'frame-landscape', id: '17' },
-            { src: 'assets/project-8.webp', type: 'POSTER', frameClass: 'frame-portrait', id: '18' },
-            { src: 'assets/project-11.webp', type: 'POSTER', frameClass: 'frame-square', id: '19' },
-            { src: 'assets/smk x banner updated.webp', type: 'POSTER', frameClass: 'frame-banner', id: '20' }
+        const FALLBACK_EXHIBITION_ARTWORKS = [
+            { src: 'assets/azzaro most wanted1.webp', type: 'POSTER', frameClass: 'frame-portrait', id: '01', title: 'Azzaro Most Wanted' },
+            { src: 'assets/DA Gem Final.webp', type: 'LOGO', frameClass: 'frame-square', id: '02', title: 'DA Gem Jewellery' },
+            { src: 'assets/logic gates classified mcq thumbnail new.webp', type: 'POSTER', frameClass: 'frame-landscape', id: '03', title: 'Logic Gates Thumbnail' },
+            { src: 'assets/lumelabslogo.webp', type: 'LOGO', frameClass: 'frame-banner', id: '04', title: 'Lume Labs Identity' },
+            { src: 'assets/number system thumb.webp', type: 'POSTER', frameClass: 'frame-landscape', id: '05', title: 'Number System Thumbnail' },
+            { src: 'assets/apex-logo.webp', type: 'LOGO', frameClass: 'frame-banner', id: '06', title: 'Apex Visuals Mark' },
+            { src: 'assets/apex-branding.webp', type: 'POSTER', frameClass: 'frame-square', id: '07', title: 'Apex Branding System' },
+            { src: 'assets/project-27.webp', type: 'LOGO', frameClass: 'frame-square', id: '08', title: 'Minimal Geometric Mark' },
+            { src: 'assets/lume-branding.webp', type: 'POSTER', frameClass: 'frame-square', id: '09', title: 'Lume Labs Brand Poster' },
+            { src: 'assets/project-28.webp', type: 'LOGO', frameClass: 'frame-landscape', id: '10', title: 'Digital Vector Monogram' },
+            { src: 'assets/project-1.webp', type: 'POSTER', frameClass: 'frame-square', id: '11', title: 'Creative Direction Poster' },
+            { src: 'assets/smk logo with the background.webp', type: 'LOGO', frameClass: 'frame-square', id: '12', title: 'SMK Studio Logo' },
+            { src: 'assets/project-2.webp', type: 'POSTER', frameClass: 'frame-square', id: '13', title: 'Editorial Cover Art' },
+            { src: 'assets/project-3.webp', type: 'POSTER', frameClass: 'frame-portrait', id: '14', title: 'Fashion Visual Poster' },
+            { src: 'assets/project-4.webp', type: 'POSTER', frameClass: 'frame-square', id: '15', title: 'Typography Layout' },
+            { src: 'assets/project-5.webp', type: 'POSTER', frameClass: 'frame-banner', id: '16', title: 'Digital Social Banner' },
+            { src: 'assets/project-7.webp', type: 'POSTER', frameClass: 'frame-landscape', id: '17', title: 'Landscape Artwork' },
+            { src: 'assets/project-8.webp', type: 'POSTER', frameClass: 'frame-portrait', id: '18', title: 'Visual Campaign Art' },
+            { src: 'assets/project-11.webp', type: 'POSTER', frameClass: 'frame-square', id: '19', title: 'Cybernetic Concept Art' },
+            { src: 'assets/smk x banner updated.webp', type: 'POSTER', frameClass: 'frame-banner', id: '20', title: 'SMK Commercial Header' }
         ];
+
+        let EXHIBITION_ARTWORKS = [...FALLBACK_EXHIBITION_ARTWORKS];
 
         // 3D Forward Runway State Engine
         const galleryState = {
@@ -1322,6 +1324,57 @@
             lastTime: 0,
             frameElements: []
         };
+
+        async function loadExhibitionArtworks() {
+            try {
+                const cacheBuster = Date.now();
+                const controller = new AbortController();
+                const timeoutId = setTimeout(() => controller.abort(), 3000);
+                const res = await fetch(`https://res.cloudinary.com/dwcsjrhhl/image/list/portfolio.json?cb=${cacheBuster}`, { signal: controller.signal });
+                clearTimeout(timeoutId);
+                if (res.ok) {
+                    const data = await res.json();
+                    if (data.resources && Array.isArray(data.resources) && data.resources.length > 0) {
+                        EXHIBITION_ARTWORKS = data.resources.map((r, idx) => {
+                            const w = r.width || 1080;
+                            const h = r.height || 1080;
+                            const ratio = w / h;
+                            let frameClass = 'frame-square';
+                            let type = 'POSTER';
+                            if (ratio > 2.0) {
+                                frameClass = 'frame-banner';
+                                type = 'BANNER';
+                            } else if (ratio > 1.25) {
+                                frameClass = 'frame-landscape';
+                                type = 'LANDSCAPE';
+                            } else if (ratio < 0.85) {
+                                frameClass = 'frame-portrait';
+                                type = 'PORTRAIT';
+                            } else {
+                                frameClass = 'frame-square';
+                                type = (r.public_id && r.public_id.toLowerCase().includes('logo')) ? 'LOGO' : 'GRAPHIC';
+                            }
+
+                            // Cloudinary auto-optimization URL with responsive bounding and auto format
+                            const src = `https://res.cloudinary.com/dwcsjrhhl/image/upload/f_auto,q_auto,w_1600,c_limit/v${r.version}/${r.public_id}.${r.format}`;
+                            const cleanName = (r.public_id || `Project ${idx + 1}`).replace(/[_-]+/g, ' ').toUpperCase();
+                            return {
+                                src: src,
+                                type: type,
+                                frameClass: frameClass,
+                                id: String(idx + 1).padStart(2, '0'),
+                                title: cleanName
+                            };
+                        });
+                        galleryState.total = EXHIBITION_ARTWORKS.length;
+                    }
+                }
+            } catch (err) {
+                console.warn('Using local fallback artworks inventory:', err.message);
+                EXHIBITION_ARTWORKS = [...FALLBACK_EXHIBITION_ARTWORKS];
+                galleryState.total = EXHIBITION_ARTWORKS.length;
+            }
+        }
 
         // ==========================================================================
         // 2. PARALLEL PRELOADER ENGINE (ZERO WAIT DURING DISCOVERY)
@@ -1425,7 +1478,7 @@
                         </div>
                     </div>
                     <div class="gallery-plaque">
-                        <span class="plaque-id">COLLECTION ${art.id}</span>
+                        <span class="plaque-id">${art.title || ('COLLECTION ' + art.id)}</span>
                         <span class="plaque-sep">•</span>
                         <span class="plaque-type">${art.type}</span>
                     </div>
@@ -1577,8 +1630,14 @@
             if (stageCurrent) stageCurrent.textContent = formattedNum;
             if (stageTotal) stageTotal.textContent = totalNum;
 
+            const dockCurrentNum = document.getElementById('dock-current-num');
+            if (dockCurrentNum) dockCurrentNum.textContent = formattedNum;
+            const dockMaxNum = document.getElementById('dock-max-num');
+            if (dockMaxNum) dockMaxNum.textContent = totalNum;
+
             if (captionArt && EXHIBITION_ARTWORKS[clampedIndex]) {
-                captionArt.textContent = `COLLECTION ITEM ${EXHIBITION_ARTWORKS[clampedIndex].id} // ${EXHIBITION_ARTWORKS[clampedIndex].type}`;
+                const curArt = EXHIBITION_ARTWORKS[clampedIndex];
+                captionArt.textContent = `${curArt.title || ('COLLECTION ' + curArt.id)} // ${curArt.type}`;
             }
 
             // Timeline ticks update
@@ -1703,7 +1762,7 @@
 
             img.src = art.src;
             if (plaque) {
-                plaque.innerHTML = `<span style="font-weight: 600; color: #f4f4f5; letter-spacing: 2px;">COLLECTION ${art.id}</span> &bull; <span style="color: #cbb382; font-weight: 600; letter-spacing: 2px;">${art.type}</span>`;
+                plaque.innerHTML = `<span style="font-weight: 600; color: #f4f4f5; letter-spacing: 2px;">${art.title || ('COLLECTION ' + art.id)}</span> &bull; <span style="color: #cbb382; font-weight: 600; letter-spacing: 2px;">${art.type}</span>`;
             }
 
             modal.style.display = 'flex';
@@ -1736,9 +1795,9 @@
                 item.style.position = 'relative';
 
                 item.innerHTML = `
-                    <img src="${art.src}" alt="Collection ${art.id}" loading="lazy">
+                    <img src="${art.src}" alt="${art.title || ('Collection ' + art.id)}" loading="lazy">
                     <div class="overlay" style="display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 8px;">
-                        <span class="view-text" style="letter-spacing: 2px;">COLLECTION ${art.id}</span>
+                        <span class="view-text" style="letter-spacing: 2px;">${art.title || ('COLLECTION ' + art.id)}</span>
                         <span style="font-family: var(--font-main); font-size: 0.72rem; color: #cbb382; font-weight: 600; letter-spacing: 2px;">${art.type}</span>
                     </div>
                 `;
@@ -1808,9 +1867,13 @@
         // ==========================================================================
         document.addEventListener('DOMContentLoaded', async () => {
             checkVaultLinkAccess();
+            await loadExhibitionArtworks();
             buildMuseumCorridor();
             initCorridorPhysics();
+            populateFallbackArchiveGrid();
             await preloadAllArtworks();
+            if (typeof loadWebProjects === 'function') loadWebProjects();
+            if (typeof loadVideoProjects === 'function') loadVideoProjects();
         });
     </script>
 </body>
