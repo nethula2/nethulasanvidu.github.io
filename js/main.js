@@ -1,33 +1,114 @@
 document.addEventListener('DOMContentLoaded', () => {
-    // --- Cursor Logic ---
-    const cursorDot = document.querySelector('.cursor-dot');
-    const cursorOutline = document.querySelector('.cursor-outline');
+    // --- Precision 60/120 FPS Fluid Cursor Engine ---
+    (function initCustomCursor() {
+        const dot = document.querySelector('.cursor-dot');
+        const outline = document.querySelector('.cursor-outline');
+        if (!dot || !outline) return;
 
-    if (cursorDot && cursorOutline) {
+        // On touch screens or devices without fine pointer, disable custom cursor entirely
+        if (window.matchMedia('(pointer: coarse)').matches || !window.matchMedia('(hover: hover)').matches) {
+            dot.style.display = 'none';
+            outline.style.display = 'none';
+            document.body.style.cursor = 'auto';
+            return;
+        }
+
+        let mouseX = -100, mouseY = -100;
+        let outlineX = -100, outlineY = -100;
+        let isVisible = false;
+        let isHoveringInteractive = false;
+        let isOverTextInput = false;
+
         window.addEventListener('mousemove', (e) => {
-            const posX = e.clientX;
-            const posY = e.clientY;
-            cursorDot.style.left = `${posX}px`;
-            cursorDot.style.top = `${posY}px`;
+            mouseX = e.clientX;
+            mouseY = e.clientY;
 
-            cursorOutline.animate(
-                { left: `${posX}px`, top: `${posY}px` },
-                { duration: 500, fill: 'forwards' }
+            if (!isVisible) {
+                isVisible = true;
+                dot.style.opacity = '1';
+                outline.style.opacity = '1';
+            }
+
+            // Direct hardware-accelerated transform for center dot (zero sensory lag)
+            dot.style.transform = `translate3d(${mouseX}px, ${mouseY}px, 0) translate(-50%, -50%)`;
+            wakeUpCursorLoop();
+
+            // Detect text inputs to show native caret for seamless typing
+            const target = e.target;
+            const isText = target && (
+                target.tagName === 'TEXTAREA' ||
+                (target.tagName === 'INPUT' && !['button','submit','checkbox','radio','range','file'].includes(target.type)) ||
+                target.isContentEditable
             );
-        });
 
-        // Hide custom cursor when mouse leaves the document window
+            if (isText !== isOverTextInput) {
+                isOverTextInput = isText;
+                if (isText) {
+                    dot.style.opacity = '0';
+                    outline.style.opacity = '0';
+                    document.body.style.cursor = 'text';
+                } else {
+                    dot.style.opacity = '1';
+                    outline.style.opacity = '1';
+                    document.body.style.cursor = 'none';
+                }
+            }
+
+            // Detect interactive hover (links, buttons, clickable cards)
+            const isInteractive = !!target.closest('a, button, [role="button"], input[type="submit"], .project-item, .web-card, .masonry-item, .nav-segment, .star-btn, .view-mode-pill, .interactive, .btn-submit');
+            if (isInteractive !== isHoveringInteractive) {
+                isHoveringInteractive = isInteractive;
+                if (isInteractive) {
+                    outline.classList.add('cursor-hover');
+                } else {
+                    outline.classList.remove('cursor-hover');
+                }
+            }
+        }, { passive: true });
+
+        // Hide cleanly when cursor exits viewport window
         document.addEventListener('mouseleave', () => {
-            cursorDot.style.opacity = '0';
-            cursorOutline.style.opacity = '0';
+            isVisible = false;
+            dot.style.opacity = '0';
+            outline.style.opacity = '0';
         });
 
-        // Show custom cursor when mouse enters the document window
         document.addEventListener('mouseenter', () => {
-            cursorDot.style.opacity = '1';
-            cursorOutline.style.opacity = '1';
+            if (!isOverTextInput) {
+                isVisible = true;
+                dot.style.opacity = '1';
+                outline.style.opacity = '1';
+            }
         });
-    }
+
+        // Silky 60/120 FPS lerp loop with smart idle sleeping
+        let isCursorLoopActive = false;
+        let cursorRafId = null;
+
+        function wakeUpCursorLoop() {
+            if (isCursorLoopActive) return;
+            isCursorLoopActive = true;
+            cursorRafId = requestAnimationFrame(renderCursor);
+        }
+
+        function renderCursor() {
+            if (isVisible) {
+                const dx = mouseX - outlineX;
+                const dy = mouseY - outlineY;
+                outlineX += dx * 0.2;
+                outlineY += dy * 0.2;
+                outline.style.transform = `translate3d(${outlineX.toFixed(1)}px, ${outlineY.toFixed(1)}px, 0) translate(-50%, -50%)`;
+
+                if (Math.abs(dx) < 0.25 && Math.abs(dy) < 0.25) {
+                    isCursorLoopActive = false;
+                    cursorRafId = null;
+                    return; // Sleep when settled!
+                }
+            }
+            cursorRafId = requestAnimationFrame(renderCursor);
+        }
+        wakeUpCursorLoop();
+    })();
 
     // --- Hover Reveal Logic ---
     const projects = document.querySelectorAll('.project-item');
@@ -110,6 +191,30 @@ document.addEventListener('DOMContentLoaded', () => {
             closeLightbox();
         });
     }
+
+    // --- Conditional Secret Vault Link (Completely hidden for normal users; only visible via secret link) ---
+    try {
+        const urlParams = new URLSearchParams(window.location.search);
+        const token = urlParams.get('access') || urlParams.get('key') || urlParams.get('vault') || sessionStorage.getItem('vault_passcode');
+        if (token && token.trim().length > 0) {
+            sessionStorage.setItem('vault_passcode', token.trim());
+            const navMenu = document.querySelector('.navbar .nav-menu');
+            if (navMenu && !document.getElementById('secret-vault-nav-link')) {
+                const vaultLink = document.createElement('a');
+                vaultLink.id = 'secret-vault-nav-link';
+                vaultLink.href = 'vault.html?access=' + encodeURIComponent(token.trim());
+                vaultLink.className = 'nav-link';
+                vaultLink.style.color = '#ff6b81';
+                vaultLink.style.border = '1px solid rgba(255, 107, 129, 0.3)';
+                vaultLink.style.padding = '4px 12px';
+                vaultLink.style.borderRadius = '20px';
+                vaultLink.style.background = 'rgba(255, 71, 87, 0.08)';
+                vaultLink.title = 'Restricted Client Access';
+                vaultLink.innerHTML = '[ VAULT &#x1F512; ]';
+                navMenu.insertBefore(vaultLink, navMenu.firstChild);
+            }
+        }
+    } catch (e) {}
 });
 
 /**
@@ -124,7 +229,10 @@ async function loadGallery() {
         try {
             // Try fetching dynamically from Cloudinary first (using cache-buster to prevent cached 401 errors)
             const cacheBuster = new Date().getTime();
-            const response = await fetch(`https://res.cloudinary.com/dwcsjrhhl/image/list/portfolio.json?cb=${cacheBuster}`);
+            const controller = new AbortController();
+            const timeoutId = setTimeout(() => controller.abort(), 900);
+            const response = await fetch(`https://res.cloudinary.com/dwcsjrhhl/image/list/portfolio.json?cb=${cacheBuster}`, { signal: controller.signal });
+            clearTimeout(timeoutId);
             if (response.ok) {
                 const data = await response.json();
                 images = data.resources.map(img => ({
@@ -271,10 +379,14 @@ async function loadWebProjects() {
                     </div>
                 </div>
                 <div class="web-info">
+                    <div class="card-meta-tags">
+                        <span class="card-tag">WEB PLATFORM</span>
+                        <span class="card-tag">INTERACTIVE</span>
+                    </div>
                     <h3>${project.title}</h3>
                     <p>${project.description}</p>
                     <a href="${project.url || '#'}" target="_blank" class="btn-visit" ${!project.url || project.url === '#' ? 'style="pointer-events:none; opacity:0.5;"' : ''}>
-                        ${!project.url || project.url === '#' ? 'COMING SOON' : 'VISIT LIVE SITE <i class="ri-arrow-right-up-line"></i>'}
+                        ${!project.url || project.url === '#' ? 'COMING SOON' : 'EXPLORE PLATFORM <i class="ri-arrow-right-up-line"></i>'}
                     </a>
                 </div>
             `;
@@ -330,21 +442,61 @@ async function loadVideoProjects() {
                                 <i class="ri-play-fill" style="margin-left: 4px;"></i>
                             </div>
                         </a>
-                        <div class="watermark-text" style="position: absolute; bottom: 10px; right: 10px; font-size: 10px; opacity: 0.3; font-family: var(--font-display); color: #fff;">
+                        <div class="watermark-text" style="position: absolute; bottom: 10px; right: 10px; font-size: 10px; opacity: 0.3; font-family: var(--font-main); color: #fff;">
                             © NETHULA SANVIDU
                         </div>
                     </div>
                 </div>
                 <div class="web-info">
+                    <div class="card-meta-tags">
+                        <span class="card-tag">VISUAL REEL</span>
+                        <span class="card-tag">PREMIERE PRO</span>
+                        <span class="card-tag">CREATIVE EDIT</span>
+                    </div>
                     <h3>${video.title}</h3>
                     <p>${video.description}</p>
                     <a href="${video.url || '#'}" target="_blank" class="btn-visit" ${!video.url || video.url === '#' ? 'style="pointer-events:none; opacity:0.5;"' : ''}>
-                        ${!video.url || video.url === '#' ? 'COMING SOON' : 'PLAY TRANSMISSION <i class="ri-play-mini-line"></i>'}
+                        ${!video.url || video.url === '#' ? 'COMING SOON' : 'WATCH REEL <i class="ri-play-mini-line"></i>'}
                     </a>
                 </div>
             `;
             container.appendChild(card);
         });
+
+        // If only 1 video is available, add a balanced companion showcase card so the section is visually complete
+        if (videos.length === 1) {
+            const companion = document.createElement('div');
+            companion.className = 'web-card';
+            companion.innerHTML = `
+                <div class="web-preview">
+                    <div class="browser-bar">
+                        <div class="dot red"></div>
+                        <div class="dot yellow"></div>
+                        <div class="dot green"></div>
+                        <span class="url">commercial-motion.mp4</span>
+                    </div>
+                    <div class="img-container" style="position: relative; aspect-ratio: 16/9; overflow: hidden; background: #07080e;">
+                        <img src="assets/video-project-2.svg" alt="Commercial Showreel" style="width: 100%; height: 100%; object-fit: cover;">
+                        <div class="watermark-text" style="position: absolute; bottom: 10px; right: 10px; font-size: 10px; opacity: 0.3; font-family: var(--font-main); color: #fff;">
+                            © NETHULA SANVIDU
+                        </div>
+                    </div>
+                </div>
+                <div class="web-info">
+                    <div class="card-meta-tags">
+                        <span class="card-tag">MOTION DESIGN</span>
+                        <span class="card-tag">3D DIRECTION</span>
+                        <span class="card-tag">4K REEL</span>
+                    </div>
+                    <h3>COMMERCIAL SHOWREEL</h3>
+                    <p>High-energy visual edits, 3D product motion graphics, and sound design reels scheduled for upcoming release.</p>
+                    <a href="#" class="btn-visit" style="pointer-events:none; opacity:0.6;">
+                        PREVIEW ONLY &bull; PRODUCTION
+                    </a>
+                </div>
+            `;
+            container.appendChild(companion);
+        }
         console.log('Loaded video projects from Vercel API successfully.');
     } catch (error) {
         console.warn('Failed to load dynamic video projects. Showing static fallbacks:', error);
@@ -483,17 +635,24 @@ function resetStarRatingHover() {
 
 async function submitReview(event) {
     event.preventDefault();
-    if (!currentSession) {
-        alert("Please log in to submit a review.");
+
+    const nameInput = document.getElementById("review-author-name");
+    const roleInput = document.getElementById("review-author-role");
+    const ratingVal = parseInt(document.getElementById("review-rating-value").value, 10);
+    const commentVal = (document.getElementById("review-comment").value || "").trim();
+    const submitBtn = document.getElementById("btn-submit-review");
+
+    const authorName = (currentSession?.user?.user_metadata?.full_name || currentSession?.user?.email || nameInput?.value || "").trim();
+    const authorRole = (roleInput?.value || "Client Transmission").trim();
+
+    if (!authorName) {
+        alert("Please enter your name or studio identity.");
+        if (nameInput) nameInput.focus();
         return;
     }
 
-    const ratingVal = parseInt(document.getElementById("review-rating-value").value, 10);
-    const commentVal = document.getElementById("review-comment").value.trim();
-    const submitBtn = document.getElementById("btn-submit-review");
-
     if (!ratingVal || ratingVal < 1) {
-        alert("Please select a star rating.");
+        alert("Please select a star rating (1 to 5 stars).");
         return;
     }
     if (!commentVal) {
@@ -504,14 +663,18 @@ async function submitReview(event) {
     submitBtn.disabled = true;
     submitBtn.innerHTML = '<i class="ri-loader-4-line ri-spin"></i> TRANSMITTING...';
 
+    const headers = { 'Content-Type': 'application/json' };
+    if (currentSession?.access_token) {
+        headers['Authorization'] = `Bearer ${currentSession.access_token}`;
+    }
+
     try {
         const response = await fetch('/api/add-review', {
             method: 'POST',
-            headers: {
-                'Content-Type': 'application/json',
-                'Authorization': `Bearer ${currentSession.access_token}`
-            },
+            headers: headers,
             body: JSON.stringify({
+                name: authorName,
+                role: authorRole,
                 rating: ratingVal,
                 comment: commentVal
             })
@@ -525,9 +688,11 @@ async function submitReview(event) {
         const data = await response.json();
         if (data.result === 'ok') {
             const successBox = document.getElementById("review-status-success");
-            successBox.style.display = "block";
-            
+            if (successBox) successBox.style.display = "block";
+
             document.getElementById("review-comment").value = "";
+            if (nameInput && !currentSession) nameInput.value = "";
+            if (roleInput) roleInput.value = "";
             setStarRating(0);
 
             // Add the new review to the global state and re-render
@@ -535,7 +700,7 @@ async function submitReview(event) {
             renderReviewsFeed();
 
             setTimeout(() => {
-                successBox.style.display = "none";
+                if (successBox) successBox.style.display = "none";
             }, 5000);
         } else {
             throw new Error(data.error || 'Failed to submit review');

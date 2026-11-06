@@ -5,29 +5,929 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>ARCHIVE // NETHULA SANVIDU</title>
 
-    <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;400;600&family=Syncopate:wght@400;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;400;500;600;700&family=Syncopate:wght@400;700&display=swap" rel="stylesheet">
     <link href="https://cdn.jsdelivr.net/npm/remixicon@3.5.0/fonts/remixicon.css" rel="stylesheet">
     <link rel="stylesheet" href="css/style.css">
 
     <style>
-        .coming-soon {
+        /* ==========================================================================
+           ARCHITECTURAL PAGE ELEVATIONS & EDITORIAL THEMING
+           ========================================================================== */
+        :root {
+            --font-main: 'Space Grotesk', sans-serif !important;
+            --font-display: 'Syncopate', sans-serif !important;
+            --museum-brass: #cbb382;
+            --museum-amber: #cbb382;
+            --museum-bone: #f4f4f5;
+            --museum-muted: #71717a;
+            --museum-border: rgba(255, 255, 255, 0.07);
+        }
+
+        /* Seamless Page Flow — Remove Rigid Section Divider Lines & Separate Dark Bands */
+        .work-category {
+            padding: 70px 40px !important;
+            border-bottom: none !important;
+            background: transparent !important;
+            backdrop-filter: none !important;
+            max-width: 1400px;
+            margin: 0 auto;
+            position: relative;
+        }
+
+        .cat-title {
+            font-family: var(--font-display) !important;
+            font-size: 1.15rem !important;
+            font-weight: 600 !important;
+            letter-spacing: 3px !important;
+            color: #ffffff !important;
+            margin-bottom: 25px !important;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .cat-title::before {
+            content: '';
+            display: inline-block;
+            width: 6px;
+            height: 6px;
+            background: #cbb382;
+            border-radius: 50%;
+        }
+
+        /* Unified 2-Column Grid Layout for Web & Video Projects (Matches Page Flow) */
+        .web-projects-container,
+        .video-projects-container {
+            display: grid !important;
+            grid-template-columns: repeat(auto-fit, minmax(min(100%, 480px), 1fr)) !important;
+            gap: 30px !important;
+            width: 100% !important;
+            max-width: 1200px !important;
+            margin: 25px auto 0 !important;
+        }
+
+        .web-card {
+            border: 1px solid rgba(255, 255, 255, 0.08) !important;
+            background: rgba(255, 255, 255, 0.025) !important;
+            backdrop-filter: blur(16px) !important;
+            -webkit-backdrop-filter: blur(16px) !important;
+            border-radius: 12px !important;
+            overflow: hidden !important;
+            margin-bottom: 0 !important;
+            transition: transform 0.35s cubic-bezier(0.16, 1, 0.3, 1), border-color 0.35s ease, box-shadow 0.35s ease !important;
+        }
+
+        .web-card:hover {
+            border-color: rgba(255, 255, 255, 0.22) !important;
+            transform: translateY(-4px) !important;
+            box-shadow: 0 20px 45px rgba(0, 0, 0, 0.45) !important;
+        }
+
+        .web-info h3 {
+            font-family: var(--font-display) !important;
+            font-size: 1.4rem !important;
+            font-weight: 600 !important;
+            letter-spacing: 1px !important;
+        }
+
+        /* ==========================================================================
+           EDITORIAL ARCHIVE HERO HEADER (HUMAN, SWISS-AESTHETIC, NON-AI)
+           ========================================================================== */
+        .archive-hero-header {
+            padding: 125px 40px 45px;
+            max-width: 1400px;
+            margin: 0 auto;
+            position: relative;
+            border-bottom: none !important;
+        }
+
+        .archive-header-inner {
+            display: flex;
+            flex-direction: column;
+            gap: 22px;
+        }
+
+        .hero-editorial-top {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            flex-wrap: wrap;
+            gap: 16px;
+            padding-bottom: 18px;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+            font-family: var(--font-display);
+            font-size: 0.72rem;
+            letter-spacing: 2.5px;
+            color: #cbb382;
+            text-transform: uppercase;
+        }
+
+        .hero-serial {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .hero-serial::before {
+            content: '';
+            width: 7px;
+            height: 7px;
+            background: #cbb382;
+            border-radius: 50%;
+            display: inline-block;
+        }
+
+        .hero-curator {
+            color: #8e8e99;
+            letter-spacing: 1.5px;
+        }
+
+        .archive-headline {
+            font-family: var(--font-display);
+            font-size: clamp(2.8rem, 6.5vw, 5.2rem);
+            font-weight: 700;
+            line-height: 1.0;
+            letter-spacing: -0.5px;
+            color: #ffffff;
+            margin: 8px 0 0;
+            text-transform: uppercase;
+        }
+
+        .hero-editorial-sub {
+            display: flex;
+            align-items: flex-start;
+            justify-content: space-between;
+            flex-wrap: wrap;
+            gap: 32px;
+            margin-top: 6px;
+        }
+
+        .hero-statement {
+            font-family: var(--font-main);
+            font-size: 1.02rem;
+            line-height: 1.65;
+            color: #a1a1aa;
+            max-width: 580px;
+            margin: 0;
+            font-weight: 400;
+        }
+
+        /* Minimalist Index Jump Anchors */
+        .hero-index-nav {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            flex-wrap: wrap;
+        }
+
+        .hero-nav-anchor {
+            display: inline-flex;
+            align-items: center;
+            gap: 9px;
+            background: rgba(255, 255, 255, 0.03);
+            border: 1px solid rgba(255, 255, 255, 0.09);
+            backdrop-filter: blur(12px);
+            -webkit-backdrop-filter: blur(12px);
+            padding: 9px 20px;
+            border-radius: 50px;
+            text-decoration: none;
+            color: #e4e4e7;
+            font-family: var(--font-display);
+            font-size: 0.72rem;
+            letter-spacing: 1px;
+            transition: all 0.28s cubic-bezier(0.16, 1, 0.3, 1);
+        }
+
+        .hero-nav-anchor .nav-idx {
+            color: #cbb382;
+            font-weight: 600;
+        }
+
+        .hero-nav-anchor .nav-name {
+            font-weight: 500;
+        }
+
+        .hero-nav-anchor i {
+            font-size: 0.85rem;
+            color: #71717a;
+            transition: transform 0.25s ease, color 0.25s ease;
+        }
+
+        .hero-nav-anchor:hover {
+            background: #ffffff;
+            border-color: #ffffff;
+            color: #000000;
+            transform: translateY(-2px);
+            box-shadow: 0 10px 25px rgba(255, 255, 255, 0.16);
+        }
+
+        .hero-nav-anchor:hover .nav-idx {
+            color: #000000;
+        }
+
+        .hero-nav-anchor:hover i {
+            color: #000000;
+            transform: translateY(2px);
+        }
+
+        /* ==========================================================================
+           REFINED WEB & VIDEO CARDS (ARCHITECTURAL & CRISP)
+           ========================================================================== */
+        .card-meta-tags {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 8px;
+            margin-bottom: 14px;
+        }
+
+        .card-tag {
+            font-family: var(--font-display);
+            font-size: 0.65rem;
+            letter-spacing: 1.5px;
+            color: #cbb382;
+            background: rgba(203, 179, 130, 0.08);
+            border: 1px solid rgba(203, 179, 130, 0.2);
+            padding: 3px 10px;
+            border-radius: 4px;
+            text-transform: uppercase;
+        }
+
+        .browser-bar {
+            padding: 11px 16px !important;
+            background: rgba(12, 13, 18, 0.85) !important;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.07) !important;
+            display: flex !important;
+            align-items: center !important;
+            gap: 8px !important;
+        }
+
+        .browser-bar .url {
+            margin-left: 12px !important;
+            font-family: monospace !important;
+            font-size: 0.72rem !important;
+            color: #888898 !important;
+            background: rgba(255, 255, 255, 0.035) !important;
+            padding: 3px 12px !important;
+            border-radius: 20px !important;
+            border: 1px solid rgba(255, 255, 255, 0.05) !important;
+            letter-spacing: 0.5px !important;
+        }
+
+        .web-preview .img-container {
+            aspect-ratio: 16/9;
+            overflow: hidden;
+            background: #08090d;
+        }
+
+        .web-preview .img-container img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            display: block;
+            transition: transform 0.6s cubic-bezier(0.16, 1, 0.3, 1);
+        }
+
+        .web-card:hover .web-preview .img-container img {
+            transform: scale(1.03);
+        }
+
+        .web-info {
+            padding: 28px 30px 32px !important;
+        }
+
+        .web-info h3 {
+            font-family: var(--font-display) !important;
+            font-size: 1.35rem !important;
+            font-weight: 600 !important;
+            letter-spacing: 0.5px !important;
+            color: #ffffff !important;
+            margin-bottom: 12px !important;
+        }
+
+        .web-info p {
+            font-family: var(--font-main) !important;
+            font-size: 0.88rem !important;
+            line-height: 1.6 !important;
+            color: #a1a1aa !important;
+            margin-bottom: 24px !important;
+        }
+
+        .btn-visit-editorial {
+            display: inline-flex;
+            align-items: center;
+            gap: 10px;
+            padding: 10px 22px;
+            border-radius: 50px;
+            background: rgba(255, 255, 255, 0.04);
+            border: 1px solid rgba(255, 255, 255, 0.16);
+            color: #ffffff;
+            text-decoration: none;
+            font-family: var(--font-display);
+            font-size: 0.72rem;
+            letter-spacing: 1.5px;
+            font-weight: 600;
+            transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+        }
+
+        .btn-visit-editorial:hover {
+            background: #ffffff;
+            color: #000000;
+            border-color: #ffffff;
+            transform: translateY(-2px);
+            box-shadow: 0 8px 24px rgba(255, 255, 255, 0.18);
+        }
+
+        .btn-visit-editorial i {
+            font-size: 0.95rem;
+            transition: transform 0.3s ease;
+        }
+
+        .btn-visit-editorial:hover i {
+            transform: translate(2px, -2px);
+        }
+
+        /* ==========================================================================
+           3D FORWARD-GLIDING MUSEUM CORRIDOR (SEAMLESS ON FLUID BACKGROUND)
+           ========================================================================== */
+        .museum-section-wrapper {
+            position: relative;
+            margin: 40px auto 70px;
+            user-select: none;
+            max-width: 1400px;
+        }
+
+        .museum-header-bar {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            flex-wrap: wrap;
+            gap: 20px;
+            margin-bottom: 25px;
+        }
+
+        .museum-title-box {
+            display: flex;
+            align-items: center;
+            gap: 14px;
+        }
+
+        /* View Mode Switcher */
+        .view-mode-toggle {
+            display: inline-flex;
+            align-items: center;
+            gap: 4px;
+            background: rgba(255, 255, 255, 0.04);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 50px;
+            padding: 4px;
+        }
+
+        .btn-view-toggle {
+            background: transparent;
+            border: none;
+            color: #888898;
+            font-family: var(--font-display);
+            font-size: 0.68rem;
+            letter-spacing: 1.5px;
+            padding: 8px 18px;
+            border-radius: 50px;
+            cursor: pointer;
+            transition: all 0.25s ease;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .btn-view-toggle.active {
+            background: #ffffff;
+            color: #000000;
+            font-weight: 700;
+            box-shadow: 0 4px 15px rgba(255, 255, 255, 0.25);
+        }
+
+        /* 3D Museum Stage — Completely Transparent, Floating on Fluid Background */
+        .museum-stage-outer {
+            position: relative;
+            width: 100%;
+            height: 780px;
+            background: transparent !important;
+            border: none !important;
+            border-radius: 0 !important;
+            overflow: hidden;
+            box-shadow: none !important;
             display: flex;
             align-items: center;
             justify-content: center;
-            height: 300px;
-            background: linear-gradient(135deg, #0a0a0a, #1a1a1a);
-            border: 1px solid rgba(255,255,255,0.1);
-            font-family: 'Syncopate', sans-serif;
-            font-size: 18px;
-            letter-spacing: 2px;
-            color: rgba(255,255,255,0.7);
-            text-align: center;
+            cursor: grab;
+            outline: none;
         }
-        .coming-soon span {
-            opacity: 0.6;
-            font-size: 14px;
+
+        .museum-stage-outer:active {
+            cursor: grabbing;
+        }
+
+        /* Overhead Halogen Ambient Wash — Soft & Transparent */
+        .gallery-overhead-spotlight {
+            position: absolute;
+            top: -100px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 1000px;
+            height: 520px;
+            background: radial-gradient(ellipse at 50% 0%, rgba(255, 255, 255, 0.08) 0%, rgba(203, 179, 130, 0.02) 50%, transparent 75%);
+            pointer-events: none;
+            z-index: 15;
+            filter: blur(40px);
+        }
+
+        /* Ground Ambient Floor Shadow — Soft Natural Drop Shadow */
+        .gallery-floor-ambient {
+            position: absolute;
+            bottom: 25px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 80%;
+            max-width: 850px;
+            height: 80px;
+            background: radial-gradient(ellipse at 50% 50%, rgba(0, 0, 0, 0.35) 0%, transparent 75%);
+            pointer-events: none;
+            z-index: 1;
+        }
+
+        /* 3D Perspective Viewport */
+        .corridor-viewport {
+            position: relative;
+            width: 100%;
+            height: 100%;
+            perspective: 1600px;
+            perspective-origin: 50% 46%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            z-index: 5;
+        }
+
+        .corridor-track {
+            position: absolute;
+            width: 0;
+            height: 0;
+            transform-style: preserve-3d;
+            will-change: transform;
+        }
+
+        /* ==========================================================================
+           ADAPTIVE MUSEUM FRAMES (HUGE / MONUMENTAL GRAND SCALE)
+           ========================================================================== */
+        .adaptive-frame {
+            will-change: transform, opacity;
+            backface-visibility: hidden;
+            -webkit-backface-visibility: hidden;
+            contain: layout paint;
+            position: absolute;
+            left: 50%;
+            top: 50%;
+            transform-style: preserve-3d;
+            backface-visibility: hidden;
+            -webkit-backface-visibility: hidden;
+            cursor: pointer;
+            will-change: transform, opacity, filter;
+            transition: filter 0.25s ease, box-shadow 0.25s ease;
+        }
+
+        /* 1. PORTRAIT FRAMES (4:5 Posters - Monumental Size) */
+        .adaptive-frame.frame-portrait {
+            width: 480px;
+            height: 640px;
+            margin-left: -240px;
+            margin-top: -320px;
+        }
+
+        /* 2. SQUARE FRAMES (1:1 Visual Marks & Identity - Monumental Size) */
+        .adaptive-frame.frame-square {
+            width: 580px;
+            height: 580px;
+            margin-left: -290px;
+            margin-top: -290px;
+        }
+
+        /* 3. LANDSCAPE FRAMES (16:9 Thumbnails & Artworks - Monumental Size) */
+        .adaptive-frame.frame-landscape {
+            width: 860px;
+            height: 500px;
+            margin-left: -430px;
+            margin-top: -250px;
+        }
+
+        /* 4. BANNER / PANORAMIC FRAMES (3:1 Marks & Banners - Monumental Size) */
+        .adaptive-frame.frame-banner {
+            width: 940px;
+            height: 360px;
+            margin-left: -470px;
+            margin-top: -180px;
+        }
+
+        /* Frame Architectural Bevel Moulding */
+        .frame-bevel-moulding {
+            position: relative;
+            width: 100%;
+            height: 100%;
+            background: #111216;
+            border: 10px solid #181920;
+            border-radius: 4px;
+            box-shadow: 
+                inset 0 0 0 1px rgba(203, 179, 130, 0.4), /* Soft brass fillet */
+                inset 0 0 0 2px #0a0b0e,
+                0 40px 90px rgba(0, 0, 0, 0.9),
+                0 10px 30px rgba(0, 0, 0, 0.65);
+            padding: 10px;
+            display: flex;
+            flex-direction: column;
+            overflow: hidden;
+        }
+
+        /* Archival Velvet Matting Paper */
+        .frame-inner-matting {
+            width: 100%;
+            height: 100%;
+            background: #0f1014;
+            border: 1px solid rgba(255, 255, 255, 0.04);
+            box-shadow: inset 0 3px 12px rgba(0, 0, 0, 0.85);
+            position: relative;
+            overflow: hidden;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: 2px;
+        }
+
+        /* Image Rendering - ZERO CROPPING EVER */
+        .frame-inner-matting img {
+            width: 100%;
+            height: 100%;
+            object-fit: contain;
             display: block;
-            margin-top: 10px;
+            pointer-events: none;
+            -webkit-user-drag: none;
+        }
+
+        /* Specular Glass Sheen */
+        .frame-glass-sheen {
+            position: absolute;
+            inset: 0;
+            background: linear-gradient(135deg, rgba(255, 255, 255, 0.1) 0%, rgba(255, 255, 255, 0.02) 40%, transparent 65%);
+            pointer-events: none;
+            z-index: 2;
+        }
+
+        /* Hover Glow on Active Foreground Frame */
+        .adaptive-frame.is-active:hover .frame-bevel-moulding {
+            border-color: #242531;
+            box-shadow: 
+                inset 0 0 0 1px rgba(203, 179, 130, 0.7),
+                0 45px 100px rgba(0, 0, 0, 0.95),
+                0 0 40px rgba(203, 179, 130, 0.15);
+        }
+
+        /* Human Architectural Museum Plaque (Non-AI, Refined & Minimal) */
+        .gallery-plaque {
+            position: absolute;
+            bottom: -46px;
+            left: 50%;
+            transform: translateX(-50%);
+            display: inline-flex;
+            align-items: center;
+            gap: 12px;
+            font-family: var(--font-main);
+            font-size: 0.72rem;
+            letter-spacing: 2.5px;
+            color: #d4d4d8;
+            white-space: nowrap;
+            background: #0d0e13;
+            border: 1px solid rgba(255, 255, 255, 0.08);
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.8);
+            padding: 6px 20px;
+            border-radius: 4px;
+            z-index: 4;
+            pointer-events: auto;
+            transition: all 0.25s ease;
+        }
+
+        .gallery-plaque .plaque-id {
+            color: #f4f4f5;
+            font-weight: 600;
+        }
+
+        .gallery-plaque .plaque-sep {
+            color: #52525b;
+            font-size: 0.7rem;
+        }
+
+        .gallery-plaque .plaque-type {
+            color: #cbb382; /* Warm champagne gold */
+            font-weight: 600;
+        }
+
+        /* Header Curation Tag */
+        .header-curation-stat {
+            font-family: var(--font-main), sans-serif;
+            font-size: 0.7rem;
+            letter-spacing: 2px;
+            color: #71717a;
+            text-transform: uppercase;
+        }
+
+        /* ==========================================================================
+           REFINED FLOATING GALLERY CONTROLS (NON-AI, EDITORIAL DESIGN)
+           ========================================================================== */
+        .museum-navigation-bar {
+            position: absolute;
+            bottom: 24px;
+            left: 50%;
+            transform: translateX(-50%);
+            display: flex;
+            align-items: center;
+            gap: 16px;
+            background: rgba(12, 13, 18, 0.88);
+            backdrop-filter: blur(16px);
+            -webkit-backdrop-filter: blur(16px);
+            border: 1px solid rgba(255, 255, 255, 0.08);
+            border-radius: 50px;
+            padding: 6px 18px;
+            box-shadow: 0 15px 40px rgba(0, 0, 0, 0.8);
+            z-index: 25;
+        }
+
+        .btn-nav-arrow {
+            background: transparent;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            color: #ffffff;
+            width: 32px;
+            height: 32px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            font-size: 0.95rem;
+        }
+
+        .btn-nav-arrow:hover {
+            background: #ffffff;
+            color: #000000;
+            border-color: #ffffff;
+            transform: scale(1.08);
+        }
+
+        /* Interactive Timeline Scrubber Track */
+        .nav-scrubber-wrapper {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .scrubber-num {
+            font-family: var(--font-main), sans-serif;
+            font-size: 0.68rem;
+            letter-spacing: 1.5px;
+            color: #71717a;
+            font-weight: 500;
+        }
+
+        .scrubber-num.current {
+            color: #ffffff;
+            font-weight: 700;
+        }
+
+        .nav-scrubber-track {
+            display: flex;
+            align-items: center;
+            gap: 4px;
+            height: 26px;
+        }
+
+        .timeline-tick {
+            width: 4px;
+            height: 10px;
+            border-radius: 2px;
+            background: rgba(255, 255, 255, 0.12);
+            cursor: pointer;
+            transition: all 0.25s ease;
+        }
+
+        .timeline-tick:hover {
+            background: rgba(255, 255, 255, 0.5);
+            height: 16px;
+        }
+
+        .timeline-tick.active {
+            background: #cbb382;
+            height: 18px;
+            box-shadow: 0 0 10px rgba(203, 179, 130, 0.5);
+        }
+
+        /* Under-Stage Quiet Interaction Caption */
+        .museum-stage-caption {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 12px;
+            font-family: var(--font-main);
+            font-size: 0.68rem;
+            letter-spacing: 1.5px;
+            color: #52525b;
+            margin-top: 14px;
+            text-transform: uppercase;
+        }
+
+        .caption-dot {
+            color: #3f3f46;
+        }
+
+        /* ==========================================================================
+           PRELOADER ENGINE (ZERO-WAIT DISCOVERY)
+           ========================================================================== */
+        .museum-preloader {
+            position: absolute;
+            inset: 0;
+            background: #08090d;
+            border-radius: 20px;
+            z-index: 50;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 24px;
+            transition: opacity 0.5s cubic-bezier(0.16, 1, 0.3, 1);
+        }
+
+        .preloader-box {
+            background: rgba(255, 255, 255, 0.02);
+            border: 1px solid rgba(255, 255, 255, 0.09);
+            border-radius: 16px;
+            padding: 35px 32px;
+            max-width: 420px;
+            width: 100%;
+            text-align: center;
+            box-shadow: 0 25px 60px rgba(0, 0, 0, 0.8);
+        }
+
+        .preloader-emblem {
+            width: 54px;
+            height: 54px;
+            border-radius: 50%;
+            background: rgba(245, 158, 11, 0.1);
+            border: 1px solid rgba(245, 158, 11, 0.35);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.5rem;
+            color: var(--museum-amber);
+            margin: 0 auto 16px;
+        }
+
+        .preloader-title {
+            font-family: var(--font-display);
+            font-size: 0.85rem;
+            letter-spacing: 2px;
+            color: #ffffff;
+            margin-bottom: 6px;
+        }
+
+        .preloader-subtext {
+            font-size: 0.78rem;
+            color: #71717a;
+            margin-bottom: 22px;
+            line-height: 1.5;
+        }
+
+        .preloader-bar-rail {
+            width: 100%;
+            height: 4px;
+            background: rgba(255, 255, 255, 0.08);
+            border-radius: 10px;
+            overflow: hidden;
+            margin-bottom: 12px;
+        }
+
+        .preloader-bar-thumb {
+            height: 100%;
+            width: 0%;
+            background: linear-gradient(90deg, #f59e0b, #fbbf24);
+            border-radius: 10px;
+            transition: width 0.2s ease;
+            box-shadow: 0 0 12px rgba(245, 158, 11, 0.5);
+        }
+
+        .preloader-footer {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            font-family: var(--font-display);
+            font-size: 0.68rem;
+            letter-spacing: 1px;
+            color: #71717a;
+        }
+
+        #preloader-percent {
+            color: var(--museum-amber);
+            font-weight: 700;
+        }
+
+        /* ==========================================================================
+           RESPONSIVE SCALE ADAPTATIONS
+           ========================================================================== */
+        @media (max-width: 1200px) {
+            .museum-stage-outer {
+                height: 700px;
+            }
+            .adaptive-frame.frame-portrait {
+                width: 400px;
+                height: 530px;
+                margin-left: -200px;
+                margin-top: -265px;
+            }
+            .adaptive-frame.frame-square {
+                width: 480px;
+                height: 480px;
+                margin-left: -240px;
+                margin-top: -240px;
+            }
+            .adaptive-frame.frame-landscape {
+                width: 720px;
+                height: 420px;
+                margin-left: -360px;
+                margin-top: -210px;
+            }
+            .adaptive-frame.frame-banner {
+                width: 780px;
+                height: 300px;
+                margin-left: -390px;
+                margin-top: -150px;
+            }
+        }
+
+        @media (max-width: 768px) {
+            .archive-hero-header {
+                padding: 95px 20px 30px;
+            }
+            .hero-editorial-sub {
+                flex-direction: column;
+                gap: 20px;
+            }
+            .hero-index-nav {
+                width: 100%;
+            }
+            .museum-stage-outer {
+                height: 560px;
+            }
+            .adaptive-frame.frame-portrait {
+                width: 250px;
+                height: 330px;
+                margin-left: -125px;
+                margin-top: -180px;
+            }
+            .adaptive-frame.frame-square {
+                width: 280px;
+                height: 280px;
+                margin-left: -140px;
+                margin-top: -155px;
+            }
+            .adaptive-frame.frame-landscape {
+                width: 340px;
+                height: 205px;
+                margin-left: -170px;
+                margin-top: -120px;
+            }
+            .adaptive-frame.frame-banner {
+                width: 350px;
+                height: 155px;
+                margin-left: -175px;
+                margin-top: -95px;
+            }
+            .museum-navigation-bar {
+                padding: 5px 14px;
+                gap: 10px;
+                max-width: 92%;
+            }
+            .nav-scrubber-track {
+                gap: 3px;
+            }
+            .timeline-tick {
+                width: 3px;
+                height: 9px;
+            }
+            .scrubber-num {
+                font-size: 0.62rem;
+            }
+            .museum-stage-caption {
+                flex-direction: column;
+                gap: 4px;
+                text-align: center;
+                font-size: 0.62rem;
+            }
+            .caption-dot {
+                display: none;
+            }
         }
     </style>
 </head>
@@ -38,88 +938,292 @@
     <div class="cursor-dot"></div>
     <div class="cursor-outline"></div>
 
-    <nav class="navbar">
-        <div class="logo">
-            <a href="index.html">NETHULA SANVIDU</a>
-            <span class="badge">ARCHIVE</span>
+    <!-- MAIN NAVIGATION -->
+    <nav class="navbar" id="site-navbar">
+        <a href="index.html" class="logo">
+            <span>NETHULA SANVIDU</span>
+            <span class="badge">©2026</span>
+        </a>
+        <div class="nav-menu" id="primary-nav-menu">
+            <a href="works.html" class="nav-link active" id="nav-item-work">[ WORK ]</a>
+            <a href="tools.html" class="nav-link" id="nav-item-toolyard">[ TOOLYARD ]</a>
+            <a href="index.html#about" class="nav-link" id="nav-item-profile">[ PROFILE ]</a>
+            <a href="index.html#contact" class="nav-link" id="nav-item-contact">[ CONTACT ]</a>
         </div>
-        <div class="nav-menu works-nav">
-            <a href="index.html" class="nav-link">[ BACK HOME ]</a>
-        </div>
+        <button class="menu-toggle" id="menu-toggle-btn" aria-label="Toggle navigation" type="button">
+            <span class="line-1"></span>
+            <span class="line-2"></span>
+            <span class="line-3"></span>
+        </button>
     </nav>
 
-    <div class="works-header">
-        <h1>PROJECT<br>ARCHIVE</h1>
-    </div>
+    <!-- EDITORIAL ARCHIVE HERO -->
+    <header class="archive-hero-header">
+        <div class="archive-header-inner">
+            <div class="hero-editorial-top">
+                <span class="hero-serial">INDEX &bull; 2024 — 2026</span>
+                <span class="hero-curator">NETHULA SANVIDU &bull; CURATED ARCHIVE</span>
+            </div>
+            
+            <h1 class="archive-headline">
+                SELECTED WORKS
+            </h1>
 
+            <div class="hero-editorial-sub">
+                <p class="hero-statement">
+                    A curated archive of bespoke digital platforms, brand visual systems, spatial graphic design, and cinematic motion direction.
+                </p>
+                <div class="hero-index-nav">
+                    <a href="#web" class="hero-nav-anchor">
+                        <span class="nav-idx">01</span>
+                        <span class="nav-name">Web Platforms</span>
+                        <i class="ri-arrow-down-line"></i>
+                    </a>
+                    <a href="#graphic" class="hero-nav-anchor">
+                        <span class="nav-idx">02</span>
+                        <span class="nav-name">Graphic Exhibition</span>
+                        <i class="ri-arrow-down-line"></i>
+                    </a>
+                    <a href="#video" class="hero-nav-anchor">
+                        <span class="nav-idx">03</span>
+                        <span class="nav-name">Video &amp; Motion</span>
+                        <i class="ri-arrow-down-line"></i>
+                    </a>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <!-- ==========================================================================
+         01 / WEB PLATFORMS
+         ========================================================================== -->
     <section id="web" class="work-category">
-        <div class="cat-title">01 / WEB DESIGN</div>
-
-        <div id="web-projects-container">
-            <!-- PROJECT 1 -->
+        <div class="cat-title">01 / WEB PLATFORMS</div>
+        
+        <div class="web-projects-container" id="web-projects-container">
+            <!-- PROJECT 1: CELISE CLOTHING BRAND -->
             <div class="web-card">
                 <div class="web-preview">
                     <div class="browser-bar">
                         <div class="dot red"></div>
                         <div class="dot yellow"></div>
                         <div class="dot green"></div>
-                        <span class="url">www.celise-clothing.com</span>
+                        <span class="url">celise-couture.com</span>
                     </div>
-                    <!-- Manual watermark for static image -->
-                    <div class="img-container" style="position: relative;">
-                        <img src="assets/web-project-1.jpg" alt="Website Preview">
-                        <div class="watermark-text" style="position: absolute; bottom: 10px; right: 10px; font-size: 10px; opacity: 0.3;">
-                            © NETHULA SANVIDU
+                    <div class="img-container" style="position: relative; aspect-ratio: 16/9; overflow: hidden; background: #07080e;">
+                        <img src="assets/web-project-1.svg" alt="Celise Clothing Brand Storefront" style="width: 100%; height: 100%; object-fit: cover;">
+                        <div class="watermark-text" style="position: absolute; bottom: 10px; right: 10px; font-size: 10px; opacity: 0.3; font-family: var(--font-main); color: #fff;">
+                            &copy; NETHULA SANVIDU
                         </div>
                     </div>
                 </div>
                 <div class="web-info">
+                    <div class="card-meta-tags">
+                        <span class="card-tag">E-COMMERCE</span>
+                        <span class="card-tag">NODE.JS &bull; MONGO</span>
+                        <span class="card-tag">CUSTOM CART</span>
+                    </div>
                     <h3>CELISE CLOTHING BRAND</h3>
-                    <p>A custom e-commerce experience built with Node.js and MongoDB. Features a made-to-order system and modern aesthetic.</p>
-                    <a href="https://google.com" target="_blank" class="btn-visit">
-                        VISIT LIVE SITE <i class="ri-arrow-right-up-line"></i>
+                    <p>A bespoke luxury couture e-commerce storefront engineered with headless Node.js architecture, real-time inventory synchronization, and custom sizing algorithms.</p>
+                    <a href="https://google.com" target="_blank" class="btn-visit-editorial">
+                        <span>VISIT PLATFORM</span>
+                        <i class="ri-arrow-right-up-line"></i>
                     </a>
                 </div>
             </div>
 
-            <!-- PROJECT 2 (COMING SOON) -->
+            <!-- PROJECT 2: LUME LABS CREATIVE TECH -->
             <div class="web-card">
                 <div class="web-preview">
                     <div class="browser-bar">
                         <div class="dot red"></div>
                         <div class="dot yellow"></div>
                         <div class="dot green"></div>
-                        <span class="url">client-projects.dev</span>
+                        <span class="url">lumelabs.design</span>
                     </div>
-                    <div class="img-container coming-soon">
-                        CLIENT PROJECTS
-                        <span>COMING SOON</span>
+                    <div class="img-container" style="position: relative; aspect-ratio: 16/9; overflow: hidden; background: #07080e;">
+                        <img src="assets/web-project-2.svg" alt="Lume Labs Creative Tech Studio" style="width: 100%; height: 100%; object-fit: cover;">
+                        <div class="watermark-text" style="position: absolute; bottom: 10px; right: 10px; font-size: 10px; opacity: 0.3; font-family: var(--font-main); color: #fff;">
+                            &copy; NETHULA SANVIDU
+                        </div>
                     </div>
                 </div>
                 <div class="web-info">
-                    <h3>CLIENT WEBSITES</h3>
-                    <p>Live client projects and premium web experiences will be published here soon. Stay tuned.</p>
-                    <a href="#" class="btn-visit" style="pointer-events:none; opacity:0.5;">COMING SOON</a>
+                    <div class="card-meta-tags">
+                        <span class="card-tag">CREATIVE TECH</span>
+                        <span class="card-tag">WEBGL LAB</span>
+                        <span class="card-tag">INTERACTIVE</span>
+                    </div>
+                    <h3>LUME LABS CREATIVE TECH</h3>
+                    <p>Commercial digital studio platform architected for creative technology ventures, spatial identity systems, and high-performance WebGL interactive experiences.</p>
+                    <a href="https://google.com" target="_blank" class="btn-visit-editorial">
+                        <span>VISIT PLATFORM</span>
+                        <i class="ri-arrow-right-up-line"></i>
+                    </a>
                 </div>
             </div>
         </div>
     </section>
 
-    <section id="graphic" class="work-category">
-        <div class="cat-title">02 / GRAPHIC DESIGNS</div>
-        <div class="masonry-grid" id="gallery"></div>
+    <!-- ==========================================================================
+         02 / GRAPHIC DESIGNS — 3D FORWARD-GLIDING MUSEUM CORRIDOR
+         ========================================================================== -->
+    <section id="graphic" class="work-category museum-section-wrapper">
+        <div class="museum-header-bar">
+            <div class="museum-title-box">
+                <div class="cat-title" style="margin-bottom: 0;">02 / GRAPHIC DESIGNS</div>
+                <span class="header-curation-stat">EXHIBITION 2024 — 2026</span>
+            </div>
+            
+            <!-- View Mode Switcher -->
+            <div class="view-mode-toggle">
+                <button type="button" class="btn-view-toggle active" id="btn-mode-3d" onclick="switchGraphicView('3d')">
+                    <i class="ri-compass-3-line"></i> 3D RUNWAY
+                </button>
+                <button type="button" class="btn-view-toggle" id="btn-mode-grid" onclick="switchGraphicView('grid')">
+                    <i class="ri-layout-grid-line"></i> ARCHIVE GRID
+                </button>
+            </div>
+        </div>
+
+        <!-- 3D Museum Corridor Stage Outer Chamber -->
+        <div id="museum-stage" class="museum-stage-outer" tabindex="0">
+            
+            <!-- Preloader (Preloads all 20 artworks into cache before entry) -->
+            <div id="museum-preloader" class="museum-preloader">
+                <div class="preloader-box">
+                    <div class="preloader-emblem">
+                        <i class="ri-gallery-line"></i>
+                    </div>
+                    <div class="preloader-title">CURATING 3D RUNWAY</div>
+                    <div class="preloader-subtext">Preloading archival frames &amp; artworks into GPU cache...</div>
+                    <div class="preloader-bar-rail">
+                        <div id="preloader-thumb" class="preloader-bar-thumb"></div>
+                    </div>
+                    <div class="preloader-footer">
+                        <span id="preloader-percent">0%</span>
+                        <span>ZERO-WAIT DISCOVERY</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Overhead Lighting & Runway Ground Floor -->
+            <div class="gallery-overhead-spotlight"></div>
+            <div class="gallery-floor-ambient"></div>
+
+            <!-- 3D Corridor Runway Viewport -->
+            <div class="corridor-viewport">
+                <div id="corridor-track" class="corridor-track">
+                    <!-- 20 Adaptive Framed Artworks Injected Here Dynamically -->
+                </div>
+            </div>
+
+            <!-- Refined Floating Navigation Bar (Non-AI, No Duplicate Text) -->
+            <div class="museum-navigation-bar">
+                <button type="button" class="btn-nav-arrow" id="btn-glide-prev" title="Previous Artwork" aria-label="Previous">
+                    <i class="ri-arrow-left-s-line"></i>
+                </button>
+
+                <div class="nav-scrubber-wrapper">
+                    <span class="scrubber-num current" id="dock-current-num">01</span>
+                    <div class="nav-scrubber-track" id="dock-timeline-ticks">
+                        <!-- 20 Interactive Timeline Ticks Injected Here -->
+                    </div>
+                    <span class="scrubber-num">20</span>
+                </div>
+
+                <button type="button" class="btn-nav-arrow" id="btn-glide-next" title="Next Artwork" aria-label="Next">
+                    <i class="ri-arrow-right-s-line"></i>
+                </button>
+            </div>
+        </div>
+
+        <!-- Under-Stage Interaction Caption -->
+        <div class="museum-stage-caption">
+            <span><i class="ri-mouse-line"></i> Scroll wheel or drag to walk corridor</span>
+            <span class="caption-dot">•</span>
+            <span><i class="ri-fullscreen-line"></i> Click artwork to inspect high-res</span>
+        </div>
+
+        <!-- Fallback/Alternative Masonry Grid (Hidden in 3D Runway Mode, visible in Archive Grid Mode) -->
+        <div class="masonry-grid" id="archive-masonry-gallery" style="display: none; margin-top: 30px;"></div>
     </section>
 
+    <!-- ==========================================================================
+         03 / VIDEO EDITS SECTION
+         ========================================================================== -->
     <section id="video" class="work-category">
         <div class="cat-title">03 / VIDEO EDITS</div>
         <div class="video-projects-container" id="video-projects-container">
-            <div class="coming-soon">
-                TRANSMISSION INBOUND
-                <span>VIDEO REELS & EDITS DROPPING SOON</span>
+            <!-- VIDEO 1: PODCAST REEL -->
+            <div class="web-card">
+                <div class="web-preview">
+                    <div class="browser-bar">
+                        <div class="dot red"></div>
+                        <div class="dot yellow"></div>
+                        <div class="dot green"></div>
+                        <span class="url">podcast-reel.mp4</span>
+                    </div>
+                    <div class="img-container" style="position: relative; aspect-ratio: 16/9; overflow: hidden; background: #000; display: flex; align-items: center; justify-content: center;">
+                        <img src="https://res.cloudinary.com/dwcsjrhhl/video/upload/v1783355127/Practice_reel_01_jd3nbx.jpg" alt="Podcast Reel" style="width: 100%; height: 100%; object-fit: cover;">
+                        <a href="https://res.cloudinary.com/dwcsjrhhl/video/upload/v1783355127/Practice_reel_01_jd3nbx.mp4" target="_blank" style="position: absolute; inset: 0; display: flex; align-items: center; justify-content: center; background: rgba(0,0,0,0.4); text-decoration: none;">
+                            <div style="background: rgba(255,255,255,0.15); backdrop-filter: blur(10px); -webkit-backdrop-filter: blur(10px); border: 1px solid rgba(255,255,255,0.25); border-radius: 50%; width: 60px; height: 60px; display: flex; align-items: center; justify-content: center; color: #fff; font-size: 2rem; transition: all 0.3s ease; box-shadow: 0 4px 30px rgba(0,0,0,0.1);" onmouseover="this.style.transform='scale(1.1)'; this.style.backgroundColor='rgba(255,255,255,0.25)';" onmouseout="this.style.transform='scale(1)'; this.style.backgroundColor='rgba(255,255,255,0.15)';">
+                                <i class="ri-play-fill" style="margin-left: 4px;"></i>
+                            </div>
+                        </a>
+                        <div class="watermark-text" style="position: absolute; bottom: 10px; right: 10px; font-size: 10px; opacity: 0.3; font-family: var(--font-main); color: #fff;">
+                            &copy; NETHULA SANVIDU
+                        </div>
+                    </div>
+                </div>
+                <div class="web-info">
+                    <div class="card-meta-tags">
+                        <span class="card-tag">VISUAL REEL</span>
+                        <span class="card-tag">PREMIERE PRO</span>
+                        <span class="card-tag">CREATIVE EDIT</span>
+                    </div>
+                    <h3>PODCAST REEL</h3>
+                    <p>A high-intensity creative visual reel edited in Adobe Premiere Pro with synchronized sound design, dynamic pacing, and editorial color grading.</p>
+                    <a href="https://res.cloudinary.com/dwcsjrhhl/video/upload/v1783355127/Practice_reel_01_jd3nbx.mp4" target="_blank" class="btn-visit-editorial">
+                        <span>WATCH REEL</span>
+                        <i class="ri-play-mini-line"></i>
+                    </a>
+                </div>
+            </div>
+
+            <!-- VIDEO 2: COMMERCIAL SHOWREEL -->
+            <div class="web-card">
+                <div class="web-preview">
+                    <div class="browser-bar">
+                        <div class="dot red"></div>
+                        <div class="dot yellow"></div>
+                        <div class="dot green"></div>
+                        <span class="url">commercial-motion.mp4</span>
+                    </div>
+                    <div class="img-container" style="position: relative; aspect-ratio: 16/9; overflow: hidden; background: #07080e;">
+                        <img src="assets/video-project-2.svg" alt="Commercial Showreel" style="width: 100%; height: 100%; object-fit: cover;">
+                        <div class="watermark-text" style="position: absolute; bottom: 10px; right: 10px; font-size: 10px; opacity: 0.3; font-family: var(--font-main); color: #fff;">
+                            &copy; NETHULA SANVIDU
+                        </div>
+                    </div>
+                </div>
+                <div class="web-info">
+                    <div class="card-meta-tags">
+                        <span class="card-tag">MOTION DESIGN</span>
+                        <span class="card-tag">3D DIRECTION</span>
+                        <span class="card-tag">4K REEL</span>
+                    </div>
+                    <h3>COMMERCIAL SHOWREEL</h3>
+                    <p>High-energy visual edits, 3D product motion graphics, and sound design reels scheduled for upcoming release across commercial campaigns.</p>
+                    <a href="#" class="btn-visit-editorial" style="pointer-events:none; opacity:0.6;">
+                        <span>PREVIEW ONLY &bull; PRODUCTION</span>
+                    </a>
+                </div>
             </div>
         </div>
     </section>
 
+    <!-- FOOTER -->
     <footer id="contact">
         <div class="footer-container">
             <div class="contact-grid">
@@ -162,11 +1266,552 @@
         </div>
     </footer>
 
+    <!-- HIGH-RES ARCHIVAL LIGHTBOX INSPECTION MODAL -->
     <div id="lightbox" class="lightbox-modal" onclick="closeLightbox()">
-        <span class="close-btn">&times; CLOSE</span>
-        <img class="lightbox-content" id="lightbox-img">
+        <span class="close-btn">&times; CLOSE EXHIBITION VIEW</span>
+        <div style="position: relative; display: inline-block; max-width: 90vw; max-height: 85vh;" onclick="event.stopPropagation()">
+            <img class="lightbox-content" id="lightbox-img" style="margin: 0; display: block; border-radius: 4px; box-shadow: 0 25px 80px rgba(0,0,0,0.9);">
+            <div id="lightbox-plaque" style="margin-top: 16px; text-align: center; font-family: var(--font-display); font-size: 0.8rem; letter-spacing: 2.5px; color: #fff;"></div>
+        </div>
     </div>
 
+    <!-- MAIN APP SCRIPT -->
     <script src="js/main.js?v=2"></script>
+
+    <!-- ==========================================================================
+         3D FORWARD-GLIDING CORRIDOR CONTROLLER SCRIPT
+         ========================================================================== -->
+    <script>
+        // ==========================================================================
+        // 1. CURATED ARTWORK INVENTORY (ADAPTIVE FRAME CLASSIFICATION)
+        // ==========================================================================
+        const EXHIBITION_ARTWORKS = [
+            { src: 'assets/azzaro most wanted1.webp', type: 'POSTER', frameClass: 'frame-portrait', id: '01' },
+            { src: 'assets/DA Gem Final.webp', type: 'LOGO', frameClass: 'frame-square', id: '02' },
+            { src: 'assets/logic gates classified mcq thumbnail new.webp', type: 'POSTER', frameClass: 'frame-landscape', id: '03' },
+            { src: 'assets/lumelabslogo.webp', type: 'LOGO', frameClass: 'frame-banner', id: '04' },
+            { src: 'assets/number system thumb.webp', type: 'POSTER', frameClass: 'frame-landscape', id: '05' },
+            { src: 'assets/apex-logo.webp', type: 'LOGO', frameClass: 'frame-banner', id: '06' },
+            { src: 'assets/apex-branding.webp', type: 'POSTER', frameClass: 'frame-square', id: '07' },
+            { src: 'assets/project-27.webp', type: 'LOGO', frameClass: 'frame-square', id: '08' },
+            { src: 'assets/lume-branding.webp', type: 'POSTER', frameClass: 'frame-square', id: '09' },
+            { src: 'assets/project-28.webp', type: 'LOGO', frameClass: 'frame-landscape', id: '10' },
+            { src: 'assets/project-1.webp', type: 'POSTER', frameClass: 'frame-square', id: '11' },
+            { src: 'assets/smk logo with the background.webp', type: 'LOGO', frameClass: 'frame-square', id: '12' },
+            { src: 'assets/project-2.webp', type: 'POSTER', frameClass: 'frame-square', id: '13' },
+            { src: 'assets/project-3.webp', type: 'POSTER', frameClass: 'frame-portrait', id: '14' },
+            { src: 'assets/project-4.webp', type: 'POSTER', frameClass: 'frame-square', id: '15' },
+            { src: 'assets/project-5.webp', type: 'POSTER', frameClass: 'frame-banner', id: '16' },
+            { src: 'assets/project-7.webp', type: 'POSTER', frameClass: 'frame-landscape', id: '17' },
+            { src: 'assets/project-8.webp', type: 'POSTER', frameClass: 'frame-portrait', id: '18' },
+            { src: 'assets/project-11.webp', type: 'POSTER', frameClass: 'frame-square', id: '19' },
+            { src: 'assets/smk x banner updated.webp', type: 'POSTER', frameClass: 'frame-banner', id: '20' }
+        ];
+
+        // 3D Forward Runway State Engine
+        const galleryState = {
+            total: EXHIBITION_ARTWORKS.length,
+            currentProgress: 0,
+            targetProgress: 0,
+            velocity: 0,
+            isDragging: false,
+            startX: 0,
+            startY: 0,
+            lastX: 0,
+            lastY: 0,
+            lastTime: 0,
+            frameElements: []
+        };
+
+        // ==========================================================================
+        // 2. PARALLEL PRELOADER ENGINE (ZERO WAIT DURING DISCOVERY)
+        // ==========================================================================
+        function preloadAllArtworks() {
+            const preloader = document.getElementById('museum-preloader');
+            const thumb = document.getElementById('preloader-thumb');
+            const percentLabel = document.getElementById('preloader-percent');
+
+            // Priority preload: load first 3 primary visible artworks to dismiss preloader instantly (<150ms)
+            const PRIORITY_COUNT = Math.min(3, EXHIBITION_ARTWORKS.length);
+            let priorityLoaded = 0;
+
+            return new Promise((resolve) => {
+                let resolved = false;
+
+                function onPriorityItemLoaded() {
+                    priorityLoaded++;
+                    const pct = Math.min(100, Math.round((priorityLoaded / PRIORITY_COUNT) * 100));
+                    if (thumb) thumb.style.width = pct + '%';
+                    if (percentLabel) percentLabel.textContent = pct + '%';
+
+                    if (priorityLoaded >= PRIORITY_COUNT && !resolved) {
+                        resolved = true;
+                        setTimeout(() => {
+                            if (preloader) {
+                                preloader.style.opacity = '0';
+                                setTimeout(() => preloader.style.display = 'none', 400);
+                            }
+                            resolve();
+                            // Background preload remaining artworks smoothly
+                            backgroundPreloadRemaining(PRIORITY_COUNT);
+                        }, 200);
+                    }
+                }
+
+                // Immediately load the first 3 visible frames
+                for (let i = 0; i < PRIORITY_COUNT; i++) {
+                    const img = new Image();
+                    img.onload = img.onerror = onPriorityItemLoaded;
+                    img.src = EXHIBITION_ARTWORKS[i].src;
+                }
+
+                // Safety fallback timeout
+                setTimeout(() => {
+                    if (!resolved) {
+                        resolved = true;
+                        if (preloader) {
+                            preloader.style.opacity = '0';
+                            setTimeout(() => preloader.style.display = 'none', 400);
+                        }
+                        resolve();
+                        backgroundPreloadRemaining(PRIORITY_COUNT);
+                    }
+                }, 1200);
+            });
+        }
+
+        function backgroundPreloadRemaining(startIndex) {
+            // Idle background progressive cache
+            let idx = startIndex;
+            function loadNext() {
+                if (idx >= EXHIBITION_ARTWORKS.length) return;
+                const img = new Image();
+                img.onload = img.onerror = () => {
+                    idx++;
+                    if ('requestIdleCallback' in window) {
+                        requestIdleCallback(loadNext, { timeout: 1000 });
+                    } else {
+                        setTimeout(loadNext, 50);
+                    }
+                };
+                img.src = EXHIBITION_ARTWORKS[idx].src;
+            }
+            loadNext();
+        }
+
+        // ==========================================================================
+        // 3. BUILD ADAPTIVE MUSEUM FRAMES (GRAND ARCHITECTURAL SCALE)
+        // ==========================================================================
+        function buildMuseumCorridor() {
+            const track = document.getElementById('corridor-track');
+            const dockTicks = document.getElementById('dock-timeline-ticks');
+            if (!track) return;
+
+            track.innerHTML = '';
+            if (dockTicks) dockTicks.innerHTML = '';
+            galleryState.frameElements = [];
+
+            EXHIBITION_ARTWORKS.forEach((art, index) => {
+                // Create 3D Adaptive Frame
+                const frame = document.createElement('div');
+                frame.className = `adaptive-frame ${art.frameClass}`;
+                frame.dataset.index = index;
+
+                frame.innerHTML = `
+                    <div class="frame-bevel-moulding">
+                        <div class="frame-inner-matting">
+                            <img src="${art.src}" alt="Collection ${art.id}" loading="eager">
+                            <div class="frame-glass-sheen"></div>
+                        </div>
+                    </div>
+                    <div class="gallery-plaque">
+                        <span class="plaque-id">COLLECTION ${art.id}</span>
+                        <span class="plaque-sep">•</span>
+                        <span class="plaque-type">${art.type}</span>
+                    </div>
+                `;
+
+                // Frame click interactions:
+                // If it's active focal piece: open lightbox
+                // If it's ahead in the hall: fly camera smoothly to it!
+                frame.addEventListener('click', (e) => {
+                    e.stopPropagation();
+                    const diff = Math.abs(index - galleryState.currentProgress);
+                    if (diff < 0.35) {
+                        inspectArtwork(index);
+                    } else {
+                        galleryState.targetProgress = index;
+                    }
+                });
+
+                track.appendChild(frame);
+                galleryState.frameElements.push(frame);
+
+                // Create Timeline Tick in HUD
+                if (dockTicks) {
+                    const tick = document.createElement('div');
+                    tick.className = `timeline-tick ${index === 0 ? 'active' : ''}`;
+                    tick.title = `Collection ${art.id} — ${art.type}`;
+                    tick.addEventListener('click', (e) => {
+                        e.stopPropagation();
+                        galleryState.targetProgress = index;
+                    });
+                    dockTicks.appendChild(tick);
+                }
+            });
+
+            // Populate Fallback Masonry Grid
+            populateFallbackArchiveGrid();
+        }
+
+        // ==========================================================================
+        // 4. FORWARD-GLIDING 3D MATHEMATICAL RENDER LOOP (SPACIOUS CORRIDOR DEPTH)
+        // ==========================================================================
+        let isCorridorLoopActive = false;
+        let corridorRafId = null;
+
+        function wakeUpCorridorLoop() {
+            if (isCorridorLoopActive) return;
+            isCorridorLoopActive = true;
+            corridorRafId = requestAnimationFrame(runCorridorPhysicsStep);
+        }
+
+        function runCorridorPhysicsStep() {
+            const diff = galleryState.targetProgress - galleryState.currentProgress;
+            const isMoving = Math.abs(diff) > 0.0003 || galleryState.isDragging;
+
+            if (isMoving) {
+                galleryState.currentProgress += diff * 0.1;
+            } else {
+                galleryState.currentProgress = galleryState.targetProgress;
+            }
+
+            renderCorridorFrame();
+
+            if (isMoving) {
+                corridorRafId = requestAnimationFrame(runCorridorPhysicsStep);
+            } else {
+                // Settle and sleep! Completely frees CPU and GPU
+                isCorridorLoopActive = false;
+                corridorRafId = null;
+            }
+        }
+
+        function updateCorridorRendering() {
+            wakeUpCorridorLoop();
+        }
+
+        function renderCorridorFrame() {
+            const activeIndex = Math.round(galleryState.currentProgress);
+            const zSpacing = 780;
+
+            galleryState.frameElements.forEach((frame, i) => {
+                const delta = i - galleryState.currentProgress;
+
+                // Frustum culling: hide anything out of visible range (-1.3 to +4.5)
+                if (delta < -1.3 || delta > 4.5) {
+                    frame.style.display = 'none';
+                    return;
+                }
+
+                frame.style.display = 'block';
+
+                let x = 0;
+                let z = 0;
+                let rotY = 0;
+                let rotX = 0;
+                let scale = 1.0;
+                let opacity = 1.0;
+
+                const side = (i % 2 === 0) ? -1 : 1;
+
+                if (delta >= 0) {
+                    // APPROACHING FROM FORWARD DOWN RUNWAY
+                    z = -delta * zSpacing;
+                    const lateralWeight = Math.min(1.0, Math.max(0, delta));
+                    x = side * lateralWeight * 420;
+                    rotY = -side * lateralWeight * 12;
+
+                    if (delta > 0.8) {
+                        opacity = Math.max(0, 1.0 - (delta - 0.8) * 0.35);
+                    }
+                } else {
+                    // GLIDING PAST THE CAMERA
+                    const alpha = -delta; // 0 to 1.3
+                    x = side * (alpha * 600);
+                    z = alpha * 480;
+                    rotY = side * (alpha * 22);
+                    rotX = alpha * 3.0;
+                    scale = 1.0 + alpha * 0.08;
+                    opacity = Math.max(0, 1.0 - alpha * 1.4);
+                }
+
+                // Pure GPU hardware-accelerated transform & opacity (Zero filter blur penalty = Locked 60/120 FPS!)
+                frame.style.transform = `translate3d(${x.toFixed(1)}px, 0px, ${z.toFixed(1)}px) rotateY(${rotY.toFixed(1)}deg) rotateX(${rotX.toFixed(1)}deg) scale(${scale.toFixed(3)})`;
+                frame.style.opacity = opacity.toFixed(3);
+                frame.style.zIndex = Math.round(100 - Math.abs(delta) * 12);
+
+                if (Math.abs(delta) < 0.4) {
+                    frame.classList.add('is-active');
+                } else {
+                    frame.classList.remove('is-active');
+                }
+            });
+
+            updateHUD(activeIndex);
+        }
+
+        function updateHUD(activeIndex) {
+            const clampedIndex = Math.max(0, Math.min(galleryState.total - 1, activeIndex));
+            const formattedNum = String(clampedIndex + 1).padStart(2, '0');
+            const totalNum = String(galleryState.total).padStart(2, '0');
+
+            const indexCurrent = document.getElementById('dock-index-current');
+            const indexTotal = document.getElementById('dock-index-total');
+            const stageCurrent = document.getElementById('stage-num-current');
+            const stageTotal = document.getElementById('stage-num-total');
+            const captionArt = document.getElementById('caption-art-title');
+
+            if (indexCurrent) indexCurrent.textContent = formattedNum;
+            if (indexTotal) indexTotal.textContent = totalNum;
+            if (stageCurrent) stageCurrent.textContent = formattedNum;
+            if (stageTotal) stageTotal.textContent = totalNum;
+
+            if (captionArt && EXHIBITION_ARTWORKS[clampedIndex]) {
+                captionArt.textContent = `COLLECTION ITEM ${EXHIBITION_ARTWORKS[clampedIndex].id} // ${EXHIBITION_ARTWORKS[clampedIndex].type}`;
+            }
+
+            // Timeline ticks update
+            const ticks = document.querySelectorAll('.timeline-tick');
+            ticks.forEach((tick, idx) => {
+                if (idx === clampedIndex) {
+                    tick.classList.add('active');
+                } else {
+                    tick.classList.remove('active');
+                }
+            });
+        }
+
+        // ==========================================================================
+        // 5. CORRIDOR INTERACTION & EVENT BINDINGS
+        // ==========================================================================
+        function initCorridorPhysics() {
+            const stage = document.getElementById('museum-stage');
+            if (!stage) return;
+
+            // 1. Mouse Drag / Touch Gestures
+            const onPointerDown = (e) => {
+                galleryState.isDragging = true;
+                const clientX = e.clientX || (e.touches && e.touches[0].clientX) || 0;
+                const clientY = e.clientY || (e.touches && e.touches[0].clientY) || 0;
+                galleryState.startX = galleryState.lastX = clientX;
+                galleryState.startY = galleryState.lastY = clientY;
+                galleryState.lastTime = Date.now();
+                galleryState.velocity = 0;
+                wakeUpCorridorLoop();
+            };
+
+            const onPointerMove = (e) => {
+                if (!galleryState.isDragging) return;
+                const clientX = e.clientX || (e.touches && e.touches[0].clientX) || 0;
+                const deltaX = clientX - galleryState.lastX;
+                galleryState.lastX = clientX;
+
+                // Scrub runway progress based on drag
+                const dragSensitivity = 0.0035;
+                galleryState.targetProgress = Math.max(0, Math.min(galleryState.total - 1, galleryState.targetProgress - deltaX * dragSensitivity));
+                wakeUpCorridorLoop();
+            };
+
+            const onPointerUp = () => {
+                if (!galleryState.isDragging) return;
+                galleryState.isDragging = false;
+                // Snap to nearest frame
+                galleryState.targetProgress = Math.round(galleryState.targetProgress);
+                wakeUpCorridorLoop();
+            };
+
+            stage.addEventListener('mousedown', onPointerDown);
+            window.addEventListener('mousemove', onPointerMove, { passive: true });
+            window.addEventListener('mouseup', onPointerUp);
+
+            stage.addEventListener('touchstart', onPointerDown, { passive: true });
+            window.addEventListener('touchmove', onPointerMove, { passive: true });
+            window.addEventListener('touchend', onPointerUp);
+
+            // 2. Mouse Wheel Scroll Navigation
+            stage.addEventListener('wheel', (e) => {
+                e.preventDefault();
+                const delta = Math.sign(e.deltaY);
+                galleryState.targetProgress = Math.max(0, Math.min(galleryState.total - 1, galleryState.targetProgress + delta));
+                wakeUpCorridorLoop();
+            }, { passive: false });
+
+            // 3. Arrow Keys Navigation
+            window.addEventListener('keydown', (e) => {
+                if (e.key === 'ArrowRight' || e.key === 'ArrowDown') {
+                    galleryState.targetProgress = Math.min(galleryState.total - 1, Math.round(galleryState.targetProgress) + 1);
+                    wakeUpCorridorLoop();
+                } else if (e.key === 'ArrowLeft' || e.key === 'ArrowUp') {
+                    galleryState.targetProgress = Math.max(0, Math.round(galleryState.targetProgress) - 1);
+                    wakeUpCorridorLoop();
+                } else if (e.key === 'Home') {
+                    galleryState.targetProgress = 0;
+                    wakeUpCorridorLoop();
+                } else if (e.key === 'End') {
+                    galleryState.targetProgress = galleryState.total - 1;
+                    wakeUpCorridorLoop();
+                }
+            });
+
+            // 4. Dock Glide Buttons (< PREV / NEXT >)
+            const btnPrev = document.getElementById('btn-glide-prev');
+            const btnNext = document.getElementById('btn-glide-next');
+
+            if (btnPrev) {
+                btnPrev.addEventListener('click', (e) => {
+                    e.stopPropagation();
+                    galleryState.targetProgress = Math.max(0, Math.round(galleryState.targetProgress) - 1);
+                    wakeUpCorridorLoop();
+                });
+            }
+
+            if (btnNext) {
+                btnNext.addEventListener('click', (e) => {
+                    e.stopPropagation();
+                    galleryState.targetProgress = Math.min(galleryState.total - 1, Math.round(galleryState.targetProgress) + 1);
+                    wakeUpCorridorLoop();
+                });
+            }
+
+            // Initial render
+            renderCorridorFrame();
+        }
+
+        // ==========================================================================
+        // 6. INSPECTION LIGHTBOX
+        // ==========================================================================
+        function inspectArtwork(index) {
+            const art = EXHIBITION_ARTWORKS[index];
+            if (!art) return;
+
+            const modal = document.getElementById('lightbox');
+            const img = document.getElementById('lightbox-img');
+            const plaque = document.getElementById('lightbox-plaque');
+
+            if (!modal || !img) return;
+
+            img.src = art.src;
+            if (plaque) {
+                plaque.innerHTML = `<span style="font-weight: 600; color: #f4f4f5; letter-spacing: 2px;">COLLECTION ${art.id}</span> &bull; <span style="color: #cbb382; font-weight: 600; letter-spacing: 2px;">${art.type}</span>`;
+            }
+
+            modal.style.display = 'flex';
+            document.body.style.overflow = 'hidden';
+        }
+
+        function closeLightbox() {
+            const modal = document.getElementById('lightbox');
+            if (modal) {
+                modal.style.display = 'none';
+                document.body.style.overflow = 'auto';
+            }
+        }
+
+        window.addEventListener('keydown', (e) => {
+            if (e.key === 'Escape') closeLightbox();
+        });
+
+        // ==========================================================================
+        // 7. POPULATE FALLBACK MASONRY ARCHIVE GRID
+        // ==========================================================================
+        function populateFallbackArchiveGrid() {
+            const gallery = document.getElementById('archive-masonry-gallery');
+            if (!gallery) return;
+
+            gallery.innerHTML = '';
+            EXHIBITION_ARTWORKS.forEach((art, index) => {
+                const item = document.createElement('div');
+                item.className = 'masonry-item';
+                item.style.position = 'relative';
+
+                item.innerHTML = `
+                    <img src="${art.src}" alt="Collection ${art.id}" loading="lazy">
+                    <div class="overlay" style="display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 8px;">
+                        <span class="view-text" style="letter-spacing: 2px;">COLLECTION ${art.id}</span>
+                        <span style="font-family: var(--font-main); font-size: 0.72rem; color: #cbb382; font-weight: 600; letter-spacing: 2px;">${art.type}</span>
+                    </div>
+                `;
+
+                item.addEventListener('click', () => inspectArtwork(index));
+                gallery.appendChild(item);
+            });
+        }
+
+        // ==========================================================================
+        // 8. VIEW MODE SWITCHER (3D RUNWAY VS ARCHIVE GRID)
+        // ==========================================================================
+        function switchGraphicView(mode) {
+            const btn3D = document.getElementById('btn-mode-3d');
+            const btnGrid = document.getElementById('btn-mode-grid');
+            const stage3D = document.getElementById('museum-stage');
+            const gridView = document.getElementById('archive-masonry-gallery');
+
+            if (mode === '3d') {
+                btn3D.classList.add('active');
+                btnGrid.classList.remove('active');
+                stage3D.style.display = 'flex';
+                gridView.style.display = 'none';
+            } else {
+                btnGrid.classList.add('active');
+                btn3D.classList.remove('active');
+                stage3D.style.display = 'none';
+                gridView.style.display = 'block';
+            }
+        }
+
+        // ==========================================================================
+        // 9. CONDITIONAL SECRET CLIENT VAULT LINK (HIDDEN FOR ALL NORMAL USERS)
+        // ==========================================================================
+        function checkVaultLinkAccess() {
+            try {
+                const urlParams = new URLSearchParams(window.location.search);
+                const token = urlParams.get('access') || urlParams.get('key') || urlParams.get('vault') || sessionStorage.getItem('vault_passcode');
+                
+                // Only render if a secret access key is explicitly provided via link or session
+                if (token && token.trim().length > 0) {
+                    sessionStorage.setItem('vault_passcode', token.trim());
+                    const navMenu = document.querySelector('.navbar .nav-menu');
+                    if (navMenu && !document.getElementById('secret-vault-nav-link')) {
+                        const vaultLink = document.createElement('a');
+                        vaultLink.id = 'secret-vault-nav-link';
+                        vaultLink.href = `vault.html?access=${encodeURIComponent(token.trim())}`;
+                        vaultLink.className = 'nav-link';
+                        vaultLink.style.color = '#ff6b81';
+                        vaultLink.style.border = '1px solid rgba(255, 107, 129, 0.3)';
+                        vaultLink.style.padding = '4px 12px';
+                        vaultLink.style.borderRadius = '20px';
+                        vaultLink.style.background = 'rgba(255, 71, 87, 0.08)';
+                        vaultLink.title = 'Restricted Client Access';
+                        vaultLink.innerHTML = '[ VAULT 🔒 ]';
+                        // Place as the first nav option
+                        navMenu.insertBefore(vaultLink, navMenu.firstChild);
+                    }
+                }
+            } catch (err) {
+                // Silently keep vault completely hidden
+            }
+        }
+
+        // ==========================================================================
+        // 10. INITIALIZATION PIPELINE
+        // ==========================================================================
+        document.addEventListener('DOMContentLoaded', async () => {
+            checkVaultLinkAccess();
+            buildMuseumCorridor();
+            initCorridorPhysics();
+            await preloadAllArtworks();
+        });
+    </script>
 </body>
 </html>

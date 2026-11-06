@@ -1,0 +1,492 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>TOOLYARD // Creator &amp; Designer Utility Suite — Nethula Sanvidu</title>
+    
+    <!-- Google Fonts: Space Grotesk & Syncopate for Site, Roboto for YouTube Simulation -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700&family=Space+Grotesk:wght@300;400;500;600;700&family=Syncopate:wght@400;700&display=swap" rel="stylesheet">
+    
+    <!-- Remix Icons -->
+    <link href="https://cdn.jsdelivr.net/npm/remixicon@3.5.0/fonts/remixicon.css" rel="stylesheet">
+    
+    <!-- CSS: Site-wide Design System First, Tools Overlay Second -->
+    <link rel="stylesheet" href="css/style.css?v=20261106_v6">
+    <!-- CSS -->
+    <link rel="stylesheet" href="css/tools.css?v=20261106_v6">
+</head>
+<body class="toolyard-body">
+
+    <!-- Unified Custom Cursor Elements -->
+    <div class="cursor-dot"></div>
+    <div class="cursor-outline"></div>
+
+    <!-- Standardized Architectural Navbar (Exact same across all pages) -->
+    <nav class="navbar" id="site-navbar">
+        <a href="index.html" class="logo">
+            <span>NETHULA SANVIDU</span>
+            <span class="badge">©2026</span>
+        </a>
+        <div class="nav-menu" id="primary-nav-menu">
+            <a href="works.html" class="nav-link" id="nav-item-work">[ WORK ]</a>
+            <a href="tools.html" class="nav-link active" id="nav-item-toolyard">[ TOOLYARD ]</a>
+            <a href="index.html#about" class="nav-link" id="nav-item-profile">[ PROFILE ]</a>
+            <a href="index.html#contact" class="nav-link" id="nav-item-contact">[ CONTACT ]</a>
+        </div>
+        <button class="menu-toggle" id="menu-toggle-btn" aria-label="Toggle navigation" type="button">
+            <span class="line-1"></span>
+            <span class="line-2"></span>
+            <span class="line-3"></span>
+        </button>
+    </nav>
+
+    <!-- Clean Toolyard Secondary Tool Switcher Dock -->
+    <header class="toolyard-secondary-bar">
+        <div class="toolyard-brand-tag">
+            <span class="toolyard-title">TOOLYARD</span>
+            <span class="toolyard-sub">/ creator utilities</span>
+        </div>
+
+        <nav class="toolyard-nav" id="toolyard-nav">
+            <button type="button" class="nav-segment active" data-section="compressor" id="nav-btn-compressor">
+                <i class="ri-file-zip-line"></i> Compressor
+            </button>
+            <button type="button" class="nav-segment" data-section="safezone" id="nav-btn-safezone">
+                <i class="ri-focus-2-line"></i> Safe-Zone Studio
+            </button>
+            <button type="button" class="nav-segment" data-section="yt" id="nav-btn-yt">
+                <i class="ri-youtube-line"></i> YouTube Simulator
+            </button>
+        </nav>
+
+        <div class="toolyard-meta-status">
+            <span class="status-indicator-dot"></span>
+            <span class="status-label">ENGINE ONLINE</span>
+        </div>
+    </header>
+
+    <div class="app-layout">
+        
+        <!-- ==========================================================================
+             LEFT: TOOL CONTROLS SIDEBAR
+             ========================================================================== -->
+        <aside class="sidebar-panel">
+
+            <!-- 1. UNIFIED COMPRESSOR SETTINGS (ACTIVE BY DEFAULT) -->
+            <div id="sidebar-compressor-controls" class="tool-sidebar-section">
+                <div class="sidebar-section-title">COMPRESSION SETTINGS</div>
+
+                <!-- Image Quality -->
+                <div class="settings-group">
+                    <label class="group-label">IMAGE QUALITY</label>
+                    <div class="setting-pills-list">
+                        <button type="button" class="btn-setting-pill active" data-quality="0.94" id="preset-master">
+                            High Quality (95% Lossless)
+                        </button>
+                        <button type="button" class="btn-setting-pill" data-quality="0.88" id="preset-smart">
+                            Balanced (88%)
+                        </button>
+                        <button type="button" class="btn-setting-pill" data-quality="0.75" id="preset-crunch">
+                            Compact (75%)
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Image Format -->
+                <div class="settings-group">
+                    <label class="group-label">IMAGE FORMAT</label>
+                    <select id="select-output-format" class="toolyard-select">
+                        <option value="original" selected>Preserve original (PNG, JPG, WebP)</option>
+                        <option value="image/png">PNG (Transparency)</option>
+                        <option value="image/jpeg">JPEG</option>
+                        <option value="image/webp">WebP</option>
+                    </select>
+                </div>
+
+                <div class="settings-divider"></div>
+
+                <!-- PDF Compression Profile -->
+                <div class="settings-group">
+                    <label class="group-label">PDF PROFILE</label>
+                    <div class="setting-pills-list">
+                        <button type="button" class="btn-pdf-preset-pill active" data-preset="balanced" id="pdf-preset-balanced">
+                            Balanced (Recommended)
+                        </button>
+                        <button type="button" class="btn-pdf-preset-pill" data-preset="extreme" id="pdf-preset-extreme">
+                            Maximum compression
+                        </button>
+                        <button type="button" class="btn-pdf-preset-pill" data-preset="master" id="pdf-preset-master">
+                            High quality (Print / Decks)
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 2. SOCIAL SAFE-ZONE CONTROLS (VISIBLE IN SAFEZONE MODE) -->
+            <div id="sidebar-safezone-controls" class="tool-sidebar-section" style="display: none;">
+                <div class="sidebar-section-title">PLATFORM PRESETS</div>
+
+                <div class="settings-group">
+                    <label class="group-label">TARGET PLATFORM</label>
+                    <div class="setting-pills-list">
+                        <button type="button" class="btn-platform-pill active" data-platform="tiktok">
+                            TikTok &amp; Reels (9:16)
+                        </button>
+                        <button type="button" class="btn-platform-pill" data-platform="ig-post-portrait">
+                            Instagram Portrait (4:5)
+                        </button>
+                        <button type="button" class="btn-platform-pill" data-platform="ig-post-square">
+                            Instagram Square (1:1)
+                        </button>
+                        <button type="button" class="btn-platform-pill" data-platform="ig-story">
+                            Instagram Story (9:16)
+                        </button>
+                        <button type="button" class="btn-platform-pill" data-platform="yt-banner">
+                            YouTube Banner (16:9)
+                        </button>
+                        <button type="button" class="btn-platform-pill" data-platform="twitter-header">
+                            X / Twitter Header (3:1)
+                        </button>
+                        <button type="button" class="btn-platform-pill" data-platform="twitter-feed">
+                            X / Twitter Feed (16:9)
+                        </button>
+                        <button type="button" class="btn-platform-pill" data-platform="linkedin-banner">
+                            LinkedIn Banner (4:1)
+                        </button>
+                    </div>
+                </div>
+
+                <div class="settings-divider"></div>
+
+                <div class="sidebar-section-title">OVERLAYS &amp; GUIDES</div>
+
+                <div class="settings-group">
+                    <label class="toggle-control-row">
+                        <input type="checkbox" id="toggle-platform-ui" checked>
+                        <span>Interface Mockup Icons</span>
+                    </label>
+                    <label class="toggle-control-row">
+                        <input type="checkbox" id="toggle-safe-guides" checked>
+                        <span>Safe Margin Grid</span>
+                    </label>
+                </div>
+
+                <div class="settings-group">
+                    <div class="slider-label-row">
+                        <span class="group-label">UI OPACITY</span>
+                        <span class="slider-value-tag" id="label-safezone-opacity">70%</span>
+                    </div>
+                    <input type="range" id="safezone-opacity-range" min="10" max="100" value="70" class="toolyard-range">
+                </div>
+
+                <div class="settings-divider"></div>
+
+                <div class="sidebar-section-title">IMAGE POSITION &amp; FIT</div>
+
+                <div class="settings-group">
+                    <div class="scale-mode-btns">
+                        <button type="button" class="btn-secondary-action active" id="btn-scale-fill">Cover / Fill</button>
+                        <button type="button" class="btn-secondary-action" id="btn-scale-fit">Contain / Fit</button>
+                    </div>
+                </div>
+
+                <div class="settings-group">
+                    <button type="button" class="btn-primary-action full-width" id="btn-export-cropped-graphic">
+                        <i class="ri-download-2-line"></i> Export Platform Graphic
+                    </button>
+                    <button type="button" class="btn-secondary-action full-width" id="btn-export-with-guides" style="margin-top: 8px;">
+                        <i class="ri-camera-lens-line"></i> Export with Safe Guides
+                    </button>
+                </div>
+            </div>
+
+            <!-- 3. YOUTUBE CONTROLS (VISIBLE IN YT MODE) -->
+            <div id="sidebar-yt-controls" class="tool-sidebar-section" style="display: none;">
+                <div class="slot-counter-banner">
+                    <span style="font-size: 0.72rem; color: #888; font-weight: 700;">ACTIVE SLOTS</span>
+                    <span class="slot-limit-pill" id="sidebar-slot-pill">2 / 8 SLOTS</span>
+                </div>
+
+                <p style="font-size: 0.75rem; color: #888; margin: 0 0 14px; line-height: 1.4;">
+                    Test title and thumbnail variations side-by-side inside the live desktop YouTube feed.
+                </p>
+
+                <!-- Channel Display Name -->
+                <div class="channel-name-field">
+                    <label>Channel display name</label>
+                    <input type="text" id="global-channel-input" value="Aesthetic Studios" placeholder="Enter channel name...">
+                </div>
+
+                <!-- Dynamic Slot Cards List -->
+                <div id="slot-cards-list">
+                    <!-- Rendered dynamically by js/tools.js -->
+                </div>
+
+                <!-- Add Slot Button -->
+                <button type="button" class="btn-sidebar-add-slot" id="btn-add-variation-slot">
+                    <i class="ri-add-line"></i> Add variation slot
+                </button>
+            </div>
+
+        </aside>
+
+        <!-- ==========================================================================
+             WORKSPACE 1: UNIFIED FILE COMPRESSOR (IMAGES & PDF)
+             ========================================================================== -->
+        <main class="toolyard-workspace active" id="tool-workspace-compressor">
+            <div class="compressor-hero">
+                <h1>File Compressor</h1>
+                <p>Lossless compression for PNG, JPG, WebP images and multi-page PDF documents. Runs 100% locally in your browser.</p>
+            </div>
+
+            <!-- Unified Drag & Drop Zone -->
+            <div class="unified-dropzone" id="unified-dropzone">
+                <div class="dropzone-inner">
+                    <i class="ri-upload-2-line dropzone-icon"></i>
+                    <div class="dropzone-text">
+                        <span class="dropzone-title">Drop images or PDF documents here, or <span class="dropzone-browse">browse files</span></span>
+                        <span class="dropzone-sub">Supports PNG, JPG, WebP, and multi-page PDF files</span>
+                    </div>
+                </div>
+                <input type="file" id="unified-file-input" multiple accept="image/png, image/jpeg, image/webp, application/pdf">
+            </div>
+
+            <!-- Interactive Before / After Split Slider (Images) -->
+            <div class="split-viewer-wrapper" id="split-viewer-wrapper" style="display: none;">
+                <div class="split-viewer-header">
+                    <div class="split-viewer-title">
+                        <span class="indicator-dot"></span>
+                        <span>Inspection Comparison</span>
+                    </div>
+                    <div class="split-metrics-badges">
+                        <span class="metric-pill orig" id="metric-original-size">Original: —</span>
+                        <span class="metric-pill comp" id="metric-compressed-size">Compressed: —</span>
+                        <span class="metric-pill saved" id="metric-saved-percent">–0%</span>
+                    </div>
+                </div>
+
+                <div class="split-canvas-frame" id="split-canvas-frame">
+                    <div class="split-image-layer before" id="split-layer-before"></div>
+                    <span class="split-tag-overlay left">Original</span>
+
+                    <div class="split-image-layer after" id="split-layer-after"></div>
+                    <span class="split-tag-overlay right">Compressed</span>
+
+                    <div class="split-divider-line" id="split-divider-line">
+                        <div class="split-divider-handle" id="split-divider-handle">
+                            <i class="ri-drag-move-fill"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- PDF Workspace Area (PDFs) -->
+            <div class="pdf-workspace-area" id="pdf-workspace-area" style="display: none;">
+                <!-- PDF Progress Card -->
+                <div class="pdf-progress-card" id="pdf-progress-card" style="display: none;">
+                    <div class="pdf-progress-header">
+                        <span id="pdf-progress-status">Optimizing PDF document...</span>
+                        <span id="pdf-progress-percent">0%</span>
+                    </div>
+                    <div class="pdf-progress-track">
+                        <div class="pdf-progress-fill" id="pdf-progress-fill" style="width: 0%;"></div>
+                    </div>
+                </div>
+
+                <!-- PDF Result Card -->
+                <div class="pdf-result-card" id="pdf-result-card" style="display: none;">
+                    <div class="pdf-result-header">
+                        <div class="pdf-file-info-group">
+                            <div class="pdf-badge-icon">PDF</div>
+                            <div>
+                                <div class="pdf-result-title" id="pdf-result-name">document.pdf</div>
+                                <div class="pdf-result-meta" id="pdf-result-pages">0 Pages Document</div>
+                            </div>
+                        </div>
+                        <div class="split-metrics-badges">
+                            <span class="metric-pill orig" id="pdf-metric-orig">Original: —</span>
+                            <span class="metric-pill comp" id="pdf-metric-comp">Compressed: —</span>
+                            <span class="metric-pill saved" id="pdf-metric-saved">–0%</span>
+                        </div>
+                    </div>
+
+                    <div class="pdf-action-row">
+                        <a href="#" id="btn-download-pdf-result" class="btn-download-pdf-result" download="compressed.pdf">
+                            Download Compressed PDF
+                        </a>
+                    </div>
+
+                    <div class="pdf-preview-section">
+                        <div class="pdf-preview-heading">Page Previews</div>
+                        <div class="pdf-preview-grid" id="pdf-preview-grid">
+                            <!-- Populated dynamically -->
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Unified Batch Queue Container -->
+            <div class="batch-queue-container" id="batch-queue-container" style="display: none;">
+                <div class="batch-queue-header">
+                    <span class="batch-queue-title">Compressed Files</span>
+                    <button type="button" class="btn-download-batch" id="btn-download-all-batch">
+                        Download All
+                    </button>
+                </div>
+
+                <div class="batch-items-list" id="batch-items-list">
+                    <!-- Populated dynamically -->
+                </div>
+            </div>
+        </main>
+
+        <!-- ==========================================================================
+             WORKSPACE 2: SOCIAL SAFE-ZONE & MULTI-PLATFORM CANVAS
+             ========================================================================== -->
+        <main class="toolyard-workspace" id="tool-workspace-safezone" style="display: none;">
+            <div class="compressor-hero">
+                <h1>Social Safe-Zone Studio</h1>
+                <p>Preview artwork against live TikTok, Instagram, YouTube, and X interface safe zones to prevent captions, avatars, and buttons from obscuring your focal elements.</p>
+            </div>
+
+            <!-- Upload / File Bar -->
+            <div class="safezone-top-bar">
+                <div class="safezone-file-picker" id="safezone-dropzone">
+                    <i class="ri-upload-cloud-line"></i>
+                    <span id="safezone-file-label">Drop artwork here or browse files</span>
+                    <input type="file" id="safezone-file-input" accept="image/*">
+                </div>
+
+                <div class="safezone-meta-pill" id="safezone-dim-pill">
+                    <span id="safezone-platform-name">TikTok &amp; Reels</span> • <span id="safezone-dim-text">1080 × 1920 (9:16)</span>
+                </div>
+            </div>
+
+            <!-- Interactive Stage Area -->
+            <div class="safezone-stage-wrapper" id="safezone-stage-wrapper">
+                <div class="safezone-viewport-box" id="safezone-viewport-box">
+                    <div class="safezone-device-frame" id="safezone-device-frame" data-platform="tiktok">
+                        <!-- Artwork Layer -->
+                        <div class="safezone-artwork-container" id="safezone-artwork-container">
+                            <img id="safezone-artwork-img" src="" alt="Artwork Preview" style="display: none; width: 100%; height: 100%; object-fit: cover;">
+                            <div id="safezone-empty-placeholder" class="safezone-blank-placeholder" style="position: absolute; top: 0; left: 0; width: 100%; height: 100%; display: flex; flex-direction: column; align-items: center; justify-content: center; text-align: center; padding: 24px 18px; background: #0c0c0e; z-index: 45; cursor: pointer; box-sizing: border-box;" title="Click or drop artwork to test safe margins">
+                                <div class="empty-icon-ring" style="width: 52px; height: 52px; border-radius: 50%; background: rgba(255,255,255,0.05); border: 1px dashed rgba(255,255,255,0.25); display: flex; align-items: center; justify-content: center; font-size: 1.6rem; color: #cbb382; margin-bottom: 14px;">
+                                    <i class="ri-upload-cloud-2-line"></i>
+                                </div>
+                                <span class="empty-title" style="font-family: var(--font-display), 'Syncopate', sans-serif; font-size: 0.76rem; font-weight: 700; letter-spacing: 2px; color: #ffffff; margin-bottom: 6px; display: block;">UPLOAD ARTWORK</span>
+                                <span class="empty-sub" style="font-family: var(--font-main), 'Space Grotesk', sans-serif; font-size: 0.7rem; color: #888892; line-height: 1.4; margin-bottom: 12px; display: block; max-width: 190px;">Drop artwork here or click to browse</span>
+                                <span class="empty-badge" id="safezone-empty-badge" style="font-family: var(--font-main), 'Space Grotesk', sans-serif; font-size: 0.62rem; font-weight: 600; color: #cbb382; background: rgba(203,179,130,0.1); border: 1px solid rgba(203,179,130,0.3); padding: 3px 10px; border-radius: 20px; letter-spacing: 1px; display: inline-block;">TIKTOK &bull; 1080 × 1920</span>
+                                <input type="file" id="safezone-canvas-file-input" accept="image/*" style="position: absolute; top: 0; left: 0; width: 100%; height: 100%; opacity: 0; cursor: pointer;">
+                            </div>
+                        </div>
+
+                        <!-- Safe Margin Guides Overlay -->
+                        <div class="safezone-guides-layer" id="safezone-guides-layer">
+                            <!-- Dynamic Safe Guides -->
+                        </div>
+
+                        <!-- Realistic Interface Mockup UI Overlay -->
+                        <div class="safezone-mockup-layer" id="safezone-mockup-layer">
+                            <!-- Dynamic Platform UI Mockup -->
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </main>
+
+        <!-- ==========================================================================
+             WORKSPACE 3: YOUTUBE CTR LAB (SIMULATOR)
+             ========================================================================== -->
+        <main class="toolyard-workspace yt-content-panel" id="tool-workspace-yt" style="display: none;">
+            
+            <!-- 1. Exact YouTube Header -->
+            <header class="yt-header">
+                <div class="yt-header-left">
+                    <a href="tools.html" class="yt-logo-link" title="YouTube Home">
+                        <svg height="20" viewBox="0 0 90 20" width="90" style="display: block;">
+                            <path d="M27.97 3.12c-.32-1.21-1.27-2.16-2.48-2.48C23.3 0 14.28 0 14.28 0S5.26 0 3.07.64C1.86.96.91 1.91.59 3.12 0 5.31 0 9.87 0 9.87s0 4.56.59 6.75c.32 1.21 1.27 2.16 2.48 2.48 2.19.64 11.21.64 11.21.64s9.02 0 11.21-.64c1.21-.32 2.16-1.27 2.48-2.48.59-2.19.59-6.75.59-6.75s0-4.56-.59-6.75z" fill="#FF0000"></path>
+                            <polygon points="11.43,14.1 19.34,9.87 11.43,5.64" fill="#FFFFFF"></polygon>
+                            <text x="32" y="16" fill="#FFFFFF" font-family="Roboto, Arial, sans-serif" font-weight="700" font-size="16" letter-spacing="-0.5px">YouTube</text>
+                        </svg>
+                        <span class="yt-country-code">LK</span>
+                    </a>
+                </div>
+
+                <!-- Center: YouTube Search Bar -->
+                <div class="yt-header-center">
+                    <form class="yt-search-form" onsubmit="return false;">
+                        <input type="text" class="yt-search-input" placeholder="Search" value="">
+                        <button type="button" class="yt-search-btn" title="Search">
+                            <i class="ri-search-line"></i>
+                        </button>
+                    </form>
+                    <button type="button" class="yt-mic-btn" title="Search with your voice">
+                        <i class="ri-mic-fill"></i>
+                    </button>
+                </div>
+
+                <!-- Right: Create, Bell, Avatar -->
+                <div class="yt-header-right">
+                    <button type="button" class="yt-create-btn">
+                        <i class="ri-add-line" style="font-size: 1.15rem;"></i> Create
+                    </button>
+                    <div class="yt-bell-wrap" title="Notifications">
+                        <i class="ri-notification-3-line"></i>
+                        <span class="yt-bell-badge">9+</span>
+                    </div>
+                    <div class="yt-user-avatar" title="Account">
+                        <img src="https://images.unsplash.com/photo-1535713875002-d1d0cf377fde?w=100&auto=format&fit=crop&q=80" alt="Avatar">
+                    </div>
+                </div>
+            </header>
+
+            <!-- 2. Exact YouTube Filter Chips Row -->
+            <nav class="yt-chips-container">
+                <button type="button" class="yt-chip active">All</button>
+                <button type="button" class="yt-chip">Music</button>
+                <button type="button" class="yt-chip">Mixes</button>
+                <button type="button" class="yt-chip">Gaming</button>
+                <button type="button" class="yt-chip">Live</button>
+                <button type="button" class="yt-chip">Playlists</button>
+                <button type="button" class="yt-chip">Underground Hip Hop</button>
+                <button type="button" class="yt-chip">Hip hop</button>
+                <button type="button" class="yt-chip">Pop Music</button>
+                <button type="button" class="yt-chip">Comedy</button>
+                <button type="button" class="yt-chip">Role-Playing Games</button>
+                <button type="button" class="yt-chip">Recently uploaded</button>
+                <button type="button" class="yt-chip">Watched</button>
+                <button type="button" class="yt-chip">New to you</button>
+            </nav>
+
+            <!-- 3. YouTube 4-Column Video Feed Grid -->
+            <div class="yt-feed-grid-area">
+                <div class="yt-feed-grid" id="yt-feed-grid">
+                    <!-- Populated by js/tools.js -->
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <!-- High-Performance Lossless PNG Compression Engine (UPNG.js + Pako) -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/pako/2.1.0/pako.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/upng-js/2.1.0/UPNG.min.js"></script>
+
+    <!-- Client-side PDF Processing Libraries -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js"></script>
+    <script src="https://unpkg.com/pdf-lib@1.17.1/dist/pdf-lib.min.js"></script>
+    <script>
+        // Configure PDF.js worker
+        if (window.pdfjsLib) {
+            window.pdfjsLib.GlobalWorkerOptions.workerSrc = 'https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.worker.min.js';
+        }
+    </script>
+
+    <!-- JavaScript Suite Engine -->
+    <script src="js/watermark-engine.js"></script>
+    <script src="js/main.js"></script>
+    <script src="js/tools.js?v=20261106_v6"></script>
+</body>
+</html>

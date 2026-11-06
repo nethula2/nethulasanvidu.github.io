@@ -1,0 +1,73 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1280 720" width="1280" height="720">
+  <defs>
+    <linearGradient id="bgGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#0a0b10"/>
+      <stop offset="50%" stop-color="#12131b"/>
+      <stop offset="100%" stop-color="#07080c"/>
+    </linearGradient>
+    <linearGradient id="goldGrad" x1="0%" y1="0%" x2="100%" y2="0%">
+      <stop offset="0%" stop-color="#e5c07b"/>
+      <stop offset="100%" stop-color="#cbb382"/>
+    </linearGradient>
+    <radialGradient id="spotlight" cx="45%" cy="35%" r="65%">
+      <stop offset="0%" stop-color="rgba(203, 179, 130, 0.12)"/>
+      <stop offset="100%" stop-color="transparent"/>
+    </radialGradient>
+  </defs>
+
+  <!-- Background -->
+  <rect width="1280" height="720" fill="url(#bgGrad)"/>
+  <rect width="1280" height="720" fill="url(#spotlight)"/>
+
+  <!-- Subtle Architectural Guides -->
+  <line x1="80" y1="100" x2="1200" y2="100" stroke="rgba(255,255,255,0.08)" stroke-width="1"/>
+  <line x1="80" y1="620" x2="1200" y2="620" stroke="rgba(255,255,255,0.08)" stroke-width="1"/>
+
+  <!-- Navigation Bar -->
+  <text x="80" y="65" fill="#ffffff" font-family="'Space Grotesk', -apple-system, sans-serif" font-size="22" font-weight="700" letter-spacing="4">CELISE</text>
+  <text x="185" y="65" fill="#cbb382" font-family="'Space Grotesk', -apple-system, sans-serif" font-size="12" letter-spacing="2">[ COUTURE ]</text>
+  
+  <text x="540" y="64" fill="rgba(255,255,255,0.6)" font-family="sans-serif" font-size="13" letter-spacing="2">COLLECTION</text>
+  <text x="670" y="64" fill="rgba(255,255,255,0.6)" font-family="sans-serif" font-size="13" letter-spacing="2">EDITORIAL</text>
+  <text x="780" y="64" fill="rgba(255,255,255,0.6)" font-family="sans-serif" font-size="13" letter-spacing="2">ATELIER</text>
+
+  <rect x="1100" y="42" width="100" height="32" rx="16" fill="rgba(255,255,255,0.06)" stroke="rgba(255,255,255,0.15)" stroke-width="1"/>
+  <text x="1132" y="63" fill="#ffffff" font-family="sans-serif" font-size="12" letter-spacing="1">BAG (0)</text>
+
+  <!-- Hero Content -->
+  <text x="80" y="210" fill="#cbb382" font-family="'Space Grotesk', -apple-system, sans-serif" font-size="13" letter-spacing="4">AUTUMN / WINTER 2025</text>
+  <text x="80" y="285" fill="#ffffff" font-family="'Space Grotesk', -apple-system, sans-serif" font-size="64" font-weight="700" letter-spacing="2">MONOLITH</text>
+  <text x="80" y="350" fill="rgba(255,255,255,0.45)" font-family="'Space Grotesk', -apple-system, sans-serif" font-size="64" font-weight="300" letter-spacing="2">COLLECTION</text>
+  
+  <text x="80" y="415" fill="rgba(255,255,255,0.65)" font-family="sans-serif" font-size="15">
+    Bespoke made-to-order silhouettes engineered with architectural precision.
+  </text>
+  <text x="80" y="440" fill="rgba(255,255,255,0.65)" font-family="sans-serif" font-size="15">
+    Handcrafted luxury tailoring and contemporary streetwear fusion.
+  </text>
+
+  <!-- CTA Button -->
+  <rect x="80" y="485" width="210" height="48" rx="4" fill="#ffffff"/>
+  <text x="115" y="515" fill="#000000" font-family="'Space Grotesk', -apple-system, sans-serif" font-size="13" font-weight="700" letter-spacing="1.5">DISCOVER PIECES</text>
+
+  <!-- Right Visual Cards (Product Showcases) -->
+  <rect x="680" y="160" width="240" height="380" rx="8" fill="rgba(255,255,255,0.03)" stroke="rgba(255,255,255,0.1)" stroke-width="1"/>
+  <rect x="700" y="180" width="200" height="260" rx="4" fill="#151722"/>
+  <circle cx="800" cy="300" r="36" fill="rgba(203, 179, 130, 0.15)"/>
+  <text x="800" y="306" text-anchor="middle" fill="#cbb382" font-family="'Space Grotesk', sans-serif" font-size="14" font-weight="700">01</text>
+  <text x="700" y="472" fill="#ffffff" font-family="'Space Grotesk', -apple-system, sans-serif" font-size="14" font-weight="600">TAILORED OVERCOAT</text>
+  <text x="700" y="497" fill="#cbb382" font-family="sans-serif" font-size="13" font-weight="600">LKR 28,500</text>
+  <text x="700" y="522" fill="rgba(255,255,255,0.4)" font-family="sans-serif" font-size="11" letter-spacing="1">MADE-TO-ORDER</text>
+
+  <rect x="950" y="210" width="240" height="380" rx="8" fill="rgba(255,255,255,0.03)" stroke="rgba(255,255,255,0.1)" stroke-width="1"/>
+  <rect x="970" y="230" width="200" height="260" rx="4" fill="#181a28"/>
+  <circle cx="1070" cy="350" r="36" fill="rgba(255, 255, 255, 0.08)"/>
+  <text x="1070" y="356" text-anchor="middle" fill="#ffffff" font-family="'Space Grotesk', sans-serif" font-size="14" font-weight="700">02</text>
+  <text x="970" y="522" fill="#ffffff" font-family="'Space Grotesk', -apple-system, sans-serif" font-size="14" font-weight="600">STRUCTURED HOODIE</text>
+  <text x="970" y="547" fill="#cbb382" font-family="sans-serif" font-size="13" font-weight="600">LKR 16,000</text>
+  <text x="970" y="572" fill="rgba(255,255,255,0.4)" font-family="sans-serif" font-size="11" letter-spacing="1">LIMITED RUN</text>
+
+  <!-- Bottom Bar -->
+  <text x="80" y="655" fill="rgba(255,255,255,0.4)" font-family="'Space Grotesk', -apple-system, sans-serif" font-size="11" letter-spacing="2">ARCHITECTURE: NODE.JS • MONGODB • RESPONSIVE COMMERCE</text>
+  <text x="1200" y="655" text-anchor="end" fill="rgba(255,255,255,0.4)" font-family="'Space Grotesk', -apple-system, sans-serif" font-size="11" letter-spacing="2">© 2025 CELISE CLOTHING</text>
+</svg>

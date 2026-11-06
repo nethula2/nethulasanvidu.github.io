@@ -7,3 +7,8 @@ node_modules
 # Windows system files
 desktop.ini
 *.ico
+
+# Dev scratch files
+scratch/
+data/.supabase_offline
+data/reviews-cache.json

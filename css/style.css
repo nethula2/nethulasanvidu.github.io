@@ -95,86 +95,148 @@ img {
     position: fixed;
     top: 0;
     left: 0;
-    transform: translate(-50%, -50%);
     border-radius: 50%;
-    z-index: 999999; /* Stay on top of lightbox (z-index 10000) and other layers */
+    z-index: 9999999;
     pointer-events: none;
-    transition: opacity 0.3s ease;
+    will-change: transform, opacity;
+    opacity: 0;
+    transition: opacity 0.2s ease, width 0.25s cubic-bezier(0.16, 1, 0.3, 1), height 0.25s cubic-bezier(0.16, 1, 0.3, 1), background-color 0.25s ease, border-color 0.25s ease;
 }
 
 .cursor-dot {
-    width: 8px;
-    height: 8px;
-    background-color: white;
+    width: 6px;
+    height: 6px;
+    background-color: #ffffff;
+    box-shadow: 0 0 10px rgba(255, 255, 255, 0.9);
 }
 
 .cursor-outline {
-    width: 40px;
-    height: 40px;
-    border: 1px solid rgba(255, 255, 255, 0.5);
-    transition: opacity 0.3s ease, width 0.2s ease, height 0.2s ease;
+    width: 36px;
+    height: 36px;
+    border: 1px solid rgba(255, 255, 255, 0.45);
+    background: transparent;
 }
 
+.cursor-outline.cursor-hover {
+    width: 52px;
+    height: 52px;
+    border-color: rgba(255, 255, 255, 0.85);
+    background: rgba(255, 255, 255, 0.08);
+    backdrop-filter: blur(2px);
+    -webkit-backdrop-filter: blur(2px);
+}
+
+@media (pointer: coarse), (hover: none) {
+    .cursor-dot,
+    .cursor-outline {
+        display: none !important;
+    }
+    body, * {
+        cursor: auto !important;
+    }
+}
+
+/* =========================================
+   STANDARDIZED ARCHITECTURAL NAVBAR
+   Identical dimensions, styling, and flow across all pages
+   ========================================= */
 .navbar {
     position: fixed;
-    top: 25px;
+    top: 24px;
     left: 50%;
     transform: translateX(-50%);
     display: flex;
-    gap: 40px;
+    gap: 36px;
     align-items: center;
-    z-index: 100;
-    transition: transform 0.3s ease-in-out;
-    background: rgba(255, 255, 255, 0.05);
-    backdrop-filter: blur(25px);
-    -webkit-backdrop-filter: blur(25px);
-    border: 1px solid rgba(255, 255, 255, 0.15);
-    border-radius: 50px;
-    padding: 10px 30px;
-    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2), inset 0 1px 2px rgba(255, 255, 255, 0.2);
+    justify-content: space-between;
+    z-index: 10000;
+    transition: transform 0.35s cubic-bezier(0.16, 1, 0.3, 1), background 0.3s ease;
+    background: rgba(10, 10, 12, 0.82);
+    backdrop-filter: blur(24px);
+    -webkit-backdrop-filter: blur(24px);
+    border: 1px solid rgba(255, 255, 255, 0.12);
+    border-radius: 999px;
+    padding: 0 26px;
+    height: 52px;
+    box-sizing: border-box;
+    box-shadow: 0 12px 35px rgba(0, 0, 0, 0.45), inset 0 1px 1px rgba(255, 255, 255, 0.2);
+    white-space: nowrap;
 }
 
-/* Glass Pill Style for Logo */
 .logo {
     font-family: var(--font-display);
     font-weight: 700;
-    font-size: 1.1rem;
+    font-size: 0.92rem;
     letter-spacing: 2px;
-    display: flex;
+    display: inline-flex;
     align-items: center;
+    gap: 8px;
+    text-decoration: none;
+    color: #ffffff;
+    white-space: nowrap;
 }
 
-/* Glass Pill Style for Navigation Menu */
-.nav-menu {
-    display: flex;
-    gap: 25px;
-    align-items: center;
-}
-
-/* Pushes the navbar up and out of view */
-.navbar--hidden {
-    transform: translate(-50%, -150%);
+.logo:hover {
+    color: #ffffff;
 }
 
 .badge {
     font-family: var(--font-main);
-    font-size: 0.7rem;
-    vertical-align: super;
-    opacity: 0.7;
+    font-size: 0.65rem;
+    font-weight: 600;
+    letter-spacing: 1.5px;
+    color: #cbb382;
+    padding: 2px 7px;
+    border-radius: 20px;
+    border: 1px solid rgba(203, 179, 130, 0.35);
+    background: rgba(203, 179, 130, 0.08);
+}
+
+.nav-menu {
+    display: flex;
+    gap: 22px;
+    align-items: center;
 }
 
 .nav-link {
-    font-size: 0.9rem;
+    font-family: var(--font-main);
+    font-size: 0.82rem;
     font-weight: 600;
-    letter-spacing: 1px;
-    transition: opacity 0.3s;
-    display: flex;
+    letter-spacing: 1.5px;
+    color: rgba(255, 255, 255, 0.7);
+    text-decoration: none;
+    transition: color 0.25s ease, opacity 0.25s ease;
+    display: inline-flex;
     align-items: center;
     white-space: nowrap;
+    position: relative;
+    padding: 4px 2px;
 }
 
 .nav-link:hover {
-    opacity: 0.5;
+    color: #ffffff;
+    opacity: 1;
+}
+
+.nav-link.active {
+    color: #ffffff;
+    opacity: 1;
+}
+
+.nav-link.active::after {
+    content: '';
+    position: absolute;
+    bottom: -2px;
+    left: 8%;
+    width: 84%;
+    height: 2px;
+    background: #cbb382;
+    border-radius: 2px;
+    box-shadow: 0 0 8px rgba(203, 179, 130, 0.7);
+}
+
+.navbar--hidden {
+    transform: translate(-50%, -150%) !important;
 }
 
 .menu-toggle {
@@ -852,18 +914,20 @@ footer {
         left: 0;
         transform: none;
         width: 100%;
+        height: 58px;
         border-radius: 0;
         border: none;
-        border-bottom: 1px solid rgba(255, 255, 255, 0.1);
-        background: rgba(5, 5, 5, 0.85);
+        border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+        background: rgba(8, 8, 10, 0.94);
         backdrop-filter: blur(20px);
         -webkit-backdrop-filter: blur(20px);
-        padding: 15px 20px;
-        box-shadow: none;
+        padding: 0 20px;
+        box-shadow: 0 4px 20px rgba(0, 0, 0, 0.5);
         display: flex;
         justify-content: space-between;
         align-items: center;
         gap: 0;
+        z-index: 10000;
     }
 
     .navbar--hidden {
@@ -871,17 +935,17 @@ footer {
     }
 
     .logo {
-        font-size: 0.95rem;
+        font-size: 0.85rem;
     }
 
     .menu-toggle {
         display: flex;
         flex-direction: column;
         justify-content: space-between;
-        width: 25px;
+        width: 24px;
         height: 16px;
         cursor: pointer;
-        z-index: 1000;
+        z-index: 10002;
         background: transparent;
         border: none;
         padding: 0;
@@ -892,18 +956,17 @@ footer {
         width: 100%;
         height: 2px;
         background-color: #fff;
-        transition: transform 0.3s cubic-bezier(0.16, 1, 0.3, 1), opacity 0.3s ease;
+        border-radius: 2px;
+        transition: transform 0.3s cubic-bezier(0.16, 1, 0.3, 1), opacity 0.25s ease;
     }
 
     .menu-toggle.active .line-1 {
         transform: translateY(7px) rotate(45deg);
     }
-
     .menu-toggle.active .line-2 {
         opacity: 0;
         transform: scaleX(0);
     }
-
     .menu-toggle.active .line-3 {
         transform: translateY(-7px) rotate(-45deg);
     }
@@ -914,15 +977,16 @@ footer {
         left: 0;
         width: 100%;
         height: 100vh;
-        background: rgba(5, 5, 5, 0.98);
-        backdrop-filter: blur(20px);
+        background: rgba(8, 8, 10, 0.98);
+        backdrop-filter: blur(24px);
+        -webkit-backdrop-filter: blur(24px);
         flex-direction: column;
         justify-content: center;
         align-items: center;
-        gap: 40px;
+        gap: 32px;
         transform: translateY(-100%);
-        transition: transform 0.4s ease-in-out;
-        z-index: 999;
+        transition: transform 0.4s cubic-bezier(0.16, 1, 0.3, 1), opacity 0.3s ease;
+        z-index: 10001;
         display: flex;
         opacity: 0;
         pointer-events: none;
@@ -937,29 +1001,11 @@ footer {
         pointer-events: all;
     }
 
-    .nav-menu.works-nav {
-        position: static;
-        width: auto;
-        height: auto;
-        background: transparent;
-        backdrop-filter: none;
-        -webkit-backdrop-filter: none;
-        flex-direction: row;
-        gap: 0;
-        transform: none;
-        opacity: 1;
-        pointer-events: auto;
-        display: flex;
-        border: none;
-        box-shadow: none;
-    }
-
-    .nav-menu.works-nav .nav-link {
-        font-size: 0.85rem;
-    }
-
     .nav-link {
-        font-size: 1.5rem;
+        font-size: 1.35rem;
+        letter-spacing: 2px;
+        font-weight: 600;
+        padding: 8px 16px;
     }
 
     .hero-section {
@@ -1236,14 +1282,7 @@ footer {
         column-count: 2;
     }
 
-    .cursor-dot,
-    .cursor-outline {
-        display: none !important;
-    }
-
-    body {
-        cursor: auto !important;
-    }
+    /* Custom cursor now handled cleanly by @media (pointer: coarse) */
 }
 
 @media (max-width: 768px) {

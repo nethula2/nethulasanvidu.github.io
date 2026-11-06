@@ -1,0 +1,1449 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="robots" content="noindex, nofollow, noarchive">
+    <title>Post Watermark Studio Engine // Leo Club of SLIIT</title>
+
+    <!-- IMMEDIATE GATEKEEPER: Redirects normal visitors before DOM renders -->
+    <script>
+        (function() {
+            try {
+                const params = new URLSearchParams(window.location.search);
+                const token = params.get('access') || params.get('key') || sessionStorage.getItem('watermark_access');
+                if (!token) {
+                    window.location.replace('index.html');
+                }
+            } catch (e) {
+                window.location.replace('index.html');
+            }
+        })();
+    </script>
+
+    <!-- Fonts & Icons -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=Space+Grotesk:wght@500;600;700&display=swap" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/remixicon@3.5.0/fonts/remixicon.css" rel="stylesheet">
+    <link rel="stylesheet" href="css/style.css">
+
+    <style>
+        :root {
+            --font-ui: 'Plus Jakarta Sans', -apple-system, BlinkMacSystemFont, sans-serif;
+            --font-mono: 'Space Grotesk', monospace;
+            --lime: #bdfa29;
+            --lime-hover: #d2ff4d;
+            --lime-dim: rgba(189, 250, 41, 0.12);
+            --lime-border: rgba(189, 250, 41, 0.45);
+            --bg-dark: #0b0c0e;
+            --surface-dark: #121316;
+            --border-subtle: rgba(255, 255, 255, 0.09);
+            --border-active: #bdfa29;
+            --text-muted: #94a3b8;
+            --text-dim: #64748b;
+        }
+
+        *, *::before, *::after {
+            box-sizing: border-box;
+        }
+
+        body {
+            background-color: var(--bg-dark);
+            color: #ffffff;
+            font-family: var(--font-ui);
+            min-height: 100vh;
+            overflow-x: hidden;
+            cursor: default !important;
+            margin: 0;
+            padding: 0;
+            letter-spacing: -0.01em;
+            line-height: 1.5;
+        }
+
+        /* Ambient Studio Vignette */
+        .studio-vignette {
+            position: fixed;
+            inset: 0;
+            background: 
+                radial-gradient(ellipse 65% 50% at 75% 25%, rgba(189, 250, 41, 0.04) 0%, transparent 60%),
+                radial-gradient(ellipse 50% 50% at 20% 80%, rgba(255, 255, 255, 0.02) 0%, transparent 50%);
+            pointer-events: none;
+            z-index: 0;
+        }
+
+        /* Container Layout */
+        .studio-page-wrap {
+            max-width: 1260px;
+            margin: 0 auto;
+            padding: 105px 4% 60px;
+            position: relative;
+            z-index: 2;
+        }
+
+        /* Floating Navbar */
+        .navbar {
+            background: rgba(18, 19, 22, 0.8) !important;
+            backdrop-filter: blur(20px) !important;
+            -webkit-backdrop-filter: blur(20px) !important;
+            border: 1px solid var(--border-subtle) !important;
+            border-radius: 50px !important;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5) !important;
+            padding: 10px 26px !important;
+        }
+
+        .navbar .logo {
+            font-family: var(--font-ui) !important;
+            font-weight: 700 !important;
+            font-size: 0.88rem !important;
+            letter-spacing: 0.5px !important;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .navbar-brand-pill {
+            font-size: 0.68rem;
+            font-weight: 700;
+            font-family: var(--font-mono);
+            letter-spacing: 1px;
+            padding: 3px 10px;
+            border-radius: 20px;
+            background: var(--lime-dim);
+            color: var(--lime);
+            border: 1px solid var(--lime-border);
+            text-transform: uppercase;
+        }
+
+        /* =========================================
+           SPLIT HERO SECTION (REFERENCE MATCH)
+           ========================================= */
+        .studio-hero-split {
+            display: grid;
+            grid-template-columns: 1.05fr 0.95fr;
+            gap: 50px;
+            align-items: center;
+            margin-bottom: 50px;
+        }
+
+        /* Left Column Controls */
+        .studio-hero-left {
+            display: flex;
+            flex-direction: column;
+        }
+
+        .hero-kicker-badge {
+            font-size: 0.72rem;
+            font-weight: 700;
+            font-family: var(--font-mono);
+            letter-spacing: 2px;
+            color: #d1d5db;
+            text-transform: uppercase;
+            margin-bottom: 16px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .hero-kicker-badge .kicker-dash {
+            width: 14px;
+            height: 2px;
+            background: var(--lime);
+            display: inline-block;
+        }
+
+        .hero-headline {
+            font-size: clamp(2.3rem, 4vw, 3.4rem);
+            font-weight: 800;
+            letter-spacing: -0.035em;
+            line-height: 1.08;
+            color: #ffffff;
+            margin: 0 0 16px 0;
+        }
+
+        .hero-headline .lime-accent {
+            color: var(--lime);
+            display: block;
+        }
+
+        .hero-description {
+            color: var(--text-muted);
+            font-size: 0.92rem;
+            line-height: 1.6;
+            margin: 0 0 26px 0;
+            max-width: 540px;
+        }
+
+        .hero-description strong {
+            color: #ffffff;
+            font-weight: 700;
+        }
+
+        /* Horizontal Ratio Tabs (Segmented Control) */
+        .ratio-segmented-bar {
+            background: rgba(255, 255, 255, 0.03);
+            border: 1px solid var(--border-subtle);
+            border-radius: 12px;
+            padding: 5px;
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 8px;
+            margin-bottom: 22px;
+            max-width: 480px;
+        }
+
+        .ratio-tab-item {
+            background: transparent;
+            border: 1px solid transparent;
+            border-radius: 8px;
+            padding: 10px 14px;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            text-align: left;
+            user-select: none;
+        }
+
+        .ratio-tab-item:hover {
+            background: rgba(255, 255, 255, 0.04);
+        }
+
+        .ratio-tab-item.active {
+            background: rgba(189, 250, 41, 0.05);
+            border: 1px solid var(--border-active);
+        }
+
+        .ratio-tab-icon {
+            font-size: 1.25rem;
+            color: #888;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .ratio-tab-item.active .ratio-tab-icon {
+            color: var(--lime);
+        }
+
+        .ratio-tab-text {
+            display: flex;
+            flex-direction: column;
+            line-height: 1.25;
+        }
+
+        .ratio-tab-name {
+            font-size: 0.85rem;
+            font-weight: 700;
+            color: #ffffff;
+        }
+
+        .ratio-tab-sub {
+            font-size: 0.74rem;
+            color: var(--text-dim);
+            font-family: var(--font-mono);
+        }
+
+        .ratio-tab-item.active .ratio-tab-sub {
+            color: #94a3b8;
+        }
+
+        /* Main Dropzone */
+        .studio-dropzone {
+            background: rgba(255, 255, 255, 0.018);
+            border: 1.5px dashed rgba(255, 255, 255, 0.16);
+            border-radius: 16px;
+            padding: 38px 24px;
+            text-align: center;
+            cursor: pointer;
+            transition: all 0.25s ease;
+            position: relative;
+        }
+
+        .studio-dropzone:hover,
+        .studio-dropzone.drag-over {
+            border-color: var(--lime);
+            background: rgba(189, 250, 41, 0.035);
+            transform: translateY(-2px);
+        }
+
+        .dropzone-upload-icon {
+            width: 52px;
+            height: 52px;
+            border-radius: 50%;
+            background: rgba(255, 255, 255, 0.04);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.5rem;
+            color: #ffffff;
+            margin: 0 auto 14px;
+            transition: all 0.2s ease;
+        }
+
+        .studio-dropzone:hover .dropzone-upload-icon {
+            color: var(--lime);
+            border-color: var(--lime-border);
+            transform: scale(1.05);
+        }
+
+        .dropzone-heading {
+            font-size: 1.12rem;
+            font-weight: 700;
+            color: #ffffff;
+            margin: 0 0 4px 0;
+            letter-spacing: -0.01em;
+        }
+
+        .dropzone-divider-or {
+            font-size: 0.78rem;
+            color: var(--text-dim);
+            margin-bottom: 14px;
+        }
+
+        .btn-browse-lime {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            padding: 11px 26px;
+            background: var(--lime);
+            color: #000000;
+            border: none;
+            border-radius: 50px;
+            font-size: 0.82rem;
+            font-weight: 700;
+            font-family: var(--font-ui);
+            cursor: pointer;
+            transition: all 0.2s ease;
+            box-shadow: 0 4px 15px rgba(189, 250, 41, 0.25);
+        }
+
+        .btn-browse-lime:hover {
+            background: var(--lime-hover);
+            transform: translateY(-1px);
+            box-shadow: 0 6px 22px rgba(189, 250, 41, 0.4);
+        }
+
+        .dropzone-footer-specs {
+            font-size: 0.76rem;
+            color: var(--text-dim);
+            margin-top: 16px;
+            line-height: 1.5;
+        }
+
+        /* =========================================
+           RIGHT COLUMN: 3D STACKED SHOWCASE MOCKUP
+           ========================================= */
+        .studio-hero-right {
+            position: relative;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 20px 10px;
+        }
+
+        /* Top-Right Callout Badge with Curved Arrow */
+        .showcase-callout-wrap {
+            position: absolute;
+            top: 0px;
+            right: 0px;
+            z-index: 10;
+            display: flex;
+            flex-direction: column;
+            align-items: flex-end;
+            pointer-events: none;
+        }
+
+        .showcase-callout-pill {
+            background: rgba(18, 19, 22, 0.95);
+            border: 1px solid rgba(255, 255, 255, 0.16);
+            border-radius: 8px;
+            padding: 6px 12px;
+            font-size: 0.74rem;
+            font-weight: 600;
+            color: #f4f4f5;
+            display: flex;
+            align-items: center;
+            gap: 7px;
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.6);
+        }
+
+        .showcase-callout-pill i {
+            color: #ffffff;
+            font-size: 0.85rem;
+        }
+
+        .showcase-curved-arrow {
+            width: 45px;
+            height: 38px;
+            margin-right: 18px;
+            margin-top: 2px;
+            opacity: 0.85;
+        }
+
+        /* Stacked Cards Container */
+        .showcase-stack-container {
+            position: relative;
+            width: 100%;
+            max-width: 440px;
+        }
+
+        /* Back card (rotated depth layer) */
+        .showcase-card-back {
+            position: absolute;
+            inset: 0;
+            background: rgba(255, 255, 255, 0.02);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 20px;
+            transform: rotate(-3deg) scale(0.98);
+            box-shadow: 0 25px 60px rgba(0, 0, 0, 0.6);
+            z-index: 1;
+            pointer-events: none;
+        }
+
+        /* Front card holding the watermarked graphic */
+        .showcase-card-front {
+            position: relative;
+            z-index: 2;
+            width: 100%;
+            background: #000;
+            border: 1px solid rgba(255, 255, 255, 0.15);
+            border-radius: 18px;
+            overflow: hidden;
+            box-shadow: 0 25px 60px rgba(0, 0, 0, 0.8);
+            aspect-ratio: 1 / 1;
+            transition: aspect-ratio 0.3s ease;
+        }
+
+        .showcase-card-front.portrait-mode {
+            aspect-ratio: 4 / 5;
+            max-width: 380px;
+            margin: 0 auto;
+        }
+
+        /* Mockup Background Image */
+        .showcase-base-img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            display: block;
+        }
+
+        /* Official Leo & Lions Watermark Overlay Layer */
+        .showcase-watermark-overlay {
+            position: absolute;
+            inset: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            object-fit: contain;
+            z-index: 5;
+        }
+
+        /* Bottom-Right 100% Quality Badge */
+        .showcase-quality-badge {
+            position: absolute;
+            bottom: 14px;
+            right: 14px;
+            background: rgba(14, 15, 18, 0.85);
+            backdrop-filter: blur(10px);
+            -webkit-backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.15);
+            border-radius: 50px;
+            padding: 5px 12px;
+            font-size: 0.72rem;
+            font-weight: 600;
+            color: #ffffff;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            z-index: 6;
+            pointer-events: none;
+        }
+
+        .showcase-quality-badge i {
+            color: var(--lime);
+            font-size: 0.85rem;
+        }
+
+        /* =========================================
+           4-COLUMN FEATURES ROW (REFERENCE MATCH)
+           ========================================= */
+        .studio-features-row {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 25px;
+            padding: 35px 0 30px;
+            margin-top: 10px;
+            border-top: 1px solid var(--border-subtle);
+        }
+
+        .feature-block {
+            display: flex;
+            align-items: flex-start;
+            gap: 14px;
+        }
+
+        .feature-icon-box {
+            font-size: 1.35rem;
+            color: #ffffff;
+            margin-top: 2px;
+            flex-shrink: 0;
+        }
+
+        .feature-title {
+            font-size: 0.88rem;
+            font-weight: 700;
+            color: #ffffff;
+            margin-bottom: 4px;
+            line-height: 1.3;
+        }
+
+        .feature-desc {
+            font-size: 0.76rem;
+            color: var(--text-dim);
+            line-height: 1.45;
+        }
+
+        /* =========================================
+           FOOTER BRAND STRIP (REFERENCE MATCH)
+           ========================================= */
+        .studio-footer-strip {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            flex-wrap: wrap;
+            gap: 16px;
+            padding-top: 22px;
+            border-top: 1px solid rgba(255, 255, 255, 0.06);
+            font-size: 0.76rem;
+            color: var(--text-dim);
+        }
+
+        .footer-left-brand {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .footer-app-icon {
+            width: 20px;
+            height: 20px;
+            border: 1.5px solid rgba(255, 255, 255, 0.4);
+            border-radius: 4px;
+            position: relative;
+        }
+
+        .footer-app-icon::after {
+            content: '';
+            position: absolute;
+            top: 3px;
+            left: 3px;
+            right: 3px;
+            bottom: 3px;
+            border: 1.5px solid rgba(255, 255, 255, 0.4);
+            border-radius: 2px;
+        }
+
+        .footer-brand-title {
+            color: #e2e8f0;
+            font-weight: 700;
+        }
+
+        .footer-brand-sub {
+            color: var(--text-dim);
+            margin-left: 6px;
+        }
+
+        /* =========================================
+           RESULTS SECTION (UPLOADED POSTS LIST)
+           ========================================= */
+        #results-container {
+            margin-top: 50px;
+            display: none;
+            flex-direction: column;
+            gap: 24px;
+        }
+
+        .results-header-bar {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            flex-wrap: wrap;
+            gap: 14px;
+            padding-bottom: 16px;
+            border-bottom: 1px solid var(--border-subtle);
+        }
+
+        .results-count-chip {
+            font-size: 0.92rem;
+            font-weight: 700;
+            color: #ffffff;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .results-count-chip .status-dot {
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+            background: var(--lime);
+            box-shadow: 0 0 10px var(--lime);
+        }
+
+        .btn-download-all {
+            background: var(--lime);
+            color: #000;
+            border: none;
+            padding: 10px 22px;
+            border-radius: 8px;
+            font-size: 0.78rem;
+            font-weight: 700;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            box-shadow: 0 4px 15px rgba(189, 250, 41, 0.25);
+        }
+
+        .btn-download-all:hover {
+            background: var(--lime-hover);
+            transform: translateY(-1px);
+        }
+
+        /* Output Post Cards */
+        .watermark-post-card {
+            background: rgba(255, 255, 255, 0.025);
+            border: 1px solid var(--border-subtle);
+            border-radius: 14px;
+            padding: 20px;
+            display: flex;
+            gap: 24px;
+            align-items: center;
+            transition: all 0.2s ease;
+        }
+
+        .watermark-post-card:hover {
+            border-color: rgba(255, 255, 255, 0.18);
+            background: rgba(255, 255, 255, 0.04);
+            transform: translateY(-2px);
+        }
+
+        .card-thumbnail-wrap {
+            width: 170px;
+            min-width: 140px;
+            border-radius: 8px;
+            overflow: hidden;
+            background: #000;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            position: relative;
+            cursor: pointer;
+        }
+
+        .card-thumbnail-wrap img {
+            width: 100%;
+            height: auto;
+            display: block;
+        }
+
+        .thumbnail-zoom-hint {
+            position: absolute;
+            bottom: 6px;
+            right: 6px;
+            background: rgba(0, 0, 0, 0.75);
+            border-radius: 4px;
+            padding: 3px 6px;
+            font-size: 0.64rem;
+            color: #fff;
+            display: flex;
+            align-items: center;
+            gap: 4px;
+            pointer-events: none;
+        }
+
+        .card-body {
+            flex: 1;
+            min-width: 260px;
+        }
+
+        .card-badge-row {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            margin-bottom: 8px;
+            flex-wrap: wrap;
+        }
+
+        .ratio-tag {
+            font-size: 0.7rem;
+            font-weight: 700;
+            font-family: var(--font-mono);
+            padding: 3px 8px;
+            border-radius: 4px;
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .ratio-tag.square {
+            background: var(--lime-dim);
+            color: var(--lime);
+            border: 1px solid var(--lime-border);
+        }
+
+        .ratio-tag.portrait {
+            background: rgba(56, 189, 248, 0.12);
+            color: #38bdf8;
+            border: 1px solid rgba(56, 189, 248, 0.3);
+        }
+
+        .dimension-tag {
+            font-size: 0.74rem;
+            color: var(--text-dim);
+            font-family: var(--font-mono);
+        }
+
+        .dimension-tag strong {
+            color: #e2e8f0;
+        }
+
+        .card-title {
+            font-size: 1.05rem;
+            font-weight: 700;
+            color: #ffffff;
+            margin: 0 0 8px 0;
+        }
+
+        .card-meta-line {
+            font-size: 0.78rem;
+            color: var(--text-muted);
+            margin-bottom: 5px;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .card-meta-line i {
+            color: var(--lime);
+        }
+
+        .card-actions-bar {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            flex-wrap: wrap;
+            margin-top: 16px;
+            padding-top: 14px;
+            border-top: 1px solid rgba(255, 255, 255, 0.06);
+        }
+
+        .btn-card-download {
+            background: var(--lime);
+            color: #000;
+            border: none;
+            padding: 9px 18px;
+            border-radius: 6px;
+            font-size: 0.78rem;
+            font-weight: 700;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .btn-card-download:hover {
+            background: var(--lime-hover);
+            transform: translateY(-1px);
+        }
+
+        .btn-card-preview {
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid rgba(255, 255, 255, 0.12);
+            color: #cbd5e1;
+            padding: 9px 14px;
+            border-radius: 6px;
+            font-size: 0.76rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+
+        .btn-card-preview:hover {
+            background: rgba(255, 255, 255, 0.1);
+            color: #fff;
+        }
+
+        .btn-card-remove {
+            background: transparent;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            color: #71717a;
+            padding: 9px 12px;
+            border-radius: 6px;
+            font-size: 0.74rem;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            margin-left: auto;
+        }
+
+        .btn-card-remove:hover {
+            border-color: #ef4444;
+            color: #ef4444;
+        }
+
+        /* Lightbox Modal */
+        .preview-modal {
+            position: fixed;
+            inset: 0;
+            background: rgba(5, 6, 8, 0.94);
+            backdrop-filter: blur(25px);
+            -webkit-backdrop-filter: blur(25px);
+            z-index: 99999;
+            display: none;
+            align-items: center;
+            justify-content: center;
+            padding: 24px;
+            cursor: zoom-out;
+        }
+
+        .preview-modal-inner {
+            position: relative;
+            max-width: 90vw;
+            max-height: 90vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .preview-modal img {
+            max-width: 88vw;
+            max-height: 84vh;
+            border-radius: 8px;
+            border: 1px solid rgba(255, 255, 255, 0.15);
+            box-shadow: 0 25px 70px rgba(0, 0, 0, 0.85);
+            object-fit: contain;
+        }
+
+        .preview-close-btn {
+            position: fixed;
+            top: 25px;
+            right: 35px;
+            width: 42px;
+            height: 42px;
+            border-radius: 50%;
+            background: rgba(255, 255, 255, 0.08);
+            border: 1px solid rgba(255, 255, 255, 0.18);
+            color: #fff;
+            font-size: 1.4rem;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            z-index: 100000;
+        }
+
+        .preview-close-btn:hover {
+            background: #ef4444;
+            border-color: #ef4444;
+        }
+
+        /* Gatekeeper Loader Overlay */
+        #auth-verifying-overlay {
+            position: fixed;
+            inset: 0;
+            background: #0b0c0e;
+            z-index: 100000;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            text-align: center;
+            padding: 24px;
+        }
+
+        .auth-card {
+            background: rgba(255, 255, 255, 0.03);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 18px;
+            padding: 40px 32px;
+            max-width: 440px;
+            width: 90%;
+            box-shadow: 0 20px 50px rgba(0, 0, 0, 0.6);
+        }
+
+        /* Mobile Adaptations */
+        @media (max-width: 1024px) {
+            .studio-hero-split {
+                grid-template-columns: 1fr;
+                gap: 40px;
+            }
+            .studio-features-row {
+                grid-template-columns: repeat(2, 1fr);
+                gap: 20px;
+            }
+            .showcase-callout-wrap {
+                position: static;
+                align-items: center;
+                margin-bottom: 12px;
+            }
+            .showcase-curved-arrow {
+                display: none;
+            }
+        }
+
+        @media (max-width: 640px) {
+            .studio-features-row {
+                grid-template-columns: 1fr;
+            }
+            .watermark-post-card {
+                flex-direction: column;
+                align-items: stretch;
+            }
+            .card-thumbnail-wrap {
+                width: 100%;
+                max-width: 260px;
+                margin: 0 auto;
+            }
+            .card-actions-bar {
+                flex-direction: column;
+                align-items: stretch;
+            }
+            .btn-card-download, .btn-card-preview, .btn-card-remove {
+                width: 100%;
+                justify-content: center;
+                margin-left: 0;
+            }
+        }
+    </style>
+</head>
+<body>
+
+    <!-- Ambient Vignette -->
+    <div class="studio-vignette"></div>
+
+    <!-- AUTH GATEKEEPER OVERLAY -->
+    <div id="auth-verifying-overlay">
+        <div class="auth-card">
+            <div style="width: 64px; height: 64px; border-radius: 50%; background: rgba(189, 250, 41, 0.1); border: 1px solid var(--lime-border); display: flex; align-items: center; justify-content: center; font-size: 1.8rem; color: var(--lime); margin: 0 auto 20px;">
+                <i class="ri-shield-keyhole-line"></i>
+            </div>
+            <div style="font-size: 0.92rem; font-weight: 700; color: #fff; margin-bottom: 8px;">
+                <i class="ri-loader-4-line ri-spin" style="color: var(--lime); margin-right: 6px;"></i> LEO CLUB OF SLIIT // MEMBER VERIFICATION
+            </div>
+            <p style="color: #71717a; font-size: 0.82rem; line-height: 1.5; margin: 0;">
+                Validating portal access token. Unauthorized visitors are redirected to home.
+            </p>
+        </div>
+    </div>
+
+    <!-- MAIN APPLICATION -->
+    <div id="studio-app" style="display: none;">
+        
+        <!-- Navigation Bar -->
+        <nav class="navbar">
+            <div class="logo">
+                <a href="index.html" style="color: #fff; text-decoration: none;">NETHULA SANVIDU</a>
+                <span class="navbar-brand-pill">LEO CLUB OF SLIIT</span>
+            </div>
+            <div class="nav-menu">
+                <a href="vault.html?access=NETHULA2026" class="nav-link" style="color: var(--lime);">[ CLIENT VAULT ]</a>
+                <a href="index.html" class="nav-link">[ BACK TO HOME ]</a>
+            </div>
+        </nav>
+
+        <div class="studio-page-wrap">
+            
+            <!-- SPLIT HERO (MATCHING USER REFERENCE DESIGN) -->
+            <section class="studio-hero-split">
+                
+                <!-- Left: Controls & Dropzone -->
+                <div class="studio-hero-left">
+                    <div class="hero-kicker-badge">
+                        <span class="kicker-dash"></span>
+                        <span>OFFICIAL BRANDING WATERMARK STUDIO</span>
+                    </div>
+
+                    <h1 class="hero-headline">
+                        Post Watermark
+                        <span class="lime-accent">Studio Engine</span>
+                    </h1>
+
+                    <p class="hero-description">
+                        Upload your graphic designs. The engine automatically inspects the image aspect ratio, selects the exact official Leo Club of SLIIT & Lion's International watermark, and applies it with <strong>100% lossless original quality</strong>.
+                    </p>
+
+                    <!-- Ratio Selector Segmented Capsule -->
+                    <div class="ratio-segmented-bar">
+                        <div class="ratio-tab-item active" id="tab-square" onclick="selectRatioMode('square')">
+                            <div class="ratio-tab-icon">
+                                <i class="ri-aspect-ratio-line"></i>
+                            </div>
+                            <div class="ratio-tab-text">
+                                <span class="ratio-tab-name">1:1 Square</span>
+                                <span class="ratio-tab-sub">1080 × 1080</span>
+                            </div>
+                        </div>
+
+                        <div class="ratio-tab-item" id="tab-portrait" onclick="selectRatioMode('portrait')">
+                            <div class="ratio-tab-icon">
+                                <i class="ri-smartphone-line"></i>
+                            </div>
+                            <div class="ratio-tab-text">
+                                <span class="ratio-tab-name">4:5 Portrait</span>
+                                <span class="ratio-tab-sub">1080 × 1350</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Dropzone -->
+                    <div class="studio-dropzone" id="studio-dropzone"
+                         onclick="document.getElementById('studio-file-input').click()"
+                         ondragover="event.preventDefault(); this.classList.add('drag-over');"
+                         ondragleave="this.classList.remove('drag-over');"
+                         ondrop="event.preventDefault(); this.classList.remove('drag-over'); handleFiles(event.dataTransfer.files);">
+                        
+                        <input type="file" id="studio-file-input" accept="image/png, image/jpeg, image/webp" multiple style="display: none;" onchange="handleFiles(this.files)">
+                        
+                        <div class="dropzone-upload-icon">
+                            <i class="ri-upload-cloud-2-line"></i>
+                        </div>
+
+                        <div class="dropzone-heading">Drag &amp; Drop Your Designs Here</div>
+                        <div class="dropzone-divider-or">or</div>
+
+                        <button type="button" class="btn-browse-lime">
+                            <i class="ri-folder-open-line"></i> Browse Files
+                        </button>
+
+                        <div class="dropzone-footer-specs">
+                            Supports batch upload &bull; Multiple files &bull; PNG, JPG, WEBP<br>
+                            Max size per file: 10MB
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Right: Interactive Stacked 3D Mockup Showcase -->
+                <div class="studio-hero-right">
+                    
+                    <!-- Callout Badge with Curved Arrow -->
+                    <div class="showcase-callout-wrap">
+                        <div class="showcase-callout-pill">
+                            <i class="ri-shield-check-line"></i>
+                            <span>Official watermark applied automatically</span>
+                        </div>
+                        <!-- Sleek Curved SVG Arrow pointing to watermark -->
+                        <svg class="showcase-curved-arrow" viewBox="0 0 50 40" fill="none" xmlns="http://www.w3.org/2000/svg">
+                            <path d="M42 5 C30 20, 15 22, 8 32" stroke="#ffffff" stroke-width="1.6" stroke-linecap="round" stroke-dasharray="3 3"/>
+                            <path d="M5 26 L8 33 L15 32" stroke="#ffffff" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/>
+                        </svg>
+                    </div>
+
+                    <!-- 3D Stacked Container -->
+                    <div class="showcase-stack-container">
+                        <div class="showcase-card-back"></div>
+                        
+                        <div class="showcase-card-front" id="showcase-card-front">
+                            <!-- Base Graphic Design Image (Mountain scenery as in user mockup) -->
+                            <img src="https://images.unsplash.com/photo-1464822759023-fed622ff2c3b?auto=format&fit=crop&w=1080&q=85" 
+                                 alt="Leo Club Post Preview" 
+                                 id="showcase-base-img" 
+                                 class="showcase-base-img">
+                            
+                            <!-- Leo & Lions Watermark Overlay -->
+                            <img src="1080 x 1080 logos.png" 
+                                 alt="Official Leo & Lions Watermark" 
+                                 id="showcase-watermark-img" 
+                                 class="showcase-watermark-overlay">
+
+                            <!-- Quality Badge at bottom right -->
+                            <div class="showcase-quality-badge">
+                                <i class="ri-checkbox-circle-fill"></i>
+                                <span>100% Original Quality</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- 4-COLUMN FEATURE ASSURANCE BAR -->
+            <section class="studio-features-row">
+                <div class="feature-block">
+                    <div class="feature-icon-box">
+                        <i class="ri-crop-line"></i>
+                    </div>
+                    <div>
+                        <div class="feature-title">100% Native Resolution</div>
+                        <div class="feature-desc">Zero downsampling or pixel compression</div>
+                    </div>
+                </div>
+
+                <div class="feature-block">
+                    <div class="feature-icon-box">
+                        <i class="ri-shield-check-line"></i>
+                    </div>
+                    <div>
+                        <div class="feature-title">Lossless PNG Output</div>
+                        <div class="feature-desc">Crisp vectors, gradients &amp; typography preserved</div>
+                    </div>
+                </div>
+
+                <div class="feature-block">
+                    <div class="feature-icon-box">
+                        <i class="ri-equalizer-line"></i>
+                    </div>
+                    <div>
+                        <div class="feature-title">Smart Ratio Matching</div>
+                        <div class="feature-desc">Automatic 1:1 vs 4:5 aspect ratio detection</div>
+                    </div>
+                </div>
+
+                <div class="feature-block">
+                    <div class="feature-icon-box">
+                        <i class="ri-flashlight-line"></i>
+                    </div>
+                    <div>
+                        <div class="feature-title">Fast &amp; Secure</div>
+                        <div class="feature-desc">Your files are processed instantly and safely</div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- FOOTER STRIP -->
+            <footer class="studio-footer-strip">
+                <div class="footer-left-brand">
+                    <div class="footer-app-icon"></div>
+                    <span class="footer-brand-title">Studio Engine</span>
+                    <span style="color: #475569;">|</span>
+                    <span class="footer-brand-sub">Leo Club of SLIIT &times; Lions International</span>
+                </div>
+                <div>
+                    Better Designs. Greater Impact.
+                </div>
+            </footer>
+
+            <!-- Processing Spinner -->
+            <div id="processing-spinner" style="display: none; text-align: center; color: var(--lime); padding: 40px 0; font-size: 0.9rem; font-weight: 700;">
+                <i class="ri-loader-4-line ri-spin" style="font-size: 2.2rem; display: block; margin-bottom: 12px;"></i>
+                WATERMARKING AT 100% LOSSLESS RESOLUTION...
+            </div>
+
+            <!-- RESULTS LIST -->
+            <section id="results-container">
+                <div class="results-header-bar">
+                    <div class="results-count-chip" id="results-count-label">
+                        <span class="status-dot"></span>
+                        <span>0 POSTS WATERMARKED READY</span>
+                    </div>
+                    <button class="btn-download-all" id="btn-download-all" onclick="downloadAllPosts()">
+                        <i class="ri-download-cloud-2-line"></i> DOWNLOAD ALL (LOSSLESS PNG)
+                    </button>
+                </div>
+
+                <div id="cards-list" style="display: flex; flex-direction: column; gap: 18px;">
+                    <!-- Dynamically generated watermarked post cards -->
+                </div>
+            </section>
+        </div>
+    </div>
+
+    <!-- LIGHTBOX PREVIEW MODAL -->
+    <div id="preview-modal" class="preview-modal" onclick="closePreview()">
+        <button class="preview-close-btn" onclick="closePreview()">&times;</button>
+        <div class="preview-modal-inner" id="preview-container"></div>
+    </div>
+
+    <!-- Watermark Engine SDK -->
+    <script src="js/watermark-engine.js"></script>
+
+    <script>
+        // ============================================
+        // 1. LINK CLEARANCE VERIFICATION
+        // ============================================
+        async function verifyStudioAccess() {
+            const urlParams = new URLSearchParams(window.location.search);
+            const token = urlParams.get('access') || urlParams.get('key') || sessionStorage.getItem('watermark_access');
+
+            if (!token) {
+                window.location.replace('index.html');
+                return;
+            }
+
+            try {
+                const response = await fetch('/api/verify-vault', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ passcode: token })
+                });
+
+                if (!response.ok) {
+                    sessionStorage.removeItem('watermark_access');
+                    window.location.replace('index.html');
+                    return;
+                }
+
+                sessionStorage.setItem('watermark_access', token);
+
+                // Reveal studio app
+                const overlay = document.getElementById('auth-verifying-overlay');
+                if (overlay) {
+                    overlay.style.opacity = '0';
+                    overlay.style.transition = 'opacity 0.3s ease';
+                    setTimeout(() => overlay.style.display = 'none', 300);
+                }
+
+                const app = document.getElementById('studio-app');
+                if (app) app.style.display = 'block';
+
+            } catch (err) {
+                console.error("Access verification error:", err);
+                sessionStorage.removeItem('watermark_access');
+                window.location.replace('index.html');
+            }
+        }
+
+        document.addEventListener('DOMContentLoaded', verifyStudioAccess);
+
+        // ============================================
+        // 2. RATIO PREVIEW TOGGLE (SQUARE VS PORTRAIT)
+        // ============================================
+        let currentRatioMode = 'square';
+
+        function selectRatioMode(mode) {
+            currentRatioMode = mode;
+            const tabSquare = document.getElementById('tab-square');
+            const tabPortrait = document.getElementById('tab-portrait');
+            const cardFront = document.getElementById('showcase-card-front');
+            const watermarkImg = document.getElementById('showcase-watermark-img');
+
+            if (mode === 'square') {
+                tabSquare.classList.add('active');
+                tabPortrait.classList.remove('active');
+                cardFront.classList.remove('portrait-mode');
+                if (watermarkImg) watermarkImg.src = '1080 x 1080 logos.png';
+            } else {
+                tabPortrait.classList.add('active');
+                tabSquare.classList.remove('active');
+                cardFront.classList.add('portrait-mode');
+                if (watermarkImg) watermarkImg.src = '1080 x 1350 logos.png';
+            }
+        }
+
+        // ============================================
+        // 3. STUDIO WATERMARK LOGIC
+        // ============================================
+        const studioItems = [];
+
+        async function handleFiles(files) {
+            if (!files || files.length === 0) return;
+
+            const spinner = document.getElementById('processing-spinner');
+            if (spinner) spinner.style.display = 'block';
+
+            for (let i = 0; i < files.length; i++) {
+                const file = files[i];
+                try {
+                    // Process through lossless ratio-aware engine
+                    const result = await WatermarkEngine.process(file, {
+                        subtleCenterStamp: false // Pure clean official Leo & Lions branding
+                    });
+
+                    studioItems.push({
+                        file: file,
+                        title: file.name.replace(/\.[^/.]+$/, "").replace(/[_-]/g, " ").toUpperCase(),
+                        result: result
+                    });
+
+                    // Live update the right-side showcase to show the user's latest design!
+                    updateLiveShowcase(result);
+
+                } catch (err) {
+                    console.error("Processing error:", err);
+                    alert(`Failed to process ${file.name}: ${err.message}`);
+                }
+            }
+
+            if (spinner) spinner.style.display = 'none';
+            renderStudioCards();
+
+            // Smooth scroll to results
+            const resultsEl = document.getElementById('results-container');
+            if (resultsEl) {
+                resultsEl.scrollIntoView({ behavior: 'smooth', block: 'start' });
+            }
+        }
+
+        function updateLiveShowcase(result) {
+            const showcaseCard = document.getElementById('showcase-card-front');
+            const baseImg = document.getElementById('showcase-base-img');
+            const wmImg = document.getElementById('showcase-watermark-img');
+
+            if (baseImg) {
+                baseImg.src = result.dataUrl;
+            }
+            // Hide separate watermark overlay since it is already baked into dataUrl at 100% resolution!
+            if (wmImg) {
+                wmImg.style.display = 'none';
+            }
+
+            if (result.isPortrait) {
+                selectRatioMode('portrait');
+            } else {
+                selectRatioMode('square');
+            }
+        }
+
+        function renderStudioCards() {
+            const container = document.getElementById('results-container');
+            const list = document.getElementById('cards-list');
+            const countLabel = document.getElementById('results-count-label');
+
+            if (!container || !list) return;
+
+            if (studioItems.length === 0) {
+                container.style.display = 'none';
+                list.innerHTML = '';
+                return;
+            }
+
+            container.style.display = 'flex';
+            list.innerHTML = '';
+            if (countLabel) {
+                countLabel.innerHTML = `<span class="status-dot"></span> <span>${studioItems.length} POST${studioItems.length > 1 ? 'S' : ''} WATERMARKED READY</span>`;
+            }
+
+            studioItems.forEach((item, index) => {
+                const isPortrait = item.result.isPortrait;
+                const ratioClass = isPortrait ? 'portrait' : 'square';
+                const ratioBadge = isPortrait ? '1080×1350 (4:5 PORTRAIT)' : '1080×1080 (1:1 SQUARE)';
+
+                const card = document.createElement('div');
+                card.className = 'watermark-post-card';
+
+                // Media thumbnail
+                const mediaWrap = document.createElement('div');
+                mediaWrap.className = 'card-thumbnail-wrap';
+                mediaWrap.title = 'Click to inspect full resolution';
+                mediaWrap.onclick = () => openPreview(item.result.dataUrl, index);
+
+                const img = document.createElement('img');
+                img.src = item.result.dataUrl;
+                img.alt = item.title;
+                mediaWrap.appendChild(img);
+
+                const zoomBadge = document.createElement('div');
+                zoomBadge.className = 'thumbnail-zoom-hint';
+                zoomBadge.innerHTML = '<i class="ri-zoom-in-line"></i> View';
+                mediaWrap.appendChild(zoomBadge);
+
+                // Information & Download
+                const infoWrap = document.createElement('div');
+                infoWrap.className = 'card-body';
+                infoWrap.innerHTML = `
+                    <div class="card-badge-row">
+                        <span class="ratio-tag ${ratioClass}">
+                            <i class="${isPortrait ? 'ri-smartphone-line' : 'ri-aspect-ratio-line'}"></i>
+                            ${ratioBadge}
+                        </span>
+                        <span class="dimension-tag">
+                            Native: <strong>${item.result.width} × ${item.result.height} px</strong>
+                        </span>
+                    </div>
+
+                    <h3 class="card-title">${escapeHtml(item.title)}</h3>
+
+                    <div class="card-meta-line">
+                        <i class="ri-checkbox-circle-fill"></i>
+                        <span>Watermark Applied: <strong>${item.result.watermarkName}</strong></span>
+                    </div>
+                    <div class="card-meta-line">
+                        <i class="ri-checkbox-circle-fill"></i>
+                        <span>Quality Profile: <strong>100% Lossless High-Fidelity PNG</strong></span>
+                    </div>
+
+                    <div class="card-actions-bar">
+                        <button class="btn-card-download" onclick="downloadSingle(${index})">
+                            <i class="ri-download-2-line"></i> Download 100% Quality PNG
+                        </button>
+                        <button class="btn-card-preview" onclick="openPreview('${item.result.dataUrl}', ${index})">
+                            <i class="ri-fullscreen-line"></i> Inspect Full Size
+                        </button>
+                        <button class="btn-card-remove" onclick="removeSingle(${index})">
+                            <i class="ri-delete-bin-line"></i> Remove
+                        </button>
+                    </div>
+                `;
+
+                card.appendChild(mediaWrap);
+                card.appendChild(infoWrap);
+                list.appendChild(card);
+            });
+        }
+
+        function downloadSingle(index) {
+            const item = studioItems[index];
+            if (!item || !item.result) return;
+            WatermarkEngine.download(item.result.canvas, item.result.filename);
+        }
+
+        function removeSingle(index) {
+            studioItems.splice(index, 1);
+            renderStudioCards();
+        }
+
+        function downloadAllPosts() {
+            if (studioItems.length === 0) return;
+            studioItems.forEach((item, index) => {
+                setTimeout(() => {
+                    WatermarkEngine.download(item.result.canvas, item.result.filename);
+                }, index * 350);
+            });
+        }
+
+        // ============================================
+        // 4. FULL RESOLUTION LIGHTBOX PREVIEW
+        // ============================================
+        function openPreview(dataUrl, index) {
+            const modal = document.getElementById('preview-modal');
+            const container = document.getElementById('preview-container');
+            if (!modal || !container) return;
+
+            let downloadBtnHtml = '';
+            if (typeof index === 'number' && studioItems[index]) {
+                downloadBtnHtml = `
+                    <div style="position: fixed; bottom: 28px; left: 50%; transform: translateX(-50%); z-index: 100001;" onclick="event.stopPropagation()">
+                        <button class="btn-browse-lime" onclick="downloadSingle(${index})">
+                            <i class="ri-download-2-line"></i> Download Lossless PNG
+                        </button>
+                    </div>
+                `;
+            }
+
+            container.innerHTML = `
+                <img src="${dataUrl}" alt="Full Resolution Preview" onclick="event.stopPropagation()">
+                ${downloadBtnHtml}
+            `;
+            modal.style.display = 'flex';
+            document.body.style.overflow = 'hidden';
+        }
+
+        function closePreview() {
+            const modal = document.getElementById('preview-modal');
+            if (modal) {
+                modal.style.display = 'none';
+                document.body.style.overflow = 'auto';
+            }
+        }
+
+        function escapeHtml(text) {
+            const div = document.createElement('div');
+            div.textContent = text;
+            return div.innerHTML;
+        }
+    </script>
+</body>
+</html>

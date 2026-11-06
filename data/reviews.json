@@ -1,0 +1,32 @@
+[
+  {
+    "id": "rev-01",
+    "name": "Kavindu Perera",
+    "role": "Founder & Creative Director, Celise",
+    "avatar_url": "",
+    "rating": 5,
+    "comment": "Nethula engineered our bespoke e-commerce platform with precision. The custom sizing algorithms and headless architecture delivered sub-second load times. The visual aesthetic elevated our entire brand identity.",
+    "created_at": "2026-09-14T10:30:00.000Z",
+    "verified": true
+  },
+  {
+    "id": "rev-02",
+    "name": "Tharusha Senanayake",
+    "role": "Technical Lead, Lume Labs",
+    "avatar_url": "",
+    "rating": 5,
+    "comment": "Exceptional full-stack and creative frontend capability. The WebGL shader interactions and 60 FPS animation pipelines ran flawlessly across all mobile and desktop devices. Truly elite craftsmanship.",
+    "created_at": "2026-08-28T16:45:00.000Z",
+    "verified": true
+  },
+  {
+    "id": "rev-03",
+    "name": "Dilan Jayasuriya",
+    "role": "Brand Strategist, Apex Visuals",
+    "avatar_url": "",
+    "rating": 5,
+    "comment": "From brand visual marks to cinematic motion pacing, Nethula understands how to make a digital presence look like an international design studio. Clean code, sharp typography, and zero clutter.",
+    "created_at": "2026-08-05T09:15:00.000Z",
+    "verified": true
+  }
+]

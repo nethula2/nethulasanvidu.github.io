@@ -1,0 +1,952 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="robots" content="noindex, nofollow, noarchive">
+    <title>GRAPHIC DESIGN VAULT // NETHULA SANVIDU</title>
+
+    <!-- IMMEDIATE GATEKEEPER: Redirects normal visitors before DOM renders -->
+    <script>
+        (function() {
+            try {
+                const params = new URLSearchParams(window.location.search);
+                const token = params.get('access') || params.get('key') || sessionStorage.getItem('vault_passcode');
+                if (!token) {
+                    window.location.replace('index.html');
+                }
+            } catch (e) {
+                window.location.replace('index.html');
+            }
+        })();
+    </script>
+
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;400;600&family=Syncopate:wght@400;700&display=swap" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/remixicon@3.5.0/fonts/remixicon.css" rel="stylesheet">
+    <link rel="stylesheet" href="css/style.css">
+
+    <style>
+        :root {
+            --vault-accent: #ff4757;
+            --vault-glow: rgba(255, 71, 87, 0.25);
+            --vault-border: rgba(255, 255, 255, 0.1);
+        }
+
+        /* HARDENED ANTI-DOWNLOAD & ANTI-COPY CSS */
+        *, *::before, *::after {
+            -webkit-touch-callout: none !important;
+            -webkit-user-select: none !important;
+            -khtml-user-select: none !important;
+            -moz-user-select: none !important;
+            -ms-user-select: none !important;
+            user-select: none !important;
+        }
+
+        body {
+            background-color: #050505;
+            color: #fff;
+            min-height: 100vh;
+            overflow-x: hidden;
+            font-family: var(--font-main);
+        }
+
+        .vault-hero {
+            padding: 130px 5% 30px;
+            text-align: center;
+            position: relative;
+            z-index: 2;
+        }
+
+        .vault-badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            font-family: var(--font-display);
+            font-size: 0.7rem;
+            letter-spacing: 3px;
+            padding: 8px 18px;
+            border-radius: 50px;
+            border: 1px solid rgba(255, 71, 87, 0.4);
+            background: rgba(255, 71, 87, 0.08);
+            color: #ff6b81;
+            margin-bottom: 20px;
+            text-transform: uppercase;
+        }
+
+        .vault-title {
+            font-family: var(--font-display);
+            font-size: clamp(1.8rem, 4.5vw, 3.2rem);
+            letter-spacing: -1px;
+            text-transform: uppercase;
+            margin-bottom: 12px;
+            line-height: 1.1;
+        }
+
+        .vault-subtitle {
+            max-width: 680px;
+            margin: 0 auto;
+            color: #888;
+            font-size: 0.9rem;
+            line-height: 1.7;
+        }
+
+        /* LOCKED STATE */
+        .lock-container {
+            max-width: 480px;
+            margin: 40px auto 100px;
+            background: rgba(255, 255, 255, 0.02);
+            border: 1px solid var(--vault-border);
+            border-radius: 20px;
+            padding: 40px;
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.6);
+            text-align: center;
+            position: relative;
+            z-index: 2;
+            transition: all 0.3s ease;
+        }
+
+        .lock-icon-wrap {
+            width: 70px;
+            height: 70px;
+            margin: 0 auto 25px;
+            border-radius: 50%;
+            background: rgba(255, 71, 87, 0.1);
+            border: 1px solid rgba(255, 71, 87, 0.3);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 2rem;
+            color: #ff6b81;
+            box-shadow: 0 0 30px rgba(255, 71, 87, 0.2);
+        }
+
+        .lock-input {
+            width: 100%;
+            padding: 16px 20px;
+            background: rgba(0, 0, 0, 0.6);
+            border: 1px solid rgba(255, 255, 255, 0.15);
+            border-radius: 10px;
+            color: #fff;
+            font-family: var(--font-display);
+            font-size: 0.95rem;
+            letter-spacing: 3px;
+            text-align: center;
+            outline: none;
+            transition: all 0.3s;
+            margin-bottom: 20px;
+        }
+
+        .lock-input:focus {
+            border-color: #ff6b81;
+            box-shadow: 0 0 20px rgba(255, 71, 87, 0.2);
+        }
+
+        .btn-decrypt {
+            width: 100%;
+            padding: 16px;
+            background: #fff;
+            color: #000;
+            border: 1px solid #fff;
+            font-family: var(--font-display);
+            font-size: 0.8rem;
+            font-weight: 700;
+            letter-spacing: 2px;
+            cursor: pointer;
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+            transition: all 0.3s;
+        }
+
+        .btn-decrypt:hover {
+            background: transparent;
+            color: #fff;
+        }
+
+        .lock-feedback {
+            margin-top: 15px;
+            font-size: 0.8rem;
+            color: #ff4757;
+            display: none;
+            letter-spacing: 1px;
+        }
+
+        /* UNLOCKED STATE */
+        #unlocked-vault-view {
+            display: none;
+            position: relative;
+            z-index: 2;
+            padding: 0 5% 100px;
+        }
+
+        .vault-controls {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            flex-wrap: wrap;
+            gap: 20px;
+            margin-bottom: 35px;
+            padding-bottom: 20px;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+        }
+
+        .vault-status-indicator {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            font-family: var(--font-display);
+            font-size: 0.75rem;
+            letter-spacing: 2px;
+            color: #27c93f;
+        }
+
+        .pulse-dot {
+            width: 8px;
+            height: 8px;
+            background: #27c93f;
+            border-radius: 50%;
+            box-shadow: 0 0 10px #27c93f;
+            animation: pulse 2s infinite;
+        }
+
+        @keyframes pulse {
+            0%, 100% { opacity: 1; transform: scale(1); }
+            50% { opacity: 0.4; transform: scale(1.3); }
+        }
+
+        .vault-actions-right {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+
+        .vault-protection-badge {
+            font-family: var(--font-display);
+            font-size: 0.65rem;
+            letter-spacing: 1.5px;
+            color: #ff6b81;
+            border: 1px solid rgba(255, 71, 87, 0.3);
+            background: rgba(255, 71, 87, 0.05);
+            padding: 6px 12px;
+            border-radius: 4px;
+        }
+
+        .btn-relock {
+            background: transparent;
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            color: #aaa;
+            padding: 8px 16px;
+            border-radius: 6px;
+            font-family: var(--font-display);
+            font-size: 0.7rem;
+            letter-spacing: 1.5px;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+
+        .btn-relock:hover {
+            border-color: #ff4757;
+            color: #ff4757;
+        }
+
+        /* GRAPHIC DESIGN MASONRY GRID */
+        .vault-grid {
+            column-count: 3;
+            column-gap: 25px;
+        }
+
+        @media (max-width: 1024px) {
+            .vault-grid {
+                column-count: 2;
+                column-gap: 20px;
+            }
+        }
+
+        @media (max-width: 650px) {
+            .vault-grid {
+                column-count: 1;
+            }
+        }
+
+        .vault-card {
+            background: rgba(255, 255, 255, 0.02);
+            border: 1px solid rgba(255, 255, 255, 0.08);
+            border-radius: 14px;
+            overflow: hidden;
+            display: inline-block;
+            width: 100%;
+            margin-bottom: 25px;
+            break-inside: avoid;
+            transition: transform 0.3s ease, border-color 0.3s ease, box-shadow 0.3s ease;
+            position: relative;
+        }
+
+        .vault-card:hover {
+            transform: translateY(-5px);
+            border-color: rgba(255, 255, 255, 0.25);
+            box-shadow: 0 15px 35px rgba(0, 0, 0, 0.6);
+        }
+
+        .vault-card-media {
+            position: relative;
+            overflow: hidden;
+            background: #000;
+            width: 100%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            min-height: 220px;
+        }
+
+        /* CANVAS AND IMAGE PROTECTION */
+        .vault-card-media canvas,
+        .vault-card-media img {
+            width: 100%;
+            height: auto;
+            display: block;
+            pointer-events: none !important;
+            -webkit-user-drag: none !important;
+            user-drag: none !important;
+        }
+
+        /* INVISIBLE PROTECTION SHIELD LAYER */
+        .protection-shield {
+            position: absolute;
+            inset: 0;
+            z-index: 10;
+            background: transparent;
+            cursor: pointer;
+        }
+
+        /* VISUAL WATERMARK OVERLAY BADGE */
+        .vault-watermark-overlay {
+            position: absolute;
+            bottom: 12px;
+            right: 12px;
+            background: rgba(0, 0, 0, 0.65);
+            backdrop-filter: blur(8px);
+            border: 1px solid rgba(255, 255, 255, 0.15);
+            color: #fff;
+            font-family: var(--font-display);
+            font-size: 0.6rem;
+            letter-spacing: 1.5px;
+            padding: 4px 10px;
+            border-radius: 4px;
+            pointer-events: none;
+            z-index: 5;
+            opacity: 0.75;
+        }
+
+        .vault-nda-tag {
+            position: absolute;
+            top: 12px;
+            left: 12px;
+            background: rgba(0, 0, 0, 0.7);
+            backdrop-filter: blur(8px);
+            border: 1px solid rgba(255, 71, 87, 0.4);
+            color: #ff6b81;
+            font-family: var(--font-display);
+            font-size: 0.6rem;
+            letter-spacing: 1.5px;
+            padding: 4px 10px;
+            border-radius: 20px;
+            z-index: 5;
+            pointer-events: none;
+        }
+
+        .vault-card-body {
+            padding: 18px 20px;
+            border-top: 1px solid rgba(255, 255, 255, 0.05);
+        }
+
+        .vault-client-label {
+            font-family: var(--font-display);
+            font-size: 0.65rem;
+            letter-spacing: 1.5px;
+            color: #ff6b81;
+            margin-bottom: 6px;
+            text-transform: uppercase;
+        }
+
+        .vault-card-title {
+            font-family: var(--font-display);
+            font-size: 1rem;
+            color: #fff;
+            margin-bottom: 8px;
+            letter-spacing: 1px;
+            word-break: break-word;
+        }
+
+        .vault-card-desc {
+            color: #888;
+            font-size: 0.82rem;
+            line-height: 1.5;
+            margin-bottom: 12px;
+            word-break: break-word;
+        }
+
+        .vault-card-action {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            color: #fff;
+            font-family: var(--font-display);
+            font-size: 0.7rem;
+            letter-spacing: 1.5px;
+            text-decoration: none;
+            padding-top: 8px;
+            border-top: 1px solid rgba(255, 255, 255, 0.06);
+            transition: color 0.3s;
+        }
+
+        .vault-card-action:hover {
+            color: #ff6b81;
+        }
+
+        /* PROTECTED LIGHTBOX */
+        .vault-lightbox {
+            position: fixed;
+            inset: 0;
+            background: rgba(0, 0, 0, 0.96);
+            backdrop-filter: blur(18px);
+            display: none;
+            align-items: center;
+            justify-content: center;
+            z-index: 9999;
+            padding: 20px;
+        }
+
+        .lightbox-container {
+            position: relative;
+            max-width: 92vw;
+            max-height: 88vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: 12px;
+            overflow: hidden;
+            box-shadow: 0 0 60px rgba(0, 0, 0, 0.9);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .lightbox-container canvas,
+        .lightbox-container img {
+            max-width: 90vw;
+            max-height: 86vh;
+            object-fit: contain;
+            display: block;
+            pointer-events: none !important;
+            -webkit-user-drag: none !important;
+        }
+
+        .vault-lightbox-close {
+            position: absolute;
+            top: 25px;
+            right: 35px;
+            color: #fff;
+            font-size: 2.2rem;
+            cursor: pointer;
+            transition: transform 0.3s, color 0.3s;
+            z-index: 10001;
+        }
+
+        .vault-lightbox-close:hover {
+            transform: scale(1.15);
+            color: #ff6b81;
+        }
+
+        /* PROTECTION TOAST NOTIFICATION */
+        .protection-toast {
+            position: fixed;
+            bottom: 30px;
+            left: 50%;
+            transform: translateX(-50%) translateY(100px);
+            background: rgba(15, 15, 15, 0.95);
+            border: 1px solid rgba(255, 71, 87, 0.5);
+            color: #fff;
+            font-family: var(--font-display);
+            font-size: 0.72rem;
+            letter-spacing: 2px;
+            padding: 12px 24px;
+            border-radius: 50px;
+            box-shadow: 0 10px 40px rgba(0, 0, 0, 0.8), 0 0 20px rgba(255, 71, 87, 0.2);
+            z-index: 100000;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            opacity: 0;
+            transition: all 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+            pointer-events: none;
+        }
+
+        .protection-toast.active {
+            transform: translateX(-50%) translateY(0);
+            opacity: 1;
+        }
+    </style>
+</head>
+<body oncontextmenu="return false;" ondragstart="return false;">
+
+    <div class="cursor-dot"></div>
+    <div class="cursor-outline"></div>
+
+    <nav class="navbar" id="site-navbar">
+        <a href="index.html" class="logo">
+            <span>NETHULA SANVIDU</span>
+            <span class="badge" style="border-color: rgba(255,71,87,0.4); color: #ff6b81;">PRIVATE ARCHIVE</span>
+        </a>
+        <div class="nav-menu" id="primary-nav-menu">
+            <a href="works.html" class="nav-link" id="nav-item-work">[ WORK ]</a>
+            <a href="tools.html" class="nav-link" id="nav-item-toolyard">[ TOOLYARD ]</a>
+            <a href="index.html#about" class="nav-link" id="nav-item-profile">[ PROFILE ]</a>
+            <a href="index.html#contact" class="nav-link" id="nav-item-contact">[ CONTACT ]</a>
+        </div>
+        <button class="menu-toggle" id="menu-toggle-btn" aria-label="Toggle navigation" type="button">
+            <span class="line-1"></span>
+            <span class="line-2"></span>
+            <span class="line-3"></span>
+        </button>
+    </nav>
+
+    <!-- VAULT HERO -->
+    <header class="vault-hero">
+        <div class="vault-badge">
+            <i class="ri-shield-keyhole-line"></i> CONFIDENTIAL CLIENT ARCHIVE // DIRECT ACCESS
+        </div>
+        <h1 class="vault-title">GRAPHIC DESIGN<br>VAULT</h1>
+        <p class="vault-subtitle">
+            Private collection of unreleased branding identities, posters, and proprietary visual works. Watermarked and copy-protected under client clearance protocols.
+        </p>
+    </header>
+
+    <!-- VERIFYING ACCESS STATE -->
+    <main id="vault-verifying-view" class="lock-container" style="max-width: 440px; margin: 40px auto 100px;">
+        <div class="lock-icon-wrap" style="color: #ff6b81; border-color: rgba(255, 71, 87, 0.3); background: rgba(255, 71, 87, 0.08);">
+            <i class="ri-shield-keyhole-line"></i>
+        </div>
+        <h3 style="font-family: var(--font-display); font-size: 0.95rem; letter-spacing: 2px; margin-bottom: 12px; color: #fff;">
+            VERIFYING ACCESS
+        </h3>
+        <p style="color: #777; font-size: 0.85rem; line-height: 1.6; margin-bottom: 20px;">
+            Connecting to secure graphic design archive and rendering high-resolution assets...
+        </p>
+        <div style="display: inline-flex; align-items: center; gap: 8px; color: #ff6b81; font-family: var(--font-display); font-size: 0.75rem; letter-spacing: 1.5px;">
+            <i class="ri-loader-4-line ri-spin" style="font-size: 1.1rem;"></i> DECRYPTING DESIGNS...
+        </div>
+    </main>
+
+    <!-- UNLOCKED VIEW (GRAPHIC DESIGN FEED) -->
+    <section id="unlocked-vault-view">
+        <div class="vault-controls">
+            <div class="vault-status-indicator">
+                <span class="pulse-dot"></span> CLEARANCE ACTIVE // GRAPHIC DESIGNS DECRYPTED
+            </div>
+            <div class="vault-actions-right">
+                <span class="vault-protection-badge">
+                    <i class="ri-shield-check-line"></i> COPY PROTECTION ACTIVE
+                </span>
+            </div>
+        </div>
+
+        <div id="vault-projects-grid" class="vault-grid">
+            <!-- Dynamically populated with watermarked designs -->
+            <div style="text-align: center; color: #888; padding: 60px 0; column-span: all;">
+                <i class="ri-loader-4-line ri-spin" style="font-size: 1.8rem; display: block; margin-bottom: 12px;"></i>
+                Rendering and watermarking graphic designs...
+            </div>
+        </div>
+    </section>
+
+    <!-- PROTECTED LIGHTBOX MODAL -->
+    <div id="vault-lightbox" class="vault-lightbox">
+        <span class="vault-lightbox-close" onclick="closeVaultLightbox()">&times;</span>
+        <div class="lightbox-container" id="lightbox-container">
+            <!-- Invisible click/touch shield -->
+            <div class="protection-shield" style="z-index: 100;" onclick="closeVaultLightbox()"></div>
+            <!-- Canvas / Image inserted dynamically -->
+        </div>
+    </div>
+
+    <!-- PROTECTION TOAST -->
+    <div id="protection-toast" class="protection-toast">
+        <i class="ri-error-warning-line" style="color: #ff4757; font-size: 1.1rem;"></i>
+        <span>ASSET PROTECTED // DOWNLOADING & RIGHT-CLICK DISABLED</span>
+    </div>
+
+    <script>
+        // ============================================
+        // 1. HARDENED ANTI-SAVE & ANTI-DOWNLOAD SHIELD
+        // ============================================
+        function showProtectionNotice() {
+            const toast = document.getElementById('protection-toast');
+            if (toast) {
+                toast.classList.add('active');
+                clearTimeout(window.__toastTimeout);
+                window.__toastTimeout = setTimeout(() => {
+                    toast.classList.remove('active');
+                }, 2500);
+            }
+        }
+
+        // Prevent right-click context menu everywhere
+        document.addEventListener('contextmenu', (e) => {
+            e.preventDefault();
+            showProtectionNotice();
+            return false;
+        });
+
+        // Prevent drag-and-drop of any element or image
+        document.addEventListener('dragstart', (e) => {
+            e.preventDefault();
+            return false;
+        });
+
+        // Block keyboard shortcuts for save, inspect, print, and view-source
+        document.addEventListener('keydown', (e) => {
+            // Ctrl+S or Cmd+S (Save)
+            if ((e.ctrlKey || e.metaKey) && (e.key === 's' || e.key === 'S')) {
+                e.preventDefault();
+                showProtectionNotice();
+                return false;
+            }
+            // Ctrl+P or Cmd+P (Print)
+            if ((e.ctrlKey || e.metaKey) && (e.key === 'p' || e.key === 'P')) {
+                e.preventDefault();
+                showProtectionNotice();
+                return false;
+            }
+            // Ctrl+U or Cmd+U (View Source)
+            if ((e.ctrlKey || e.metaKey) && (e.key === 'u' || e.key === 'U')) {
+                e.preventDefault();
+                showProtectionNotice();
+                return false;
+            }
+            // F12 or Inspect shortcuts
+            if (e.key === 'F12' || 
+                ((e.ctrlKey || e.metaKey) && e.shiftKey && (e.key === 'I' || e.key === 'i' || e.key === 'C' || e.key === 'c' || e.key === 'J' || e.key === 'j'))) {
+                e.preventDefault();
+                showProtectionNotice();
+                return false;
+            }
+        });
+
+        // Custom Cursor
+        const cursorDot = document.querySelector('.cursor-dot');
+        const cursorOutline = document.querySelector('.cursor-outline');
+        if (cursorDot && cursorOutline) {
+            window.addEventListener('mousemove', (e) => {
+                cursorDot.style.left = `${e.clientX}px`;
+                cursorDot.style.top = `${e.clientY}px`;
+                cursorOutline.animate(
+                    { left: `${e.clientX}px`, top: `${e.clientY}px` },
+                    { duration: 500, fill: 'forwards' }
+                );
+            });
+        }
+
+        // ============================================
+        // 2. HIGH-FIDELITY RATIO-AWARE WATERMARK ENGINE
+        // ============================================
+        const WATERMARK_CACHE = {
+            square: null,
+            portrait: null,
+            loading: null
+        };
+
+        function preloadWatermarks() {
+            if (WATERMARK_CACHE.loading) return WATERMARK_CACHE.loading;
+
+            const loadImg = (src) => new Promise((resolve) => {
+                const img = new Image();
+                img.crossOrigin = "anonymous";
+                img.onload = () => resolve(img);
+                img.onerror = () => {
+                    const fallback = new Image();
+                    fallback.crossOrigin = "anonymous";
+                    fallback.onload = () => resolve(fallback);
+                    fallback.onerror = () => resolve(null);
+                    fallback.src = src.includes('assets/') ? src.replace('assets/', '') : src;
+                };
+                img.src = src;
+            });
+
+            WATERMARK_CACHE.loading = Promise.all([
+                loadImg('assets/watermark-1080x1080.png'),
+                loadImg('assets/watermark-1080x1350.png')
+            ]).then(([sq, pt]) => {
+                WATERMARK_CACHE.square = sq;
+                WATERMARK_CACHE.portrait = pt;
+            });
+
+            return WATERMARK_CACHE.loading;
+        }
+
+        // Preload watermarks on load
+        preloadWatermarks();
+
+        /**
+         * Takes an image source, draws it to an offscreen canvas at full native resolution,
+         * detects 1080x1080 (1:1) vs 1080x1350 (4:5) aspect ratio,
+         * overlays the corresponding logo watermark with ZERO quality loss,
+         * and returns the watermarked canvas element.
+         */
+        function createWatermarkedCanvas(imageSrc, text = "NETHULA SANVIDU") {
+            return new Promise((resolve, reject) => {
+                const img = new Image();
+                img.crossOrigin = "anonymous";
+                img.src = imageSrc;
+
+                img.onload = async () => {
+                    try {
+                        await preloadWatermarks();
+                    } catch (_) {}
+
+                    const width = img.naturalWidth || img.width;
+                    const height = img.naturalHeight || img.height;
+                    const aspectRatio = width / height;
+
+                    // Full-resolution canvas: ZERO downsampling, zero quality loss
+                    const canvas = document.createElement('canvas');
+                    canvas.width = width;
+                    canvas.height = height;
+
+                    const ctx = canvas.getContext('2d');
+                    ctx.imageSmoothingEnabled = true;
+                    ctx.imageSmoothingQuality = 'high';
+
+                    // 1. Draw base design at 100% native resolution
+                    ctx.drawImage(img, 0, 0, width, height);
+
+                    // 2. Select ratio-matched watermark (1080x1350 for portrait <0.9, 1080x1080 for square >=0.9)
+                    const isPortrait = aspectRatio < 0.9;
+                    const watermarkImg = isPortrait ? WATERMARK_CACHE.portrait : WATERMARK_CACHE.square;
+
+                    if (watermarkImg) {
+                        ctx.drawImage(watermarkImg, 0, 0, width, height);
+                    }
+
+                    // 3. Subtle center confidentiality stamp
+                    ctx.save();
+                    const centerFontSize = Math.max(16, Math.round(width * 0.036));
+                    ctx.font = `700 ${centerFontSize}px "Syncopate", sans-serif`;
+                    ctx.textAlign = "center";
+                    ctx.textBaseline = "middle";
+                    ctx.shadowColor = "rgba(0, 0, 0, 0.4)";
+                    ctx.shadowBlur = Math.max(3, Math.round(centerFontSize * 0.18));
+                    ctx.fillStyle = "rgba(255, 255, 255, 0.22)";
+                    ctx.fillText(text, width / 2, height / 2);
+
+                    const subFontSize = Math.max(9, Math.round(centerFontSize * 0.32));
+                    ctx.font = `600 ${subFontSize}px "Space Grotesk", sans-serif`;
+                    ctx.fillStyle = "rgba(255, 255, 255, 0.18)";
+                    ctx.fillText("CONFIDENTIAL // GRAPHIC DESIGN ARCHIVE", width / 2, (height / 2) + (centerFontSize * 0.85));
+                    ctx.restore();
+
+                    // Disable pointer events on canvas
+                    canvas.style.pointerEvents = "none";
+                    resolve(canvas);
+                };
+
+                img.onerror = () => {
+                    console.warn("Canvas watermark fallback for:", imageSrc);
+                    const fallbackImg = document.createElement('img');
+                    fallbackImg.src = imageSrc;
+                    fallbackImg.draggable = false;
+                    fallbackImg.style.pointerEvents = "none";
+                    resolve(fallbackImg);
+                };
+            });
+        }
+
+        // ============================================
+        // 3. DIRECT LINK VERIFICATION & RENDERING LOGIC
+        // ============================================
+        document.addEventListener('DOMContentLoaded', () => {
+            const urlParams = new URLSearchParams(window.location.search);
+            const token = urlParams.get('access') || urlParams.get('key') || sessionStorage.getItem('vault_passcode');
+
+            if (!token) {
+                // Normal user without link: redirect to home immediately
+                window.location.replace('index.html');
+                return;
+            }
+
+            verifyAndRenderVault(token);
+        });
+
+        async function verifyAndRenderVault(key) {
+            try {
+                const response = await fetch(`/api/get-vault-projects?access=${encodeURIComponent(key)}`, {
+                    headers: {
+                        'Authorization': `Bearer ${key}`
+                    }
+                });
+
+                if (!response.ok) {
+                    // Invalid clearance key: redirect home immediately
+                    sessionStorage.removeItem('vault_passcode');
+                    window.location.replace('index.html');
+                    return;
+                }
+
+                const projects = await response.json();
+
+                // Persist session so client can refresh seamlessly
+                sessionStorage.setItem('vault_passcode', key);
+
+                // Reveal decrypted vault view
+                const verifyingView = document.getElementById('vault-verifying-view');
+                if (verifyingView) verifyingView.style.display = 'none';
+
+                const unlockedView = document.getElementById('unlocked-vault-view');
+                if (unlockedView) unlockedView.style.display = 'block';
+
+                renderVaultProjects(projects);
+            } catch (err) {
+                console.error("Vault access error:", err);
+                sessionStorage.removeItem('vault_passcode');
+                window.location.replace('index.html');
+            }
+        }
+
+        // Cache for rendered watermarked elements
+        const watermarkedCache = new Map();
+
+        async function renderVaultProjects(projects) {
+            const grid = document.getElementById('vault-projects-grid');
+            if (!grid) return;
+
+            grid.innerHTML = '';
+
+            if (projects.length === 0) {
+                grid.innerHTML = `
+                    <div style="text-align: center; color: #777; padding: 60px 0; column-span: all;">
+                        <i class="ri-folder-shield-2-line" style="font-size: 2.2rem; display: block; margin-bottom: 12px; color: #555;"></i>
+                        No graphic designs uploaded to vault yet.<br>
+                        <span style="font-size: 0.8rem; color: #555;">Upload your confidential graphic works via the Admin Terminal.</span>
+                    </div>
+                `;
+                return;
+            }
+
+            for (const project of projects) {
+                const card = document.createElement('div');
+                card.className = 'vault-card';
+
+                const mediaContainer = document.createElement('div');
+                mediaContainer.className = 'vault-card-media';
+
+                // Invisible protection shield over the canvas/image
+                const shield = document.createElement('div');
+                shield.className = 'protection-shield';
+                shield.title = 'Click to enlarge design';
+
+                // Watermark overlay badge
+                const badge = document.createElement('div');
+                badge.className = 'vault-watermark-overlay';
+                badge.innerHTML = '<i class="ri-copyright-line"></i> NETHULA SANVIDU';
+
+                // NDA Tag
+                const ndaTag = document.createElement('div');
+                ndaTag.className = 'vault-nda-tag';
+                ndaTag.innerHTML = '<i class="ri-shield-fill"></i> RESTRICTED';
+
+                // Loader placeholder
+                const loader = document.createElement('div');
+                loader.style.cssText = 'color: #555; padding: 40px; text-align: center; font-size: 0.8rem;';
+                loader.innerHTML = '<i class="ri-loader-4-line ri-spin" style="font-size: 1.4rem; display: block; margin-bottom: 6px;"></i>Watermarking...';
+                mediaContainer.appendChild(loader);
+
+                mediaContainer.appendChild(shield);
+                mediaContainer.appendChild(badge);
+                mediaContainer.appendChild(ndaTag);
+
+                card.appendChild(mediaContainer);
+
+                // Body details
+                const cardBody = document.createElement('div');
+                cardBody.className = 'vault-card-body';
+                cardBody.innerHTML = `
+                    <div class="vault-client-label">${escapeHtml(project.client || 'CONFIDENTIAL')}</div>
+                    <h3 class="vault-card-title">${escapeHtml(project.title || 'RESTRICTED DESIGN')}</h3>
+                    ${project.description ? `<p class="vault-card-desc">${escapeHtml(project.description)}</p>` : ''}
+                    ${project.url ? `
+                        <a href="${escapeHtml(project.url)}" target="_blank" class="vault-card-action">
+                            VIEW PROJECT ASSETS <i class="ri-arrow-right-up-line"></i>
+                        </a>
+                    ` : ''}
+                `;
+                card.appendChild(cardBody);
+                grid.appendChild(card);
+
+                // Asynchronously stamp the watermark and insert canvas
+                createWatermarkedCanvas(project.src, "NETHULA SANVIDU").then(canvasEl => {
+                    loader.remove();
+                    mediaContainer.insertBefore(canvasEl, shield);
+                    watermarkedCache.set(project.public_id, canvasEl);
+
+                    // Shield click triggers Lightbox
+                    shield.addEventListener('click', () => {
+                        openVaultLightbox(project.src, canvasEl);
+                    });
+                }).catch(() => {
+                    loader.remove();
+                });
+            }
+        }
+
+        function escapeHtml(text) {
+            const div = document.createElement('div');
+            div.textContent = text;
+            return div.innerHTML;
+        }
+
+        // ============================================
+        // 4. PROTECTED LIGHTBOX LOGIC
+        // ============================================
+        function openVaultLightbox(src, cachedCanvas) {
+            const lightbox = document.getElementById('vault-lightbox');
+            const container = document.getElementById('lightbox-container');
+            if (!lightbox || !container) return;
+
+            // Remove any old image/canvas except shield
+            const oldMedia = container.querySelectorAll('canvas, img');
+            oldMedia.forEach(el => el.remove());
+
+            // If we have canvas, clone it or generate high-res
+            if (cachedCanvas && cachedCanvas.tagName.toLowerCase() === 'canvas') {
+                const clone = document.createElement('canvas');
+                clone.width = cachedCanvas.width;
+                clone.height = cachedCanvas.height;
+                const ctx = clone.getContext('2d');
+                ctx.drawImage(cachedCanvas, 0, 0);
+                clone.style.pointerEvents = 'none';
+                container.appendChild(clone);
+            } else {
+                // Generate fresh watermarked canvas for full view
+                createWatermarkedCanvas(src, "NETHULA SANVIDU").then(fullCanvas => {
+                    container.appendChild(fullCanvas);
+                });
+            }
+
+            lightbox.style.display = 'flex';
+            document.body.style.overflow = 'hidden';
+        }
+
+        function closeVaultLightbox() {
+            const lightbox = document.getElementById('vault-lightbox');
+            if (lightbox) {
+                lightbox.style.display = 'none';
+                document.body.style.overflow = 'auto';
+            }
+        }
+    </script>
+    <script src="js/main.js"></script>
+</body>
+</html>
