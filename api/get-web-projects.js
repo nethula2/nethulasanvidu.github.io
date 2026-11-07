@@ -1,13 +1,11 @@
 const cloudinary = require('cloudinary').v2;
 
-if (!process.env.CLOUDINARY_URL) {
-  cloudinary.config({
-    cloud_name: 'dwcsjrhhl',
-    api_key: process.env.CLOUDINARY_API_KEY,
-    api_secret: process.env.CLOUDINARY_API_SECRET,
-    secure: true
-  });
-}
+cloudinary.config({
+  cloud_name: process.env.CLOUDINARY_CLOUD_NAME || 'dwcsjrhhl',
+  api_key: process.env.CLOUDINARY_API_KEY || '447251912538258',
+  api_secret: process.env.CLOUDINARY_API_SECRET || 'HJqfbkAHFK5M0Meb25dLAzWwC6s',
+  secure: true
+});
 
 module.exports = async (req, res) => {
   // CORS

@@ -1001,66 +1001,10 @@
         <div class="cat-title">01 / WEB PLATFORMS</div>
         
         <div class="web-projects-container" id="web-projects-container">
-            <!-- PROJECT 1: CELISE CLOTHING BRAND -->
-            <div class="web-card">
-                <div class="web-preview">
-                    <div class="browser-bar">
-                        <div class="dot red"></div>
-                        <div class="dot yellow"></div>
-                        <div class="dot green"></div>
-                        <span class="url">celise-couture.com</span>
-                    </div>
-                    <div class="img-container" style="position: relative; aspect-ratio: 16/9; overflow: hidden; background: #07080e;">
-                        <img src="assets/web-project-1.svg" alt="Celise Clothing Brand Storefront" style="width: 100%; height: 100%; object-fit: cover;">
-                        <div class="watermark-text" style="position: absolute; bottom: 10px; right: 10px; font-size: 10px; opacity: 0.3; font-family: var(--font-main); color: #fff;">
-                            &copy; NETHULA SANVIDU
-                        </div>
-                    </div>
-                </div>
-                <div class="web-info">
-                    <div class="card-meta-tags">
-                        <span class="card-tag">E-COMMERCE</span>
-                        <span class="card-tag">NODE.JS &bull; MONGO</span>
-                        <span class="card-tag">CUSTOM CART</span>
-                    </div>
-                    <h3>CELISE CLOTHING BRAND</h3>
-                    <p>A bespoke luxury couture e-commerce storefront engineered with headless Node.js architecture, real-time inventory synchronization, and custom sizing algorithms.</p>
-                    <a href="https://google.com" target="_blank" class="btn-visit-editorial">
-                        <span>VISIT PLATFORM</span>
-                        <i class="ri-arrow-right-up-line"></i>
-                    </a>
-                </div>
-            </div>
-
-            <!-- PROJECT 2: LUME LABS CREATIVE TECH -->
-            <div class="web-card">
-                <div class="web-preview">
-                    <div class="browser-bar">
-                        <div class="dot red"></div>
-                        <div class="dot yellow"></div>
-                        <div class="dot green"></div>
-                        <span class="url">lumelabs.design</span>
-                    </div>
-                    <div class="img-container" style="position: relative; aspect-ratio: 16/9; overflow: hidden; background: #07080e;">
-                        <img src="assets/web-project-2.svg" alt="Lume Labs Creative Tech Studio" style="width: 100%; height: 100%; object-fit: cover;">
-                        <div class="watermark-text" style="position: absolute; bottom: 10px; right: 10px; font-size: 10px; opacity: 0.3; font-family: var(--font-main); color: #fff;">
-                            &copy; NETHULA SANVIDU
-                        </div>
-                    </div>
-                </div>
-                <div class="web-info">
-                    <div class="card-meta-tags">
-                        <span class="card-tag">CREATIVE TECH</span>
-                        <span class="card-tag">WEBGL LAB</span>
-                        <span class="card-tag">INTERACTIVE</span>
-                    </div>
-                    <h3>LUME LABS CREATIVE TECH</h3>
-                    <p>Commercial digital studio platform architected for creative technology ventures, spatial identity systems, and high-performance WebGL interactive experiences.</p>
-                    <a href="https://google.com" target="_blank" class="btn-visit-editorial">
-                        <span>VISIT PLATFORM</span>
-                        <i class="ri-arrow-right-up-line"></i>
-                    </a>
-                </div>
+            <div class="empty-gallery" style="grid-column: 1 / -1; padding: 50px 20px; text-align: center; border: 1px dashed rgba(255,255,255,0.12); border-radius: 12px; background: rgba(255,255,255,0.02); font-family: var(--font-main); color: #888;">
+                <i class="ri-code-box-line" style="font-size: 2.2rem; color: #555; display: block; margin-bottom: 12px;"></i>
+                <span style="color: #f4f4f5; letter-spacing: 2px; font-family: var(--font-display); font-size: 0.85rem; font-weight: 600;">NO WEB EXPERIENCES PUBLISHED YET</span><br>
+                <span style="font-size: 0.75rem; color: #71717a; display: block; margin-top: 6px;">Web projects published through the Admin Terminal will appear here automatically.</span>
             </div>
         </div>
     </section>
@@ -1191,35 +1135,7 @@
                 </div>
             </div>
 
-            <!-- VIDEO 2: COMMERCIAL SHOWREEL -->
-            <div class="web-card">
-                <div class="web-preview">
-                    <div class="browser-bar">
-                        <div class="dot red"></div>
-                        <div class="dot yellow"></div>
-                        <div class="dot green"></div>
-                        <span class="url">commercial-motion.mp4</span>
-                    </div>
-                    <div class="img-container" style="position: relative; aspect-ratio: 16/9; overflow: hidden; background: #07080e;">
-                        <img src="assets/video-project-2.svg" alt="Commercial Showreel" style="width: 100%; height: 100%; object-fit: cover;">
-                        <div class="watermark-text" style="position: absolute; bottom: 10px; right: 10px; font-size: 10px; opacity: 0.3; font-family: var(--font-main); color: #fff;">
-                            &copy; NETHULA SANVIDU
-                        </div>
-                    </div>
-                </div>
-                <div class="web-info">
-                    <div class="card-meta-tags">
-                        <span class="card-tag">MOTION DESIGN</span>
-                        <span class="card-tag">3D DIRECTION</span>
-                        <span class="card-tag">4K REEL</span>
-                    </div>
-                    <h3>COMMERCIAL SHOWREEL</h3>
-                    <p>High-energy visual edits, 3D product motion graphics, and sound design reels scheduled for upcoming release across commercial campaigns.</p>
-                    <a href="#" class="btn-visit-editorial" style="pointer-events:none; opacity:0.6;">
-                        <span>PREVIEW ONLY &bull; PRODUCTION</span>
-                    </a>
-                </div>
-            </div>
+
         </div>
     </section>
 
@@ -1286,27 +1202,336 @@
         // 1. CURATED ARTWORK INVENTORY (ADAPTIVE FRAME CLASSIFICATION)
         // ==========================================================================
         const FALLBACK_EXHIBITION_ARTWORKS = [
-            { src: 'assets/azzaro most wanted1.webp', type: 'POSTER', frameClass: 'frame-portrait', id: '01', title: 'Azzaro Most Wanted' },
-            { src: 'assets/DA Gem Final.webp', type: 'LOGO', frameClass: 'frame-square', id: '02', title: 'DA Gem Jewellery' },
-            { src: 'assets/logic gates classified mcq thumbnail new.webp', type: 'POSTER', frameClass: 'frame-landscape', id: '03', title: 'Logic Gates Thumbnail' },
-            { src: 'assets/lumelabslogo.webp', type: 'LOGO', frameClass: 'frame-banner', id: '04', title: 'Lume Labs Identity' },
-            { src: 'assets/number system thumb.webp', type: 'POSTER', frameClass: 'frame-landscape', id: '05', title: 'Number System Thumbnail' },
-            { src: 'assets/apex-logo.webp', type: 'LOGO', frameClass: 'frame-banner', id: '06', title: 'Apex Visuals Mark' },
-            { src: 'assets/apex-branding.webp', type: 'POSTER', frameClass: 'frame-square', id: '07', title: 'Apex Branding System' },
-            { src: 'assets/project-27.webp', type: 'LOGO', frameClass: 'frame-square', id: '08', title: 'Minimal Geometric Mark' },
-            { src: 'assets/lume-branding.webp', type: 'POSTER', frameClass: 'frame-square', id: '09', title: 'Lume Labs Brand Poster' },
-            { src: 'assets/project-28.webp', type: 'LOGO', frameClass: 'frame-landscape', id: '10', title: 'Digital Vector Monogram' },
-            { src: 'assets/project-1.webp', type: 'POSTER', frameClass: 'frame-square', id: '11', title: 'Creative Direction Poster' },
-            { src: 'assets/smk logo with the background.webp', type: 'LOGO', frameClass: 'frame-square', id: '12', title: 'SMK Studio Logo' },
-            { src: 'assets/project-2.webp', type: 'POSTER', frameClass: 'frame-square', id: '13', title: 'Editorial Cover Art' },
-            { src: 'assets/project-3.webp', type: 'POSTER', frameClass: 'frame-portrait', id: '14', title: 'Fashion Visual Poster' },
-            { src: 'assets/project-4.webp', type: 'POSTER', frameClass: 'frame-square', id: '15', title: 'Typography Layout' },
-            { src: 'assets/project-5.webp', type: 'POSTER', frameClass: 'frame-banner', id: '16', title: 'Digital Social Banner' },
-            { src: 'assets/project-7.webp', type: 'POSTER', frameClass: 'frame-landscape', id: '17', title: 'Landscape Artwork' },
-            { src: 'assets/project-8.webp', type: 'POSTER', frameClass: 'frame-portrait', id: '18', title: 'Visual Campaign Art' },
-            { src: 'assets/project-11.webp', type: 'POSTER', frameClass: 'frame-square', id: '19', title: 'Cybernetic Concept Art' },
-            { src: 'assets/smk x banner updated.webp', type: 'POSTER', frameClass: 'frame-banner', id: '20', title: 'SMK Commercial Header' }
-        ];
+          {
+                    "src": "https://res.cloudinary.com/dwcsjrhhl/image/upload/f_auto,q_auto,w_1600,c_limit/v1782372960/Marketing_poster2_xxvaxo.webp",
+                    "type": "PORTRAIT",
+                    "frameClass": "frame-portrait",
+                    "id": "01",
+                    "title": "MARKETING POSTER2 XXVAXO"
+          },
+          {
+                    "src": "https://res.cloudinary.com/dwcsjrhhl/image/upload/f_auto,q_auto,w_1600,c_limit/v1782372846/DA_Gem_Jewellery_New_Year_l6cag7.webp",
+                    "type": "PORTRAIT",
+                    "frameClass": "frame-portrait",
+                    "id": "02",
+                    "title": "DA GEM JEWELLERY NEW YEAR L6CAG7"
+          },
+          {
+                    "src": "https://res.cloudinary.com/dwcsjrhhl/image/upload/f_auto,q_auto,w_1600,c_limit/v1782292938/project-8_oo45dn.webp",
+                    "type": "PORTRAIT",
+                    "frameClass": "frame-portrait",
+                    "id": "03",
+                    "title": "PROJECT 8 OO45DN"
+          },
+          {
+                    "src": "https://res.cloudinary.com/dwcsjrhhl/image/upload/f_auto,q_auto,w_1600,c_limit/v1782291927/Lost_in_Desert_F2_D2_rqy1or.webp",
+                    "type": "PORTRAIT",
+                    "frameClass": "frame-portrait",
+                    "id": "04",
+                    "title": "LOST IN DESERT F2 D2 RQY1OR"
+          },
+          {
+                    "src": "https://res.cloudinary.com/dwcsjrhhl/image/upload/f_auto,q_auto,w_1600,c_limit/v1782291921/Lost_in_Desert_v2_swg2uz.webp",
+                    "type": "PORTRAIT",
+                    "frameClass": "frame-portrait",
+                    "id": "05",
+                    "title": "LOST IN DESERT V2 SWG2UZ"
+          },
+          {
+                    "src": "https://res.cloudinary.com/dwcsjrhhl/image/upload/f_auto,q_auto,w_1600,c_limit/v1782291920/new_year_flyer_lume_labs_hp3e1l.webp",
+                    "type": "GRAPHIC",
+                    "frameClass": "frame-square",
+                    "id": "06",
+                    "title": "NEW YEAR FLYER LUME LABS HP3E1L"
+          },
+          {
+                    "src": "https://res.cloudinary.com/dwcsjrhhl/image/upload/f_auto,q_auto,w_1600,c_limit/v1782291918/lume_labs_new_year_kig9bz.webp",
+                    "type": "GRAPHIC",
+                    "frameClass": "frame-square",
+                    "id": "07",
+                    "title": "LUME LABS NEW YEAR KIG9BZ"
+          },
+          {
+                    "src": "https://res.cloudinary.com/dwcsjrhhl/image/upload/f_auto,q_auto,w_1600,c_limit/v1782291915/lakroo_new_year_tculcd.webp",
+                    "type": "PORTRAIT",
+                    "frameClass": "frame-portrait",
+                    "id": "08",
+                    "title": "LAKROO NEW YEAR TCULCD"
+          },
+          {
+                    "src": "https://res.cloudinary.com/dwcsjrhhl/image/upload/f_auto,q_auto,w_1600,c_limit/v1782291913/lakroo_xmas_sawfsb.webp",
+                    "type": "GRAPHIC",
+                    "frameClass": "frame-square",
+                    "id": "09",
+                    "title": "LAKROO XMAS SAWFSB"
+          },
+          {
+                    "src": "https://res.cloudinary.com/dwcsjrhhl/image/upload/f_auto,q_auto,w_1600,c_limit/v1782291907/new_year_flyer_lakroo_fashion_ildsc9.webp",
+                    "type": "GRAPHIC",
+                    "frameClass": "frame-square",
+                    "id": "10",
+                    "title": "NEW YEAR FLYER LAKROO FASHION ILDSC9"
+          },
+          {
+                    "src": "https://res.cloudinary.com/dwcsjrhhl/image/upload/f_auto,q_auto,w_1600,c_limit/v1782290043/Apex_Logo_with_text_in_w_bg_cssdds.png",
+                    "type": "LOGO",
+                    "frameClass": "frame-square",
+                    "id": "11",
+                    "title": "APEX LOGO WITH TEXT IN W BG CSSDDS"
+          },
+          {
+                    "src": "https://res.cloudinary.com/dwcsjrhhl/image/upload/f_auto,q_auto,w_1600,c_limit/v1782289456/project-29_wutvwn.png",
+                    "type": "LANDSCAPE",
+                    "frameClass": "frame-landscape",
+                    "id": "12",
+                    "title": "PROJECT 29 WUTVWN"
+          },
+          {
+                    "src": "https://res.cloudinary.com/dwcsjrhhl/image/upload/f_auto,q_auto,w_1600,c_limit/v1782289407/project-24_wjaurp.png",
+                    "type": "GRAPHIC",
+                    "frameClass": "frame-square",
+                    "id": "13",
+                    "title": "PROJECT 24 WJAURP"
+          },
+          {
+                    "src": "https://res.cloudinary.com/dwcsjrhhl/image/upload/f_auto,q_auto,w_1600,c_limit/v1782289398/project-11_kmo21k.png",
+                    "type": "GRAPHIC",
+                    "frameClass": "frame-square",
+                    "id": "14",
+                    "title": "PROJECT 11 KMO21K"
+          },
+          {
+                    "src": "https://res.cloudinary.com/dwcsjrhhl/image/upload/f_auto,q_auto,w_1600,c_limit/v1782289380/project-19_uoqrgx.png",
+                    "type": "GRAPHIC",
+                    "frameClass": "frame-square",
+                    "id": "15",
+                    "title": "PROJECT 19 UOQRGX"
+          },
+          {
+                    "src": "https://res.cloudinary.com/dwcsjrhhl/image/upload/f_auto,q_auto,w_1600,c_limit/v1782289374/project-14_ncrfvw.png",
+                    "type": "PORTRAIT",
+                    "frameClass": "frame-portrait",
+                    "id": "16",
+                    "title": "PROJECT 14 NCRFVW"
+          },
+          {
+                    "src": "https://res.cloudinary.com/dwcsjrhhl/image/upload/f_auto,q_auto,w_1600,c_limit/v1782289372/project-18_rjtcsh.png",
+                    "type": "PORTRAIT",
+                    "frameClass": "frame-portrait",
+                    "id": "17",
+                    "title": "PROJECT 18 RJTCSH"
+          },
+          {
+                    "src": "https://res.cloudinary.com/dwcsjrhhl/image/upload/f_auto,q_auto,w_1600,c_limit/v1782289346/project-17_jdczcs.png",
+                    "type": "GRAPHIC",
+                    "frameClass": "frame-square",
+                    "id": "18",
+                    "title": "PROJECT 17 JDCZCS"
+          },
+          {
+                    "src": "https://res.cloudinary.com/dwcsjrhhl/image/upload/f_auto,q_auto,w_1600,c_limit/v1782289326/smk_x_banner_updated_fdmbqs.png",
+                    "type": "BANNER",
+                    "frameClass": "frame-banner",
+                    "id": "19",
+                    "title": "SMK X BANNER UPDATED FDMBQS"
+          },
+          {
+                    "src": "https://res.cloudinary.com/dwcsjrhhl/image/upload/f_auto,q_auto,w_1600,c_limit/v1782289322/project-15_aa6io9.png",
+                    "type": "GRAPHIC",
+                    "frameClass": "frame-square",
+                    "id": "20",
+                    "title": "PROJECT 15 AA6IO9"
+          },
+          {
+                    "src": "https://res.cloudinary.com/dwcsjrhhl/image/upload/f_auto,q_auto,w_1600,c_limit/v1782289323/project-39_qencb3.png",
+                    "type": "GRAPHIC",
+                    "frameClass": "frame-square",
+                    "id": "21",
+                    "title": "PROJECT 39 QENCB3"
+          },
+          {
+                    "src": "https://res.cloudinary.com/dwcsjrhhl/image/upload/f_auto,q_auto,w_1600,c_limit/v1782289315/smk_logo_with_the_background_y2ppjs.png",
+                    "type": "LOGO",
+                    "frameClass": "frame-square",
+                    "id": "22",
+                    "title": "SMK LOGO WITH THE BACKGROUND Y2PPJS"
+          },
+          {
+                    "src": "https://res.cloudinary.com/dwcsjrhhl/image/upload/f_auto,q_auto,w_1600,c_limit/v1782289311/project-38_ekia1e.png",
+                    "type": "GRAPHIC",
+                    "frameClass": "frame-square",
+                    "id": "23",
+                    "title": "PROJECT 38 EKIA1E"
+          },
+          {
+                    "src": "https://res.cloudinary.com/dwcsjrhhl/image/upload/f_auto,q_auto,w_1600,c_limit/v1782289287/project-13_efz1tc.jpg",
+                    "type": "LANDSCAPE",
+                    "frameClass": "frame-landscape",
+                    "id": "24",
+                    "title": "PROJECT 13 EFZ1TC"
+          },
+          {
+                    "src": "https://res.cloudinary.com/dwcsjrhhl/image/upload/f_auto,q_auto,w_1600,c_limit/v1782289279/project-12_v5rm83.png",
+                    "type": "GRAPHIC",
+                    "frameClass": "frame-square",
+                    "id": "25",
+                    "title": "PROJECT 12 V5RM83"
+          },
+          {
+                    "src": "https://res.cloudinary.com/dwcsjrhhl/image/upload/f_auto,q_auto,w_1600,c_limit/v1782289276/project-35_h4x4mn.png",
+                    "type": "PORTRAIT",
+                    "frameClass": "frame-portrait",
+                    "id": "26",
+                    "title": "PROJECT 35 H4X4MN"
+          },
+          {
+                    "src": "https://res.cloudinary.com/dwcsjrhhl/image/upload/f_auto,q_auto,w_1600,c_limit/v1782289275/project-37_c6atmc.png",
+                    "type": "GRAPHIC",
+                    "frameClass": "frame-square",
+                    "id": "27",
+                    "title": "PROJECT 37 C6ATMC"
+          },
+          {
+                    "src": "https://res.cloudinary.com/dwcsjrhhl/image/upload/f_auto,q_auto,w_1600,c_limit/v1782289253/project-36_s09dpq.png",
+                    "type": "PORTRAIT",
+                    "frameClass": "frame-portrait",
+                    "id": "28",
+                    "title": "PROJECT 36 S09DPQ"
+          },
+          {
+                    "src": "https://res.cloudinary.com/dwcsjrhhl/image/upload/f_auto,q_auto,w_1600,c_limit/v1782289233/project-10_prqty6.jpg",
+                    "type": "LANDSCAPE",
+                    "frameClass": "frame-landscape",
+                    "id": "29",
+                    "title": "PROJECT 10 PRQTY6"
+          },
+          {
+                    "src": "https://res.cloudinary.com/dwcsjrhhl/image/upload/f_auto,q_auto,w_1600,c_limit/v1782289232/project-34_wlfs4r.png",
+                    "type": "GRAPHIC",
+                    "frameClass": "frame-square",
+                    "id": "30",
+                    "title": "PROJECT 34 WLFS4R"
+          },
+          {
+                    "src": "https://res.cloudinary.com/dwcsjrhhl/image/upload/f_auto,q_auto,w_1600,c_limit/v1782289229/DA_Gem_Final_fy8rop.png",
+                    "type": "GRAPHIC",
+                    "frameClass": "frame-square",
+                    "id": "31",
+                    "title": "DA GEM FINAL FY8ROP"
+          },
+          {
+                    "src": "https://res.cloudinary.com/dwcsjrhhl/image/upload/f_auto,q_auto,w_1600,c_limit/v1782289195/project-33_hoouhx.png",
+                    "type": "GRAPHIC",
+                    "frameClass": "frame-square",
+                    "id": "32",
+                    "title": "PROJECT 33 HOOUHX"
+          },
+          {
+                    "src": "https://res.cloudinary.com/dwcsjrhhl/image/upload/f_auto,q_auto,w_1600,c_limit/v1782289177/project-32_pyvlir.png",
+                    "type": "GRAPHIC",
+                    "frameClass": "frame-square",
+                    "id": "33",
+                    "title": "PROJECT 32 PYVLIR"
+          },
+          {
+                    "src": "https://res.cloudinary.com/dwcsjrhhl/image/upload/f_auto,q_auto,w_1600,c_limit/v1782289166/project-31_kqdkj5.png",
+                    "type": "PORTRAIT",
+                    "frameClass": "frame-portrait",
+                    "id": "34",
+                    "title": "PROJECT 31 KQDKJ5"
+          },
+          {
+                    "src": "https://res.cloudinary.com/dwcsjrhhl/image/upload/f_auto,q_auto,w_1600,c_limit/v1782289155/project-6_dqdoro.png",
+                    "type": "GRAPHIC",
+                    "frameClass": "frame-square",
+                    "id": "35",
+                    "title": "PROJECT 6 DQDORO"
+          },
+          {
+                    "src": "https://res.cloudinary.com/dwcsjrhhl/image/upload/f_auto,q_auto,w_1600,c_limit/v1782289149/project-30_pmocwl.png",
+                    "type": "PORTRAIT",
+                    "frameClass": "frame-portrait",
+                    "id": "36",
+                    "title": "PROJECT 30 PMOCWL"
+          },
+          {
+                    "src": "https://res.cloudinary.com/dwcsjrhhl/image/upload/f_auto,q_auto,w_1600,c_limit/v1782289123/project-26_nhuflh.png",
+                    "type": "BANNER",
+                    "frameClass": "frame-banner",
+                    "id": "37",
+                    "title": "PROJECT 26 NHUFLH"
+          },
+          {
+                    "src": "https://res.cloudinary.com/dwcsjrhhl/image/upload/f_auto,q_auto,w_1600,c_limit/v1782289115/project-5_ckwssz.png",
+                    "type": "BANNER",
+                    "frameClass": "frame-banner",
+                    "id": "38",
+                    "title": "PROJECT 5 CKWSSZ"
+          },
+          {
+                    "src": "https://res.cloudinary.com/dwcsjrhhl/image/upload/f_auto,q_auto,w_1600,c_limit/v1782289114/number_system_thumb_aubihd.png",
+                    "type": "LANDSCAPE",
+                    "frameClass": "frame-landscape",
+                    "id": "39",
+                    "title": "NUMBER SYSTEM THUMB AUBIHD"
+          },
+          {
+                    "src": "https://res.cloudinary.com/dwcsjrhhl/image/upload/f_auto,q_auto,w_1600,c_limit/v1782289102/project-28_qnfjlu.png",
+                    "type": "LANDSCAPE",
+                    "frameClass": "frame-landscape",
+                    "id": "40",
+                    "title": "PROJECT 28 QNFJLU"
+          },
+          {
+                    "src": "https://res.cloudinary.com/dwcsjrhhl/image/upload/f_auto,q_auto,w_1600,c_limit/v1782289077/project-27_g4uyt8.png",
+                    "type": "GRAPHIC",
+                    "frameClass": "frame-square",
+                    "id": "41",
+                    "title": "PROJECT 27 G4UYT8"
+          },
+          {
+                    "src": "https://res.cloudinary.com/dwcsjrhhl/image/upload/f_auto,q_auto,w_1600,c_limit/v1782289072/azzaro_most_wanted1_xwsvqb.png",
+                    "type": "PORTRAIT",
+                    "frameClass": "frame-portrait",
+                    "id": "42",
+                    "title": "AZZARO MOST WANTED1 XWSVQB"
+          },
+          {
+                    "src": "https://res.cloudinary.com/dwcsjrhhl/image/upload/f_auto,q_auto,w_1600,c_limit/v1782289069/project-1_gggldd.png",
+                    "type": "GRAPHIC",
+                    "frameClass": "frame-square",
+                    "id": "43",
+                    "title": "PROJECT 1 GGGLDD"
+          },
+          {
+                    "src": "https://res.cloudinary.com/dwcsjrhhl/image/upload/f_auto,q_auto,w_1600,c_limit/v1782289051/project-23_ii8wlw.png",
+                    "type": "LANDSCAPE",
+                    "frameClass": "frame-landscape",
+                    "id": "44",
+                    "title": "PROJECT 23 II8WLW"
+          },
+          {
+                    "src": "https://res.cloudinary.com/dwcsjrhhl/image/upload/f_auto,q_auto,w_1600,c_limit/v1782289011/logic_gates_classified_mcq_thumbnail_new_nfcx1s.png",
+                    "type": "LANDSCAPE",
+                    "frameClass": "frame-landscape",
+                    "id": "45",
+                    "title": "LOGIC GATES CLASSIFIED MCQ THUMBNAIL NEW NFCX1S"
+          },
+          {
+                    "src": "https://res.cloudinary.com/dwcsjrhhl/image/upload/f_auto,q_auto,w_1600,c_limit/v1782289009/project-21_vrwa4b.jpg",
+                    "type": "LANDSCAPE",
+                    "frameClass": "frame-landscape",
+                    "id": "46",
+                    "title": "PROJECT 21 VRWA4B"
+          },
+          {
+                    "src": "https://res.cloudinary.com/dwcsjrhhl/image/upload/f_auto,q_auto,w_1600,c_limit/v1782289008/project-20_me1vlk.png",
+                    "type": "GRAPHIC",
+                    "frameClass": "frame-square",
+                    "id": "47",
+                    "title": "PROJECT 20 ME1VLK"
+          }
+];
 
         let EXHIBITION_ARTWORKS = [...FALLBACK_EXHIBITION_ARTWORKS];
 
@@ -1328,46 +1553,63 @@
         async function loadExhibitionArtworks() {
             try {
                 const cacheBuster = Date.now();
-                const controller = new AbortController();
-                const timeoutId = setTimeout(() => controller.abort(), 3000);
-                const res = await fetch(`https://res.cloudinary.com/dwcsjrhhl/image/list/portfolio.json?cb=${cacheBuster}`, { signal: controller.signal });
-                clearTimeout(timeoutId);
-                if (res.ok) {
-                    const data = await res.json();
-                    if (data.resources && Array.isArray(data.resources) && data.resources.length > 0) {
-                        EXHIBITION_ARTWORKS = data.resources.map((r, idx) => {
-                            const w = r.width || 1080;
-                            const h = r.height || 1080;
-                            const ratio = w / h;
-                            let frameClass = 'frame-square';
-                            let type = 'POSTER';
-                            if (ratio > 2.0) {
-                                frameClass = 'frame-banner';
-                                type = 'BANNER';
-                            } else if (ratio > 1.25) {
-                                frameClass = 'frame-landscape';
-                                type = 'LANDSCAPE';
-                            } else if (ratio < 0.85) {
-                                frameClass = 'frame-portrait';
-                                type = 'PORTRAIT';
-                            } else {
-                                frameClass = 'frame-square';
-                                type = (r.public_id && r.public_id.toLowerCase().includes('logo')) ? 'LOGO' : 'GRAPHIC';
-                            }
+                let data = null;
 
-                            // Cloudinary auto-optimization URL with responsive bounding and auto format
-                            const src = `https://res.cloudinary.com/dwcsjrhhl/image/upload/f_auto,q_auto,w_1600,c_limit/v${r.version}/${r.public_id}.${r.format}`;
-                            const cleanName = (r.public_id || `Project ${idx + 1}`).replace(/[_-]+/g, ' ').toUpperCase();
-                            return {
-                                src: src,
-                                type: type,
-                                frameClass: frameClass,
-                                id: String(idx + 1).padStart(2, '0'),
-                                title: cleanName
-                            };
-                        });
-                        galleryState.total = EXHIBITION_ARTWORKS.length;
+                // 1. Query same-origin Vercel serverless API first
+                try {
+                    const resApi = await fetch(`/api/get-portfolio?cb=${cacheBuster}`);
+                    if (resApi.ok) {
+                        data = await resApi.json();
                     }
+                } catch (e) {
+                    // Fall back to direct Cloudinary list
+                }
+
+                // 2. Query Cloudinary portfolio list endpoint
+                if (!data || !data.resources || data.resources.length === 0) {
+                    try {
+                        const resCloud = await fetch(`https://res.cloudinary.com/dwcsjrhhl/image/list/portfolio.json?cb=${cacheBuster}`);
+                        if (resCloud.ok) {
+                            data = await resCloud.json();
+                        }
+                    } catch (e) {
+                        // Baked fallback applies
+                    }
+                }
+
+                if (data && data.resources && Array.isArray(data.resources) && data.resources.length > 0) {
+                    EXHIBITION_ARTWORKS = data.resources.map((r, idx) => {
+                        const w = r.width || 1080;
+                        const h = r.height || 1080;
+                        const ratio = w / h;
+                        let frameClass = 'frame-square';
+                        let type = 'POSTER';
+                        if (ratio > 2.0) {
+                            frameClass = 'frame-banner';
+                            type = 'BANNER';
+                        } else if (ratio > 1.25) {
+                            frameClass = 'frame-landscape';
+                            type = 'LANDSCAPE';
+                        } else if (ratio < 0.85) {
+                            frameClass = 'frame-portrait';
+                            type = 'PORTRAIT';
+                        } else {
+                            frameClass = 'frame-square';
+                            type = (r.public_id && r.public_id.toLowerCase().includes('logo')) ? 'LOGO' : 'GRAPHIC';
+                        }
+
+                        // Cloudinary auto-optimization URL with responsive bounding and auto format
+                        const src = `https://res.cloudinary.com/dwcsjrhhl/image/upload/f_auto,q_auto,w_1600,c_limit/v${r.version}/${r.public_id}.${r.format}`;
+                        const cleanName = (r.public_id || `Project ${idx + 1}`).replace(/[_-]+/g, ' ').toUpperCase();
+                        return {
+                            src: src,
+                            type: type,
+                            frameClass: frameClass,
+                            id: String(idx + 1).padStart(2, '0'),
+                            title: cleanName
+                        };
+                    });
+                    galleryState.total = EXHIBITION_ARTWORKS.length;
                 }
             } catch (err) {
                 console.warn('Using local fallback artworks inventory:', err.message);
@@ -1375,6 +1617,8 @@
                 galleryState.total = EXHIBITION_ARTWORKS.length;
             }
         }
+
+
 
         // ==========================================================================
         // 2. PARALLEL PRELOADER ENGINE (ZERO WAIT DURING DISCOVERY)

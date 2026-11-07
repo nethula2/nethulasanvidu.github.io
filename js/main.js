@@ -349,9 +349,15 @@ async function loadWebProjects() {
 
         const projects = await response.json();
         
-        // If there are no projects in Cloudinary, we just keep the static HTML fallback
+        // If there are no projects in Cloudinary, show clean empty state
         if (projects.length === 0) {
-            console.log('No live web projects found. Showing static fallbacks.');
+            container.innerHTML = `
+                <div class="empty-gallery" style="grid-column: 1 / -1; padding: 50px 20px; text-align: center; border: 1px dashed rgba(255,255,255,0.12); border-radius: 12px; background: rgba(255,255,255,0.02); font-family: var(--font-main); color: #888;">
+                    <i class="ri-code-box-line" style="font-size: 2.2rem; color: #555; display: block; margin-bottom: 12px;"></i>
+                    <span style="color: #f4f4f5; letter-spacing: 2px; font-family: var(--font-display); font-size: 0.85rem; font-weight: 600;">NO WEB EXPERIENCES PUBLISHED YET</span><br>
+                    <span style="font-size: 0.75rem; color: #71717a; display: block; margin-top: 6px;">Web projects published through the Admin Terminal will appear here automatically.</span>
+                </div>
+            `;
             return;
         }
 
@@ -413,9 +419,15 @@ async function loadVideoProjects() {
 
         const videos = await response.json();
         
-        // If there are no videos in Cloudinary, we just keep the static HTML fallback
+        // If there are no videos in Cloudinary, show clean empty state
         if (videos.length === 0) {
-            console.log('No live video projects found. Showing static fallbacks.');
+            container.innerHTML = `
+                <div class="empty-gallery" style="grid-column: 1 / -1; padding: 50px 20px; text-align: center; border: 1px dashed rgba(255,255,255,0.12); border-radius: 12px; background: rgba(255,255,255,0.02); font-family: var(--font-main); color: #888;">
+                    <i class="ri-film-line" style="font-size: 2.2rem; color: #555; display: block; margin-bottom: 12px;"></i>
+                    <span style="color: #f4f4f5; letter-spacing: 2px; font-family: var(--font-display); font-size: 0.85rem; font-weight: 600;">NO VIDEO EDITS PUBLISHED YET</span><br>
+                    <span style="font-size: 0.75rem; color: #71717a; display: block; margin-top: 6px;">Motion and video reels published through the Admin Terminal will appear here automatically.</span>
+                </div>
+            `;
             return;
         }
 
@@ -462,41 +474,6 @@ async function loadVideoProjects() {
             `;
             container.appendChild(card);
         });
-
-        // If only 1 video is available, add a balanced companion showcase card so the section is visually complete
-        if (videos.length === 1) {
-            const companion = document.createElement('div');
-            companion.className = 'web-card';
-            companion.innerHTML = `
-                <div class="web-preview">
-                    <div class="browser-bar">
-                        <div class="dot red"></div>
-                        <div class="dot yellow"></div>
-                        <div class="dot green"></div>
-                        <span class="url">commercial-motion.mp4</span>
-                    </div>
-                    <div class="img-container" style="position: relative; aspect-ratio: 16/9; overflow: hidden; background: #07080e;">
-                        <img src="assets/video-project-2.svg" alt="Commercial Showreel" style="width: 100%; height: 100%; object-fit: cover;">
-                        <div class="watermark-text" style="position: absolute; bottom: 10px; right: 10px; font-size: 10px; opacity: 0.3; font-family: var(--font-main); color: #fff;">
-                            © NETHULA SANVIDU
-                        </div>
-                    </div>
-                </div>
-                <div class="web-info">
-                    <div class="card-meta-tags">
-                        <span class="card-tag">MOTION DESIGN</span>
-                        <span class="card-tag">3D DIRECTION</span>
-                        <span class="card-tag">4K REEL</span>
-                    </div>
-                    <h3>COMMERCIAL SHOWREEL</h3>
-                    <p>High-energy visual edits, 3D product motion graphics, and sound design reels scheduled for upcoming release.</p>
-                    <a href="#" class="btn-visit" style="pointer-events:none; opacity:0.6;">
-                        PREVIEW ONLY &bull; PRODUCTION
-                    </a>
-                </div>
-            `;
-            container.appendChild(companion);
-        }
         console.log('Loaded video projects from Vercel API successfully.');
     } catch (error) {
         console.warn('Failed to load dynamic video projects. Showing static fallbacks:', error);
