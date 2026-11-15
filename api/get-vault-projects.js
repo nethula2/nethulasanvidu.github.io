@@ -1,48 +1,69 @@
 const cloudinary = require('cloudinary').v2;
+const {
+  getClientIp,
+  checkRateLimit,
+  handleCors,
+  constantTimeCompare,
+  verifySignedToken,
+  sendSafeError
+} = require('./utils/security');
 
-if (!process.env.CLOUDINARY_URL) {
-  cloudinary.config({
-    cloud_name: 'dwcsjrhhl',
-    api_key: process.env.CLOUDINARY_API_KEY,
-    api_secret: process.env.CLOUDINARY_API_SECRET,
-    secure: true
-  });
-}
+cloudinary.config({
+  cloud_name: process.env.CLOUDINARY_CLOUD_NAME || 'dwcsjrhhl',
+  api_key: process.env.CLOUDINARY_API_KEY || '447251912538258',
+  api_secret: process.env.CLOUDINARY_API_SECRET || 'HJqfbkAHFK5M0Meb25dLAzWwC6s',
+  secure: true
+});
 
 module.exports = async (req, res) => {
-  // CORS
-  res.setHeader('Access-Control-Allow-Credentials', 'true');
-  res.setHeader('Access-Control-Allow-Origin', '*');
-  res.setHeader('Access-Control-Allow-Methods', 'GET,OPTIONS,PATCH,DELETE,POST,PUT');
-  res.setHeader(
-    'Access-Control-Allow-Headers',
-    'X-CSRF-Token, X-Requested-With, Accept, Accept-Version, Content-Length, Content-MD5, Content-Type, Date, X-Api-Version, Authorization, x-vault-key'
-  );
+  // 1. Strict CORS & Preflight
+  if (handleCors(req, res)) return;
 
-  if (req.method === 'OPTIONS') {
-    return res.status(200).end();
+  if (req.method !== 'GET') {
+    return sendSafeError(res, 405, 'Method Not Allowed');
+  }
+
+  // 2. Rate Limiting: Max 60 requests per minute
+  const clientIp = getClientIp(req);
+  const rateLimit = checkRateLimit(`vault-read:${clientIp}`, 60, 60 * 1000);
+  if (!rateLimit.allowed) {
+    res.setHeader('Retry-After', String(rateLimit.resetInSeconds));
+    return sendSafeError(res, 429, 'Rate limit exceeded for vault archive.');
   }
 
   try {
     const configuredPasscode = process.env.VAULT_PASSCODE || 'NETHULA2026';
     const authHeader = req.headers.authorization || '';
-    const customHeader = req.headers['x-vault-key'] || '';
+    const customHeader = req.headers['x-vault-key'] || req.headers['x-admin-token'] || '';
     const queryKey = req.query ? (req.query.key || req.query.access) : '';
-    const isAdmin = (req.query && req.query.admin === 'true') || req.headers['x-admin-access'] === 'true';
 
-    const providedPasscode = (authHeader.startsWith('Bearer ') ? authHeader.slice(7) : '') ||
-                             customHeader ||
-                             queryKey ||
-                             '';
+    const candidateTokenOrKey = (authHeader.startsWith('Bearer ') ? authHeader.slice(7) : '') ||
+                                customHeader ||
+                                queryKey ||
+                                '';
 
-    // Verify clearance key or admin access
-    if (!isAdmin && (!providedPasscode || providedPasscode.trim() !== configuredPasscode.trim())) {
-      return res.status(401).json({ 
-        error: 'Unauthorized: Valid clearance key is required to access the vault archive.' 
-      });
+    // 3. Robust Server-Side Authorization Verification (RBAC)
+    let isAuthorized = false;
+
+    // Check signed token first (admin or vault_guest)
+    const payload = verifySignedToken(candidateTokenOrKey);
+    if (payload && (payload.role === 'admin' || payload.role === 'vault_guest')) {
+      isAuthorized = true;
     }
 
-    // Query Cloudinary for all resources tagged with 'vault_project'
+    // Check direct passcode match (timing-safe)
+    if (!isAuthorized && candidateTokenOrKey) {
+      if (constantTimeCompare(candidateTokenOrKey.trim(), configuredPasscode.trim())) {
+        isAuthorized = true;
+      }
+    }
+
+    if (!isAuthorized) {
+      console.warn(`[SEC_AUDIT] Unauthorized access attempt to Vault projects from IP ${clientIp}`);
+      return sendSafeError(res, 401, 'Unauthorized: Valid clearance key or active session is required.');
+    }
+
+    // 4. Query Cloudinary for confidential NDA assets
     const searchResult = await cloudinary.search
       .expression('tags:vault_project AND (resource_type:image OR resource_type:video)')
       .with_field('context')
@@ -77,9 +98,9 @@ module.exports = async (req, res) => {
       };
     });
 
+    res.setHeader('Cache-Control', 'private, no-cache, no-store, must-revalidate');
     return res.status(200).json(projects);
   } catch (error) {
-    console.error('Error fetching vault projects:', error);
-    return res.status(500).json({ error: error.message });
+    return sendSafeError(res, 500, 'Error fetching vault projects', error);
   }
 };

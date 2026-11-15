@@ -1,6 +1,14 @@
 const { createClient } = require('@supabase/supabase-js');
 const fs = require('fs');
 const path = require('path');
+const {
+  getClientIp,
+  checkRateLimit,
+  handleCors,
+  sanitizeInput,
+  escapeHtml,
+  sendSafeError
+} = require('./utils/security');
 
 const PRIMARY_FILE = path.join(__dirname, '..', 'data', 'reviews.json');
 const CACHE_FILE = path.join(__dirname, '..', 'data', 'reviews-cache.json');
@@ -28,41 +36,44 @@ function saveLocalReview(review) {
 }
 
 module.exports = async (req, res) => {
-  // Enable CORS
-  res.setHeader('Access-Control-Allow-Credentials', 'true');
-  res.setHeader('Access-Control-Allow-Origin', '*');
-  res.setHeader('Access-Control-Allow-Methods', 'GET,OPTIONS,PATCH,DELETE,POST,PUT');
-  res.setHeader(
-    'Access-Control-Allow-Headers',
-    'X-CSRF-Token, X-Requested-With, Accept, Accept-Version, Content-Length, Content-MD5, Content-Type, Date, X-Api-Version, Authorization'
-  );
-
-  if (req.method === 'OPTIONS') {
-    return res.status(200).end();
-  }
+  // 1. Strict CORS & Preflight
+  if (handleCors(req, res)) return;
 
   if (req.method !== 'POST') {
-    return res.status(405).json({ error: 'Method Not Allowed' });
+    return sendSafeError(res, 405, 'Method Not Allowed');
+  }
+
+  // 2. Rate Limiting: Max 5 submissions per 10 minutes per IP
+  const clientIp = getClientIp(req);
+  const rateLimit = checkRateLimit(`review-add:${clientIp}`, 5, 10 * 60 * 1000);
+  if (!rateLimit.allowed) {
+    res.setHeader('Retry-After', String(rateLimit.resetInSeconds));
+    return sendSafeError(
+      res, 
+      429, 
+      `Transmission rate limit reached. Please wait ${Math.ceil(rateLimit.resetInSeconds / 60)} minutes before sending another review.`
+    );
   }
 
   try {
     const { rating, comment, name, role } = req.body || {};
 
+    // 3. Strict Input Validation
     const numericRating = parseInt(rating, 10);
     if (isNaN(numericRating) || numericRating < 1 || numericRating > 5) {
-      return res.status(400).json({ error: 'Rating must be an integer between 1 and 5' });
+      return sendSafeError(res, 400, 'Rating must be an integer between 1 and 5');
     }
 
-    const cleanComment = (comment || '').toString().trim();
-    if (!cleanComment) {
-      return res.status(400).json({ error: 'Comment cannot be empty' });
+    const rawComment = sanitizeInput(comment, 500);
+    if (!rawComment) {
+      return sendSafeError(res, 400, 'Comment cannot be empty');
     }
-    if (cleanComment.length > 500) {
-      return res.status(400).json({ error: 'Comment exceeds 500 characters limit' });
+    if (rawComment.length > 500) {
+      return sendSafeError(res, 400, 'Comment exceeds the 500 character limit');
     }
 
-    let authorName = (name || '').toString().trim() || 'Verified Client';
-    let authorRole = (role || '').toString().trim() || 'Client Transmission';
+    let rawName = sanitizeInput(name, 80) || 'Verified Client';
+    let rawRole = sanitizeInput(role, 100) || 'Client Transmission';
     let avatarUrl = '';
     let userId = 'guest-' + Date.now();
 
@@ -71,35 +82,36 @@ module.exports = async (req, res) => {
     if (authHeader && authHeader.startsWith('Bearer ')) {
       const token = authHeader.split(' ')[1];
       try {
-        const timeoutPromise = new Promise((_, reject) => setTimeout(() => reject(new Error('timeout')), 1000));
+        const timeoutPromise = new Promise((_, reject) => setTimeout(() => reject(new Error('timeout')), 1200));
         const authPromise = supabase.auth.getUser(token);
         const { data: { user }, error: authError } = await Promise.race([authPromise, timeoutPromise]);
         if (!authError && user) {
-          authorName = user.user_metadata?.full_name || user.email || authorName;
+          rawName = user.user_metadata?.full_name || user.email || rawName;
           avatarUrl = user.user_metadata?.avatar_url || '';
           userId = user.id;
         }
       } catch (err) {
-        // Supabase is paused or offline; continue in direct submission mode
+        // Fallback gracefully
       }
     }
 
-    // Sanitize authorName and authorRole against HTML injection
-    authorName = authorName.replace(/<[^>]*>/g, '').slice(0, 80);
-    authorRole = authorRole.replace(/<[^>]*>/g, '').slice(0, 100);
+    // 4. Defense-in-depth: HTML entity escaping against Stored XSS
+    const safeName = escapeHtml(rawName);
+    const safeRole = escapeHtml(rawRole);
+    const safeComment = escapeHtml(rawComment);
 
     const newReview = {
       id: 'rev-' + Date.now() + '-' + Math.floor(Math.random() * 1000),
-      name: authorName,
-      role: authorRole,
+      name: safeName,
+      role: safeRole,
       avatar_url: avatarUrl,
       rating: numericRating,
-      comment: cleanComment.replace(/<[^>]*>/g, ''),
+      comment: safeComment,
       created_at: new Date().toISOString(),
       verified: true
     };
 
-    // Try saving to Supabase DB in background (with short timeout)
+    // Try saving to Supabase DB in background with short timeout
     try {
       const dbPromise = supabase.from('reviews').insert([{
         name: newReview.name,
@@ -108,24 +120,25 @@ module.exports = async (req, res) => {
         comment: newReview.comment,
         user_id: userId
       }]).select();
-      const timeoutPromise = new Promise((_, reject) => setTimeout(() => reject(new Error('timeout')), 1000));
+      const timeoutPromise = new Promise((_, reject) => setTimeout(() => reject(new Error('timeout')), 1500));
       const { data: dbData } = await Promise.race([dbPromise, timeoutPromise]);
       if (dbData && dbData[0]) {
         newReview.id = dbData[0].id;
       }
     } catch (dbErr) {
-      // Supabase is paused; seamlessly keep local ID
+      // Supabase is offline; seamlessly keep local ID
     }
 
     // Always persist to local primary reviews store
     saveLocalReview(newReview);
+
+    console.info(`[SEC_AUDIT] Review submitted from IP ${clientIp} by "${safeName}"`);
 
     return res.status(200).json({
       result: 'ok',
       review: newReview
     });
   } catch (error) {
-    console.error('Error adding review:', error);
-    return res.status(500).json({ error: error.message });
+    return sendSafeError(res, 500, 'Error submitting review transmission', error);
   }
 };

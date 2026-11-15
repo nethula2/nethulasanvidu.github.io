@@ -1,4 +1,10 @@
 const cloudinary = require('cloudinary').v2;
+const {
+  getClientIp,
+  checkRateLimit,
+  handleCors,
+  sendSafeError
+} = require('./utils/security');
 
 cloudinary.config({
   cloud_name: process.env.CLOUDINARY_CLOUD_NAME || 'dwcsjrhhl',
@@ -8,22 +14,24 @@ cloudinary.config({
 });
 
 module.exports = async (req, res) => {
-  // CORS
-  res.setHeader('Access-Control-Allow-Credentials', 'true');
-  res.setHeader('Access-Control-Allow-Origin', '*');
-  res.setHeader('Access-Control-Allow-Methods', 'GET,OPTIONS,PATCH,DELETE,POST,PUT');
-  res.setHeader(
-    'Access-Control-Allow-Headers',
-    'X-CSRF-Token, X-Requested-With, Accept, Accept-Version, Content-Length, Content-MD5, Content-Type, Date, X-Api-Version'
-  );
+  // 1. Strict CORS & Preflight
+  if (handleCors(req, res)) return;
 
-  if (req.method === 'OPTIONS') {
-    return res.status(200).end();
+  if (req.method !== 'GET') {
+    return sendSafeError(res, 405, 'Method Not Allowed');
   }
 
+  // 2. Rate Limiting: Max 120 reads per minute
+  const clientIp = getClientIp(req);
+  const rateLimit = checkRateLimit(`web-read:${clientIp}`, 120, 60 * 1000);
+  if (!rateLimit.allowed) {
+    res.setHeader('Retry-After', String(rateLimit.resetInSeconds));
+    return sendSafeError(res, 429, 'Rate limit exceeded');
+  }
+
+  res.setHeader('Cache-Control', 'public, max-age=60, stale-while-revalidate=120');
+
   try {
-    // Query Cloudinary for all resources tagged with 'web_project'
-    // Include context fields
     const searchResult = await cloudinary.search
       .expression('tags:web_project')
       .with_field('context')
@@ -33,7 +41,6 @@ module.exports = async (req, res) => {
 
     const resources = searchResult.resources || [];
     
-    // Map resources to a clean structure
     const projects = resources.map(img => {
       const context = img.context || {};
       return {
@@ -50,7 +57,6 @@ module.exports = async (req, res) => {
 
     return res.status(200).json(projects);
   } catch (error) {
-    console.error('Error fetching web projects:', error);
-    return res.status(500).json({ error: error.message });
+    return sendSafeError(res, 500, 'Error fetching web projects', error);
   }
 };

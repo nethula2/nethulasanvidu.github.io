@@ -1,4 +1,10 @@
 const cloudinary = require('cloudinary').v2;
+const {
+  getClientIp,
+  checkRateLimit,
+  handleCors,
+  sendSafeError
+} = require('./utils/security');
 
 cloudinary.config({
   cloud_name: process.env.CLOUDINARY_CLOUD_NAME || 'dwcsjrhhl',
@@ -8,14 +14,22 @@ cloudinary.config({
 });
 
 module.exports = async (req, res) => {
-  res.setHeader('Access-Control-Allow-Credentials', 'true');
-  res.setHeader('Access-Control-Allow-Origin', '*');
-  res.setHeader('Access-Control-Allow-Methods', 'GET,OPTIONS');
-  res.setHeader('Cache-Control', 's-maxage=60, stale-while-revalidate=120');
+  // 1. Strict CORS & Preflight
+  if (handleCors(req, res)) return;
 
-  if (req.method === 'OPTIONS') {
-    return res.status(200).end();
+  if (req.method !== 'GET') {
+    return sendSafeError(res, 405, 'Method Not Allowed');
   }
+
+  // 2. Rate Limiting: Max 120 reads per minute
+  const clientIp = getClientIp(req);
+  const rateLimit = checkRateLimit(`port-read:${clientIp}`, 120, 60 * 1000);
+  if (!rateLimit.allowed) {
+    res.setHeader('Retry-After', String(rateLimit.resetInSeconds));
+    return sendSafeError(res, 429, 'Rate limit exceeded');
+  }
+
+  res.setHeader('Cache-Control', 'public, max-age=60, stale-while-revalidate=120');
 
   try {
     const searchResult = await cloudinary.search
@@ -27,7 +41,6 @@ module.exports = async (req, res) => {
     const resources = searchResult.resources || [];
     return res.status(200).json({ resources });
   } catch (error) {
-    console.error('Error in get-portfolio API:', error);
-    return res.status(500).json({ error: error.message });
+    return sendSafeError(res, 500, 'Error loading portfolio feed', error);
   }
 };

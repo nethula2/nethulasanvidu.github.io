@@ -1,4 +1,12 @@
 const cloudinary = require('cloudinary').v2;
+const {
+  getClientIp,
+  checkRateLimit,
+  handleCors,
+  requireAdminAuth,
+  sanitizeInput,
+  sendSafeError
+} = require('./utils/security');
 
 cloudinary.config({
   cloud_name: process.env.CLOUDINARY_CLOUD_NAME || 'dwcsjrhhl',
@@ -8,34 +16,46 @@ cloudinary.config({
 });
 
 module.exports = async (req, res) => {
-  // Enable CORS
-  res.setHeader('Access-Control-Allow-Credentials', 'true');
-  res.setHeader('Access-Control-Allow-Origin', '*');
-  res.setHeader('Access-Control-Allow-Methods', 'GET,OPTIONS,PATCH,DELETE,POST,PUT');
-  res.setHeader(
-    'Access-Control-Allow-Headers',
-    'X-CSRF-Token, X-Requested-With, Accept, Accept-Version, Content-Length, Content-MD5, Content-Type, Date, X-Api-Version'
-  );
-
-  if (req.method === 'OPTIONS') {
-    return res.status(200).end();
-  }
+  // 1. Strict CORS & Preflight
+  if (handleCors(req, res)) return;
 
   if (req.method !== 'POST') {
-    return res.status(405).json({ error: 'Method Not Allowed' });
+    return sendSafeError(res, 405, 'Method Not Allowed');
+  }
+
+  // 2. Authentication & Authorization Enforcement (RBAC)
+  const admin = requireAdminAuth(req, res);
+  if (!admin) return; // 401 response already sent by requireAdminAuth
+
+  // 3. Rate Limiting: Max 60 deletions per minute per admin IP
+  const clientIp = getClientIp(req);
+  const rateLimit = checkRateLimit(`admin-del:${clientIp}`, 60, 60 * 1000);
+  if (!rateLimit.allowed) {
+    res.setHeader('Retry-After', String(rateLimit.resetInSeconds));
+    return sendSafeError(res, 429, 'Rate limit exceeded for asset deletion. Please slow down.');
   }
 
   try {
-    const { public_id, resource_type } = req.body;
-    if (!public_id) {
-      return res.status(400).json({ error: 'Missing public_id' });
+    const { public_id, resource_type } = req.body || {};
+    const sanitizedId = sanitizeInput(public_id, 255);
+
+    if (!sanitizedId) {
+      return sendSafeError(res, 400, 'Missing or invalid public_id');
     }
 
-    const type = resource_type || 'image';
-    const result = await cloudinary.uploader.destroy(public_id, { resource_type: type });
-    return res.status(200).json(result);
+    // Restrict resource_type to valid Cloudinary asset types only
+    const allowedTypes = ['image', 'video', 'raw'];
+    const type = allowedTypes.includes(resource_type) ? resource_type : 'image';
+
+    const result = await cloudinary.uploader.destroy(sanitizedId, { resource_type: type });
+
+    console.info(`[SEC_AUDIT] Asset destroyed: "${sanitizedId}" (${type}) by Admin from IP ${clientIp}`);
+
+    return res.status(200).json({
+      result: result.result || 'ok',
+      public_id: sanitizedId
+    });
   } catch (error) {
-    console.error('Cloudinary destruction failed:', error);
-    return res.status(500).json({ error: error.message });
+    return sendSafeError(res, 500, 'Cloudinary asset deletion failed', error);
   }
 };

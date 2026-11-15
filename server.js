@@ -20,6 +20,23 @@ if (fs.existsSync(envPath)) {
         }
     }
 }
+
+// Global Enterprise Security Headers (OWASP Recommended)
+const SECURITY_HEADERS = {
+    'X-Content-Type-Options': 'nosniff',
+    'X-Frame-Options': 'SAMEORIGIN',
+    'X-XSS-Protection': '1; mode=block',
+    'Referrer-Policy': 'strict-origin-when-cross-origin',
+    'Permissions-Policy': 'camera=(), microphone=(), geolocation=(), interest-cohort=()',
+    'Content-Security-Policy': "default-src 'self'; script-src 'self' 'unsafe-inline' 'unsafe-eval' https://cdn.jsdelivr.net https://cdnjs.cloudflare.com https://unpkg.com https://upload-widget.cloudinary.com; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com https://cdn.jsdelivr.net; font-src 'self' https://fonts.gstatic.com https://cdn.jsdelivr.net data:; img-src 'self' data: blob: https://res.cloudinary.com https://images.unsplash.com https://upload-widget.cloudinary.com; media-src 'self' data: blob: https://res.cloudinary.com; connect-src 'self' https://api.cloudinary.com https://res.cloudinary.com https://upload-widget.cloudinary.com https://*.supabase.co https://unpkg.com https://cdnjs.cloudflare.com; frame-src 'self' https://www.youtube.com https://upload-widget.cloudinary.com https://res.cloudinary.com; object-src 'none'; base-uri 'self';"
+};
+
+function applyGlobalHeaders(res) {
+    for (const [header, value] of Object.entries(SECURITY_HEADERS)) {
+        res.setHeader(header, value);
+    }
+}
+
 const MIME_TYPES = {
     '.html': 'text/html; charset=utf-8',
     '.css': 'text/css; charset=utf-8',
@@ -38,7 +55,17 @@ const MIME_TYPES = {
 };
 
 const server = http.createServer(async (req, res) => {
-    let reqUrl = new URL(req.url, `http://${req.headers.host || 'localhost'}`);
+    applyGlobalHeaders(res);
+
+    let reqUrl;
+    try {
+        reqUrl = new URL(req.url, `http://${req.headers.host || 'localhost'}`);
+    } catch (e) {
+        res.writeHead(400, { 'Content-Type': 'text/plain; charset=utf-8' });
+        res.end('400 Bad Request');
+        return;
+    }
+
     let reqPath = decodeURIComponent(reqUrl.pathname);
 
     // Helper: Shim Vercel/Express methods on res
@@ -58,13 +85,39 @@ const server = http.createServer(async (req, res) => {
 
     // 1. API Route Handler (Vercel Serverless Function compatibility)
     if (reqPath.startsWith('/api/')) {
-        let apiFile = reqPath.endsWith('.js') ? reqPath : reqPath + '.js';
+        // Prevent path traversal in API path
+        const normalizedApiPath = path.normalize(reqPath).replace(/^(\.\.[\/\\])+/, '').replace(/\\/g, '/');
+        if (normalizedApiPath.includes('..') || normalizedApiPath.startsWith('/api/utils')) {
+            res.status(403).json({ error: 'Access Denied' });
+            return;
+        }
+
+        let apiFile = normalizedApiPath.endsWith('.js') ? normalizedApiPath : normalizedApiPath + '.js';
         let apiFilePath = path.join(__dirname, apiFile);
 
         if (fs.existsSync(apiFilePath)) {
             let bodyBuffer = [];
-            req.on('data', chunk => bodyBuffer.push(chunk));
+            let totalBytes = 0;
+            const MAX_PAYLOAD = 10 * 1024 * 1024; // 10MB limit
+            let payloadExceeded = false;
+
+            req.on('data', chunk => {
+                totalBytes += chunk.length;
+                if (totalBytes > MAX_PAYLOAD) {
+                    payloadExceeded = true;
+                    req.destroy();
+                    if (!res.writableEnded) {
+                        res.writeHead(413, { 'Content-Type': 'application/json; charset=utf-8' });
+                        res.end(JSON.stringify({ error: 'Payload Too Large. Maximum 10MB permitted.' }));
+                    }
+                } else {
+                    bodyBuffer.push(chunk);
+                }
+            });
+
             req.on('end', async () => {
+                if (payloadExceeded) return;
+
                 const rawBody = Buffer.concat(bodyBuffer).toString('utf-8');
                 if (rawBody) {
                     try {
@@ -78,23 +131,63 @@ const server = http.createServer(async (req, res) => {
                 req.query = Object.fromEntries(reqUrl.searchParams.entries());
 
                 try {
-                    delete require.cache[require.resolve(apiFilePath)];
+                    // Purge api modules from cache during local development
+                    Object.keys(require.cache).forEach(key => {
+                        if (key.includes('/api/') || key.includes('\\api\\')) {
+                            delete require.cache[key];
+                        }
+                    });
                     const handler = require(apiFilePath);
                     await handler(req, res);
                 } catch (apiErr) {
                     console.error(`API Error on ${reqPath}:`, apiErr);
                     if (!res.writableEnded) {
-                        res.status(500).json({ error: apiErr.message });
+                        res.status(500).json({ error: 'An internal server error occurred.' });
                     }
                 }
             });
             return;
+        } else {
+            res.status(404).json({ error: 'API Endpoint Not Found' });
+            return;
         }
     }
 
-    // 2. High-Performance Static File Serving with Gzip & Smart Caching
+    // 2. High-Performance Static File Serving with Traversal Defense, Gzip & Smart Caching
     if (reqPath === '/') reqPath = '/index.html';
-    const filePath = path.join(__dirname, reqPath);
+
+    // Anti-Traversal & Sensitive File Shield
+    const normalizedReqPath = path.normalize(reqPath).replace(/^(\.\.[\/\\])+/, '').replace(/\\/g, '/');
+    const sensitiveExactFiles = [
+        '/server.js',
+        '/package.json',
+        '/package-lock.json',
+        '/vercel.json',
+        '/mail.php',
+        '/readme.md'
+    ];
+    if (
+        normalizedReqPath.includes('..') ||
+        /\/\./.test(normalizedReqPath) ||             // Dotfiles (.env, .git, etc.)
+        normalizedReqPath.startsWith('/api') ||       // Direct access to backend source
+        normalizedReqPath.startsWith('/scratch') ||   // Scratch scripts
+        normalizedReqPath.startsWith('/node_modules') || // Node modules
+        sensitiveExactFiles.includes(normalizedReqPath.toLowerCase())
+    ) {
+        res.writeHead(403, { 'Content-Type': 'text/plain; charset=utf-8' });
+        res.end('403 Forbidden: Access Denied');
+        return;
+    }
+
+    const rootDir = path.resolve(__dirname);
+    const filePath = path.resolve(rootDir, '.' + normalizedReqPath);
+
+    // Boundary check: must be strictly inside root directory
+    if (!filePath.startsWith(rootDir)) {
+        res.writeHead(403, { 'Content-Type': 'text/plain; charset=utf-8' });
+        res.end('403 Forbidden: Directory Traversal Prohibited');
+        return;
+    }
 
     fs.stat(filePath, (statErr, stat) => {
         if (statErr || !stat.isFile()) {
@@ -133,7 +226,7 @@ const server = http.createServer(async (req, res) => {
             if (['.webp', '.png', '.jpg', '.jpeg', '.gif', '.svg', '.woff2', '.ttf'].includes(ext)) {
                 headers['Cache-Control'] = 'public, max-age=604800, immutable'; // 7 Days Cache
             } else if (['.css', '.js'].includes(ext)) {
-                headers['Cache-Control'] = 'no-cache, must-revalidate'; // 1 Day Cache
+                headers['Cache-Control'] = 'no-cache, must-revalidate';
             } else if (ext === '.html') {
                 headers['Cache-Control'] = 'no-cache'; // Always fresh
             }
@@ -166,7 +259,7 @@ const server = http.createServer(async (req, res) => {
 
 server.listen(PORT, () => {
     console.log(`\n========================================`);
-    console.log(` Portfolio & Toolyard Server is LIVE:`);
+    console.log(` Portfolio & Toolyard Server is LIVE (Hardened):`);
     console.log(` > Main Portfolio: http://localhost:${PORT}`);
     console.log(` > Toolyard Suite: http://localhost:${PORT}/tools.html`);
     console.log(` > Project Archive: http://localhost:${PORT}/works.html`);

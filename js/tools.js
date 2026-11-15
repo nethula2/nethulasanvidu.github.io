@@ -7,6 +7,49 @@
  */
 
 // App State
+// Security & Validation Constants
+const MAX_IMAGE_FILE_SIZE = 50 * 1024 * 1024; // 50MB
+const MAX_PDF_FILE_SIZE = 100 * 1024 * 1024;  // 100MB
+const ALLOWED_IMAGE_MIMES = ['image/jpeg', 'image/png', 'image/webp', 'image/gif', 'image/svg+xml'];
+const ALLOWED_IMAGE_EXTS = ['.jpg', '.jpeg', '.png', '.webp', '.gif', '.svg'];
+
+function validateUploadFile(file, options = { allowPdf: false }) {
+    if (!file) return { valid: false, error: 'No file selected.' };
+
+    const ext = '.' + (file.name ? file.name.split('.').pop().toLowerCase() : '');
+    const isPdf = file.type === 'application/pdf' || ext === '.pdf';
+
+    if (isPdf) {
+        if (!options.allowPdf) {
+            return { valid: false, error: 'PDF documents are not supported for this view. Please upload an image (JPG, PNG, WebP).' };
+        }
+        if (file.size > MAX_PDF_FILE_SIZE) {
+            return { valid: false, error: `PDF exceeds the maximum allowed size of 100MB (${(file.size / (1024 * 1024)).toFixed(1)}MB).` };
+        }
+        return { valid: true, isPdf: true };
+    }
+
+    const isImage = ALLOWED_IMAGE_MIMES.includes(file.type) || ALLOWED_IMAGE_EXTS.includes(ext);
+    if (!isImage) {
+        return { valid: false, error: 'Invalid file format. Only JPEG, PNG, WebP, GIF, and SVG images are supported.' };
+    }
+
+    if (file.size > MAX_IMAGE_FILE_SIZE) {
+        return { valid: false, error: `Image exceeds the maximum allowed size of 50MB (${(file.size / (1024 * 1024)).toFixed(1)}MB).` };
+    }
+
+    return { valid: true, isImage: true };
+}
+
+function sanitizeSvgXml(svgString) {
+    if (typeof svgString !== 'string') return '';
+    return svgString
+        .replace(/<script\b[^<]*(?:(?!<\/script>)<[^<]*)*<\/script>/gi, '')
+        .replace(/on\w+\s*=\s*(["'][^"']*["']|[^\s>]+)/gi, '')
+        .replace(/<!ENTITY[^>]*>/gi, '')
+        .replace(/javascript\s*:/gi, '');
+}
+
 const appState = {
     globalChannel: 'Aesthetic Studios',
     globalVerified: true,
@@ -264,14 +307,21 @@ function renderSidebarSlots() {
         const fileInput = card.querySelector(`#file-input-${index}`);
         if (fileInput) {
             fileInput.addEventListener('change', (e) => {
-                if (e.target.files && e.target.files[0]) {
+                const file = e.target.files && e.target.files[0];
+                if (file) {
+                    const check = validateUploadFile(file, { allowPdf: false });
+                    if (!check.valid) {
+                        alert(check.error);
+                        fileInput.value = '';
+                        return;
+                    }
                     const reader = new FileReader();
                     reader.onload = (ev) => {
                         appState.slots[index].thumbnail = ev.target.result;
                         renderSidebarSlots();
                         renderYouTubeFeed();
                     };
-                    reader.readAsDataURL(e.target.files[0]);
+                    reader.readAsDataURL(file);
                 }
             });
         }
@@ -399,14 +449,21 @@ function renderYouTubeFeed() {
     document.querySelectorAll('.feed-slot-input').forEach(input => {
         input.addEventListener('change', (e) => {
             const slotIdx = parseInt(e.target.getAttribute('data-slot-index'), 10);
-            if (e.target.files && e.target.files[0] && !isNaN(slotIdx) && appState.slots[slotIdx]) {
+            const file = e.target.files && e.target.files[0];
+            if (file && !isNaN(slotIdx) && appState.slots[slotIdx]) {
+                const check = validateUploadFile(file, { allowPdf: false });
+                if (!check.valid) {
+                    alert(check.error);
+                    input.value = '';
+                    return;
+                }
                 const reader = new FileReader();
                 reader.onload = (ev) => {
                     appState.slots[slotIdx].thumbnail = ev.target.result;
                     renderSidebarSlots();
                     renderYouTubeFeed();
                 };
-                reader.readAsDataURL(e.target.files[0]);
+                reader.readAsDataURL(file);
             }
         });
     });
@@ -604,8 +661,26 @@ function initUnifiedDropzone() {
 function routeUploadedFiles(files) {
     if (!files || files.length === 0) return;
 
-    const pdfFiles = files.filter(f => f.type === 'application/pdf' || f.name.toLowerCase().endsWith('.pdf'));
-    const imageFiles = files.filter(f => f.type.startsWith('image/'));
+    const validFiles = [];
+    const errors = [];
+
+    for (const file of files) {
+        const check = validateUploadFile(file, { allowPdf: true });
+        if (check.valid) {
+            validFiles.push(file);
+        } else {
+            errors.push(`${file.name}: ${check.error}`);
+        }
+    }
+
+    if (errors.length > 0) {
+        alert("Some files could not be processed due to security rules:\n\n" + errors.join('\n'));
+    }
+
+    if (validFiles.length === 0) return;
+
+    const pdfFiles = validFiles.filter(f => f.type === 'application/pdf' || f.name.toLowerCase().endsWith('.pdf'));
+    const imageFiles = validFiles.filter(f => f.type.startsWith('image/'));
 
     // If PDF present, prioritize processing the PDF
     if (pdfFiles.length > 0) {
@@ -1458,10 +1533,32 @@ function initSafeZoneStudio() {
 
 function loadSafezoneArtwork(file) {
     if (!file) return;
+    const check = validateUploadFile(file, { allowPdf: false });
+    if (!check.valid) {
+        alert(check.error);
+        return;
+    }
     safezoneState.artworkFile = file;
+
+    if (file.type === 'image/svg+xml' || file.name.toLowerCase().endsWith('.svg')) {
+        const reader = new FileReader();
+        reader.onload = (e) => {
+            const sanitized = sanitizeSvgXml(e.target.result);
+            const blob = new Blob([sanitized], { type: 'image/svg+xml' });
+            const url = URL.createObjectURL(blob);
+            safezoneState.artworkSrc = url;
+            applyArtworkToSafezoneDom(url, file.name);
+        };
+        reader.readAsText(file);
+        return;
+    }
+
     const url = URL.createObjectURL(file);
     safezoneState.artworkSrc = url;
+    applyArtworkToSafezoneDom(url, file.name);
+}
 
+function applyArtworkToSafezoneDom(url, fileName) {
     const img = document.getElementById('safezone-artwork-img');
     const placeholder = document.getElementById('safezone-empty-placeholder');
     const label = document.getElementById('safezone-file-label');
@@ -1474,7 +1571,7 @@ function loadSafezoneArtwork(file) {
         placeholder.style.display = 'none';
     }
     if (label) {
-        label.textContent = file.name;
+        label.textContent = fileName;
     }
 }
 

@@ -1,15 +1,122 @@
 document.addEventListener('DOMContentLoaded', () => {
-    // --- Precision 60/120 FPS Fluid Cursor Engine ---
-    (function initCustomCursor() {
-        const dot = document.querySelector('.cursor-dot');
-        const outline = document.querySelector('.cursor-outline');
-        if (!dot || !outline) return;
+    // ==========================================================================
+    // 1. ARCHITECTURAL ASSET PRELOADER (CINEMATIC ENTRY & ZERO-JANK CACHE)
+    // ==========================================================================
+    (function initPreloader() {
+        const preloader = document.getElementById('site-preloader');
+        if (!preloader) return;
 
-        // On touch screens or devices without fine pointer, disable custom cursor entirely
+        const progressBar = document.getElementById('preloader-progress-bar');
+        const percentEl = document.getElementById('preloader-percent');
+        const statusEl = document.getElementById('preloader-status');
+
+        let progress = 0;
+        let isDone = false;
+
+        function updateProgress(val, statusText) {
+            progress = Math.min(100, Math.max(progress, val));
+            if (progressBar) progressBar.style.width = progress + '%';
+            if (percentEl) percentEl.textContent = String(Math.floor(progress)).padStart(2, '0') + '%';
+            if (statusEl && statusText) statusEl.textContent = statusText;
+        }
+
+        const assetsToPreload = [
+            'bannertop.png',
+            'assets/lumelabslogo.webp',
+            'assets/lume-branding.webp',
+            'assets/apex-logo.webp',
+            'assets/apex-branding.webp'
+        ];
+
+        let loadedCount = 0;
+        const totalCount = assetsToPreload.length + 1; // +1 for fonts
+
+        function finishPreloader() {
+            if (isDone) return;
+            isDone = true;
+            updateProgress(100, 'SYSTEMS ARMED // STUDIO READY');
+            setTimeout(() => {
+                preloader.classList.add('loaded');
+                document.body.classList.add('page-ready');
+            }, 220);
+        }
+
+        // Preload fonts
+        if (document.fonts && document.fonts.ready) {
+            document.fonts.ready.then(() => {
+                loadedCount++;
+                updateProgress(Math.floor((loadedCount / totalCount) * 90), 'FONTS CACHED');
+            }).catch(() => {});
+        } else {
+            loadedCount++;
+        }
+
+        // Preload core images in parallel
+        assetsToPreload.forEach(src => {
+            const img = new Image();
+            img.onload = img.onerror = () => {
+                loadedCount++;
+                const pct = Math.floor((loadedCount / totalCount) * 90);
+                updateProgress(pct, `PRE-CACHING ${src.split('/').pop().toUpperCase()}`);
+                if (loadedCount >= totalCount) {
+                    finishPreloader();
+                }
+            };
+            img.src = src;
+        });
+
+        // Fast safety cap: User is never blocked more than 950ms
+        setTimeout(() => {
+            finishPreloader();
+        }, 950);
+    })();
+
+    // ==========================================================================
+    // 2. LENIS HARDWARE-ACCELERATED SMOOTH SCROLLING (120 FPS FLUIDITY)
+    // ==========================================================================
+    let lenis = null;
+    if (typeof Lenis !== 'undefined') {
+        lenis = new Lenis({
+            duration: 1.25,
+            easing: (t) => Math.min(1, 1.001 - Math.pow(2, -10 * t)),
+            orientation: 'vertical',
+            gestureOrientation: 'vertical',
+            smoothWheel: true,
+            wheelMultiplier: 1.05,
+            touchMultiplier: 1.6,
+            infinite: false
+        });
+
+        function raf(time) {
+            lenis.raf(time);
+            requestAnimationFrame(raf);
+        }
+        requestAnimationFrame(raf);
+
+        // Bind smooth anchor navigation (with -70px offset for the fixed header)
+        document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+            anchor.addEventListener('click', function (e) {
+                const targetSelector = this.getAttribute('href');
+                if (!targetSelector || targetSelector === '#') return;
+                const target = document.querySelector(targetSelector);
+                if (target) {
+                    e.preventDefault();
+                    lenis.scrollTo(target, { offset: -70, duration: 1.15 });
+                }
+            });
+        });
+    }
+
+    // ==========================================================================
+    // 3. ZERO-LAG MOUSE & AMBIENT FOLLOWER RING
+    // ==========================================================================
+    (function initCustomCursor() {
+        const outline = document.querySelector('.cursor-outline');
+        if (!outline) return;
+
+        // Disable on touch screens
         if (window.matchMedia('(pointer: coarse)').matches || !window.matchMedia('(hover: hover)').matches) {
-            dot.style.display = 'none';
             outline.style.display = 'none';
-            document.body.style.cursor = 'auto';
             return;
         }
 
@@ -17,7 +124,6 @@ document.addEventListener('DOMContentLoaded', () => {
         let outlineX = -100, outlineY = -100;
         let isVisible = false;
         let isHoveringInteractive = false;
-        let isOverTextInput = false;
 
         window.addEventListener('mousemove', (e) => {
             mouseX = e.clientX;
@@ -25,37 +131,16 @@ document.addEventListener('DOMContentLoaded', () => {
 
             if (!isVisible) {
                 isVisible = true;
-                dot.style.opacity = '1';
                 outline.style.opacity = '1';
             }
-
-            // Direct hardware-accelerated transform for center dot (zero sensory lag)
-            dot.style.transform = `translate3d(${mouseX}px, ${mouseY}px, 0) translate(-50%, -50%)`;
             wakeUpCursorLoop();
+        }, { passive: true });
 
-            // Detect text inputs to show native caret for seamless typing
+        // Event-delegated hover ring expansion (0 overhead during mouse movement)
+        document.addEventListener('mouseover', (e) => {
             const target = e.target;
-            const isText = target && (
-                target.tagName === 'TEXTAREA' ||
-                (target.tagName === 'INPUT' && !['button','submit','checkbox','radio','range','file'].includes(target.type)) ||
-                target.isContentEditable
-            );
-
-            if (isText !== isOverTextInput) {
-                isOverTextInput = isText;
-                if (isText) {
-                    dot.style.opacity = '0';
-                    outline.style.opacity = '0';
-                    document.body.style.cursor = 'text';
-                } else {
-                    dot.style.opacity = '1';
-                    outline.style.opacity = '1';
-                    document.body.style.cursor = 'none';
-                }
-            }
-
-            // Detect interactive hover (links, buttons, clickable cards)
-            const isInteractive = !!target.closest('a, button, [role="button"], input[type="submit"], .project-item, .web-card, .masonry-item, .nav-segment, .star-btn, .view-mode-pill, .interactive, .btn-submit');
+            if (!target) return;
+            const isInteractive = !!target.closest('a, button, [role="button"], input[type="submit"], .project-item, .web-card, .masonry-item, .nav-segment, .star-btn, .view-mode-pill, .interactive, .btn-submit, .btn-download-primary, .btn-download-secondary');
             if (isInteractive !== isHoveringInteractive) {
                 isHoveringInteractive = isInteractive;
                 if (isInteractive) {
@@ -66,22 +151,16 @@ document.addEventListener('DOMContentLoaded', () => {
             }
         }, { passive: true });
 
-        // Hide cleanly when cursor exits viewport window
         document.addEventListener('mouseleave', () => {
             isVisible = false;
-            dot.style.opacity = '0';
             outline.style.opacity = '0';
         });
 
         document.addEventListener('mouseenter', () => {
-            if (!isOverTextInput) {
-                isVisible = true;
-                dot.style.opacity = '1';
-                outline.style.opacity = '1';
-            }
+            isVisible = true;
+            outline.style.opacity = '1';
         });
 
-        // Silky 60/120 FPS lerp loop with smart idle sleeping
         let isCursorLoopActive = false;
         let cursorRafId = null;
 
@@ -95,14 +174,14 @@ document.addEventListener('DOMContentLoaded', () => {
             if (isVisible) {
                 const dx = mouseX - outlineX;
                 const dy = mouseY - outlineY;
-                outlineX += dx * 0.2;
-                outlineY += dy * 0.2;
+                outlineX += dx * 0.35;
+                outlineY += dy * 0.35;
                 outline.style.transform = `translate3d(${outlineX.toFixed(1)}px, ${outlineY.toFixed(1)}px, 0) translate(-50%, -50%)`;
 
                 if (Math.abs(dx) < 0.25 && Math.abs(dy) < 0.25) {
                     isCursorLoopActive = false;
                     cursorRafId = null;
-                    return; // Sleep when settled!
+                    return;
                 }
             }
             cursorRafId = requestAnimationFrame(renderCursor);
@@ -110,45 +189,239 @@ document.addEventListener('DOMContentLoaded', () => {
         wakeUpCursorLoop();
     })();
 
-    // --- Hover Reveal Logic ---
+    // ==========================================================================
+    // 4. HOVER REVEAL LOGIC (CACHED BOUNDS, ZERO FORCED REFLOWS)
+    // ==========================================================================
     const projects = document.querySelectorAll('.project-item');
     projects.forEach(project => {
         const reveal = project.querySelector('.hover-reveal');
         if (reveal) {
+            let rect = null;
+            project.addEventListener('mouseenter', () => {
+                rect = project.getBoundingClientRect();
+            }, { passive: true });
+
+            project.addEventListener('mouseleave', () => {
+                rect = null;
+            }, { passive: true });
+
             project.addEventListener('mousemove', (e) => {
-                const rect = project.getBoundingClientRect();
+                if (!rect) rect = project.getBoundingClientRect();
                 const x = e.clientX - rect.left;
                 const y = e.clientY - rect.top;
-                reveal.style.transform = `translate(-50%, -50%) translate(${x / 10}px, ${y / 10}px) rotate(-5deg)`;
-            });
+                reveal.style.transform = `translate3d(${x / 10}px, ${y / 10}px, 0) translate(-50%, -50%) rotate(-5deg)`;
+            }, { passive: true });
         }
     });
 
-    // --- Smooth Scroll ---
-    document.querySelectorAll('a[href^="#"]').forEach(anchor => {
-        anchor.addEventListener('click', function (e) {
-            const targetSelector = this.getAttribute('href');
-            const target = document.querySelector(targetSelector);
-            if (target) {
-                e.preventDefault();
-                target.scrollIntoView({ behavior: 'smooth' });
-            }
-        });
-    });
-
-    // --- Navbar Hide/Show on Scroll ---
+    // ==========================================================================
+    // BUTTER-SMOOTH EDITORIAL HEADER & CRAZY SCROLL MOTION CONTROLLER
+    // ==========================================================================
     const navbar = document.querySelector('.navbar');
-    let lastScrollY = window.scrollY;
-    if (navbar) {
-        window.addEventListener('scroll', () => {
-            if (window.scrollY > lastScrollY && window.scrollY > 50) {
-                navbar.classList.add('navbar--hidden');
+    const navProgressBar = document.getElementById('navbar-progress-bar');
+    const heroBg = document.querySelector('.hero-bg');
+    const heroTitle = document.querySelector('.hero-title');
+    const heroScrollRight = document.querySelector('.hero-scroll-right');
+    const marquees = document.querySelectorAll('.marquee-content');
+    const navLinks = document.querySelectorAll('.navbar .nav-link');
+
+    // Sections for live scrollspy
+    const spySections = [
+        { id: 'hero', el: document.querySelector('.hero-section'), navId: 'nav-item-home' },
+        { id: 'ventures', el: document.getElementById('ventures'), navId: 'nav-item-services' },
+        { id: 'work', el: document.getElementById('work'), navId: 'nav-item-projects' },
+        { id: 'about', el: document.getElementById('about'), navId: 'nav-item-about' },
+        { id: 'contact', el: document.getElementById('contact'), navId: 'nav-item-contact' }
+    ].filter(s => s.el);
+
+    let lastScrollY = window.scrollY || 0;
+    let scrollDeltaAccum = 0;
+    const SCROLL_THRESHOLD = 18; // Hysteresis threshold to prevent jitter
+
+    function onScrollUpdate(currentY, velocity = 0) {
+        if (currentY < 0) currentY = 0;
+
+        // 1. Navbar scrolled visual state (translucent -> frosted glass elevation)
+        if (navbar) {
+            if (currentY > 25) {
+                navbar.classList.add('navbar--scrolled');
             } else {
+                navbar.classList.remove('navbar--scrolled');
+            }
+
+            // Directional hysteresis hide/show
+            const diff = currentY - lastScrollY;
+            if (Math.sign(diff) !== Math.sign(scrollDeltaAccum)) {
+                scrollDeltaAccum = 0;
+            }
+            scrollDeltaAccum += diff;
+
+            if (currentY <= 80) {
+                navbar.classList.remove('navbar--hidden');
+            } else if (scrollDeltaAccum > SCROLL_THRESHOLD && currentY > 120) {
+                navbar.classList.add('navbar--hidden');
+            } else if (scrollDeltaAccum < -SCROLL_THRESHOLD) {
                 navbar.classList.remove('navbar--hidden');
             }
-            lastScrollY = window.scrollY;
-        });
+
+            // 2. Reading progress line
+            if (navProgressBar) {
+                const maxScroll = document.documentElement.scrollHeight - window.innerHeight;
+                if (maxScroll > 0) {
+                    const pct = Math.min(100, Math.max(0, (currentY / maxScroll) * 100));
+                    navProgressBar.style.width = pct.toFixed(2) + '%';
+                }
+            }
+        }
+
+        lastScrollY = currentY;
+
+        // 3. Hero Parallax & Camera Zoom Depth
+        if (currentY <= 1000) {
+            if (heroBg) {
+                const bgY = (currentY * 0.32).toFixed(1);
+                const bgScale = (1 + currentY * 0.00035).toFixed(4);
+                heroBg.style.transform = `translate3d(0, ${bgY}px, 0) scale(${bgScale})`;
+            }
+            if (heroTitle) {
+                const titleY = (currentY * -0.16).toFixed(1);
+                const titleOpacity = Math.max(0, 1 - currentY / 620).toFixed(3);
+                heroTitle.style.transform = `translate3d(0, ${titleY}px, 0)`;
+                heroTitle.style.opacity = titleOpacity;
+            }
+            if (heroScrollRight) {
+                const scrollIndicatorOpacity = Math.max(0, 1 - currentY / 180).toFixed(3);
+                heroScrollRight.style.opacity = scrollIndicatorOpacity;
+            }
+        }
+
+        // 4. Kinetic Scroll-Velocity Marquee Reactivity
+        if (marquees.length && Math.abs(velocity) > 0.05) {
+            const skewVal = Math.max(-2.5, Math.min(2.5, velocity * 0.12)).toFixed(2);
+            marquees.forEach(m => {
+                m.style.transform = `skewX(${skewVal}deg) translateZ(0)`;
+            });
+        }
+
+        // 5. Active Section Scrollspy
+        if (spySections.length && navLinks.length) {
+            const viewportMiddle = currentY + window.innerHeight * 0.35;
+            let currentActiveNavId = null;
+
+            for (let i = spySections.length - 1; i >= 0; i--) {
+                const sec = spySections[i];
+                const top = sec.el.offsetTop;
+                if (viewportMiddle >= top) {
+                    currentActiveNavId = sec.navId;
+                    break;
+                }
+            }
+
+            if (currentActiveNavId) {
+                navLinks.forEach(link => {
+                    if (link.id === currentActiveNavId) {
+                        link.classList.add('active');
+                    } else {
+                        link.classList.remove('active');
+                    }
+                });
+            }
+        }
     }
+
+    // Connect to Lenis if available, otherwise throttled native scroll
+    if (lenis) {
+        lenis.on('scroll', (e) => {
+            onScrollUpdate(e.scroll, e.velocity || 0);
+        });
+    } else {
+        let isTicking = false;
+        window.addEventListener('scroll', () => {
+            if (!isTicking) {
+                requestAnimationFrame(() => {
+                    onScrollUpdate(window.scrollY, 0);
+                    isTicking = false;
+                });
+                isTicking = true;
+            }
+        }, { passive: true });
+    }
+
+    // ==========================================================================
+    // KINETIC INTERSECTION OBSERVER SCROLL REVEALS
+    // ==========================================================================
+    (function initScrollReveals() {
+        const revealElements = [
+            ...document.querySelectorAll('.section-header'),
+            ...document.querySelectorAll('.venture-card'),
+            ...document.querySelectorAll('.project-item'),
+            ...document.querySelectorAll('.manifesto'),
+            ...document.querySelectorAll('.tech-list li'),
+            ...document.querySelectorAll('.download-row')
+        ];
+
+        revealElements.forEach((el, index) => {
+            el.classList.add('scroll-reveal');
+            if (el.classList.contains('venture-card')) {
+                el.classList.add(index % 2 === 0 ? 'delay-1' : 'delay-2');
+            } else if (el.tagName === 'LI') {
+                el.classList.add(`delay-${Math.min(4, (index % 5) + 1)}`);
+            }
+        });
+
+        if ('IntersectionObserver' in window) {
+            const observer = new IntersectionObserver((entries) => {
+                entries.forEach(entry => {
+                    if (entry.isIntersecting) {
+                        entry.target.classList.add('is-revealed');
+                    }
+                });
+            }, {
+                threshold: 0.12,
+                rootMargin: '0px 0px -50px 0px'
+            });
+
+            revealElements.forEach(el => observer.observe(el));
+        } else {
+            revealElements.forEach(el => el.classList.add('is-revealed'));
+        }
+    })();
+
+    // ==========================================================================
+    // 3D PERSPECTIVE TILT & DYNAMIC GLARE ON VENTURE CARDS
+    // ==========================================================================
+    (function init3DCardTilt() {
+        const ventureCards = document.querySelectorAll('.venture-card');
+        if (!ventureCards.length) return;
+        if (window.matchMedia('(pointer: coarse)').matches) return; // Skip on touch devices
+
+        ventureCards.forEach(card => {
+            card.addEventListener('mousemove', (e) => {
+                const rect = card.getBoundingClientRect();
+                const x = e.clientX - rect.left;
+                const y = e.clientY - rect.top;
+                
+                const centerX = rect.width / 2;
+                const centerY = rect.height / 2;
+                
+                const rotateX = ((y - centerY) / centerY * -6).toFixed(2);
+                const rotateY = ((x - centerX) / centerX * 6).toFixed(2);
+                
+                card.style.transform = `perspective(1000px) rotateX(${rotateX}deg) rotateY(${rotateY}deg) translateY(-8px)`;
+                card.style.setProperty('--mouse-x', `${x}px`);
+                card.style.setProperty('--mouse-y', `${y}px`);
+            });
+
+            card.addEventListener('mouseleave', () => {
+                card.style.transform = 'perspective(1000px) rotateX(0deg) rotateY(0deg) translateY(0px)';
+                card.style.transition = 'transform 0.5s cubic-bezier(0.16, 1, 0.3, 1), border-color 0.4s ease, box-shadow 0.4s ease';
+            });
+
+            card.addEventListener('mouseenter', () => {
+                card.style.transition = 'transform 0.1s ease-out, border-color 0.4s ease, box-shadow 0.4s ease';
+            });
+        });
+    })();
 
     // --- Mobile Menu Toggle ---
     const menuToggle = document.querySelector('.menu-toggle');
@@ -215,10 +488,35 @@ document.addEventListener('DOMContentLoaded', () => {
             }
         }
     } catch (e) {}
+
+    // --- Dynamic Active CV Sync Engine ---
+    (async function syncActiveCv() {
+        try {
+            const res = await fetch('/api/get-cv?cb=' + Date.now());
+            if (res.ok) {
+                const data = await res.json();
+                if (data) {
+                    const downloadBtn = document.getElementById('btn-download-portfolio');
+                    const viewBtn = document.getElementById('btn-view-portfolio');
+                    const downloadUrl = data.downloadUrl || data.url || '/api/download-cv?action=download';
+                    const viewUrl = data.viewUrl || '/api/download-cv?action=view';
+                    if (downloadBtn) {
+                        downloadBtn.href = downloadUrl;
+                        if (data.filename) downloadBtn.download = data.filename;
+                    }
+                    if (viewBtn) {
+                        viewBtn.href = viewUrl;
+                    }
+                }
+            }
+        } catch (e) {
+            // Silently fallback to static assets
+        }
+    })();
 });
 
 /**
- * Loads images from JSON and triggers the permanent watermark process
+ * High-performance gallery loader with native lazy loading & batch DOM fragment insertion
  */
 async function loadGallery() {
     const gallery = document.getElementById('gallery');
@@ -227,30 +525,17 @@ async function loadGallery() {
     try {
         let images = [];
         try {
-            // Try fetching dynamically from Cloudinary first (using cache-buster to prevent cached 401 errors)
-            const cacheBuster = new Date().getTime();
-            const controller = new AbortController();
-            const timeoutId = setTimeout(() => controller.abort(), 900);
-            const response = await fetch(`https://res.cloudinary.com/dwcsjrhhl/image/list/portfolio.json?cb=${cacheBuster}`, { signal: controller.signal });
-            clearTimeout(timeoutId);
-            if (response.ok) {
-                const data = await response.json();
-                images = data.resources.map(img => ({
-                    src: `https://res.cloudinary.com/dwcsjrhhl/image/upload/v${img.version}/${img.public_id}.${img.format}`,
-                    alt: img.public_id
-                }));
-                console.log('Loaded gallery from Cloudinary tag list dynamically');
-            } else {
-                throw new Error('Cloudinary tag list not enabled or returned error status');
-            }
-        } catch (cloudinaryError) {
-            // Fall back to local images.json if Cloudinary list is restricted or offline
-            console.warn('Cloudinary dynamic load failed. Falling back to local images.json:', cloudinaryError);
             const response = await fetch('images.json');
-            images = await response.json();
+            if (response.ok) {
+                images = await response.json();
+            }
+        } catch (e) {
+            console.warn('Fallback loading images.json:', e);
         }
 
-        gallery.innerHTML = '';
+        if (!images || images.length === 0) return;
+
+        const fragment = document.createDocumentFragment();
 
         images.forEach((image, index) => {
             const item = document.createElement('div');
@@ -258,28 +543,29 @@ async function loadGallery() {
 
             item.innerHTML = `
                 <div class="watermark-container" id="container-${index}">
+                    <img src="${image.src}" alt="${image.alt || 'Portfolio Work'}" loading="lazy" decoding="async">
+                    <div class="watermark-text">© NETHULA SANVIDU</div>
                     <div class="overlay">
                         <span class="view-text">VIEW [ + ]</span>
                     </div>
                 </div>
             `;
-            gallery.appendChild(item);
-
-            // Using your branding
-            applyPermanentWatermark(image.src, `container-${index}`, "NETHULA SANVIDU");
-
             item.addEventListener('click', () => openLightbox(item));
+            fragment.appendChild(item);
         });
+
+        gallery.innerHTML = '';
+        gallery.appendChild(fragment);
+        console.log(`Rendered ${images.length} gallery items instantaneously with native lazy loading.`);
     } catch (error) {
         console.error('Error loading gallery:', error);
     }
 }
 
 /**
- * Uses Canvas to merge text and image into a single downloadable file
- * Centers the watermark horizontally and vertically (no rotation)
+ * On-demand Canvas watermark generator (only called if explicitly needed for export)
  */
-function applyPermanentWatermark(source, containerId, text) {
+function applyPermanentWatermark(source, containerId, text = "NETHULA SANVIDU") {
     const img = new Image();
     img.crossOrigin = "anonymous"; 
     img.src = source;
@@ -287,24 +573,18 @@ function applyPermanentWatermark(source, containerId, text) {
     img.onload = () => {
         const canvas = document.createElement('canvas');
         const ctx = canvas.getContext('2d');
-
         canvas.width = img.width;
         canvas.height = img.height;
 
-        // Draw original image
         ctx.drawImage(img, 0, 0);
 
-        // Watermark Style
         const fontSize = Math.max(canvas.width * 0.05, 24); 
         ctx.font = `bold ${fontSize}px "Syncopate", sans-serif`;
-        ctx.fillStyle = "rgba(255, 255, 255, 0.2)"; // Subtle opacity for center placement
+        ctx.fillStyle = "rgba(255, 255, 255, 0.2)";
         ctx.textAlign = "center";
         ctx.textBaseline = "middle";
-
-        // Draw text exactly in the center
         ctx.fillText(text, canvas.width / 2, canvas.height / 2);
 
-        // Convert canvas to DataURL (permanent watermark)
         const watermarkedDataUrl = canvas.toDataURL("image/jpeg", 0.9);
         const finalImg = document.createElement('img');
         finalImg.src = watermarkedDataUrl;
@@ -745,6 +1025,9 @@ function createReviewCardElement(review, isNew = false, index = 0) {
     const card = document.createElement("div");
     card.className = "review-card" + (isNew ? " new-review-animate" : "");
     
+    const safeName = escapeHtml(review.name || 'Verified Client');
+    const safeComment = escapeHtml(review.comment || '');
+
     let dateStr = "Just now";
     if (review.created_at) {
         const dateObj = new Date(review.created_at);
@@ -760,24 +1043,37 @@ function createReviewCardElement(review, isNew = false, index = 0) {
         }
     }
 
-    let avatarHtml = `<div class="avatar-placeholder">${review.name.charAt(0).toUpperCase()}</div>`;
-    if (review.avatar_url) {
-        avatarHtml = `<img src="${review.avatar_url}" alt="${review.name}">`;
+    let avatarHtml = `<div class="avatar-placeholder">${safeName.charAt(0).toUpperCase()}</div>`;
+    if (review.avatar_url && (review.avatar_url.startsWith('https://') || review.avatar_url.startsWith('http://'))) {
+        avatarHtml = `<img src="${encodeURI(review.avatar_url)}" alt="${safeName}">`;
     }
 
     card.innerHTML = `
         <div class="review-card-header">
             ${avatarHtml}
             <div class="review-card-meta">
-                <span class="review-card-name">${review.name}</span>
+                <span class="review-card-name">${safeName}</span>
                 <span class="review-card-date">${dateStr}</span>
             </div>
             <div class="review-card-stars">
                 ${starsHtml}
             </div>
         </div>
-        <p class="review-card-comment">${review.comment}</p>
+        <p class="review-card-comment">${safeComment}</p>
     `;
 
     return card;
+}
+
+/**
+ * XSS Sanitization Defense Helper
+ */
+function escapeHtml(str) {
+    if (typeof str !== 'string') return '';
+    return str
+        .replace(/&/g, '&amp;')
+        .replace(/</g, '&lt;')
+        .replace(/>/g, '&gt;')
+        .replace(/"/g, '&quot;')
+        .replace(/'/g, '&#39;');
 }

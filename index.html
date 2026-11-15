@@ -15,31 +15,49 @@
 </head>
 <body>
 
+    <!-- ARCHITECTURAL ASSET PRELOADER -->
+    <div id="site-preloader" class="site-preloader">
+        <div class="preloader-inner">
+            <div class="preloader-brand">
+                <span class="preloader-badge">NETHULA SANVIDU &bull; ARCHIVE 2026</span>
+                <span class="preloader-title">SYSTEMS INITIALIZING</span>
+            </div>
+            <div class="preloader-progress-wrap">
+                <div class="preloader-progress-bar" id="preloader-progress-bar"></div>
+            </div>
+            <div class="preloader-footer">
+                <span class="preloader-status" id="preloader-status">PRE-CACHING CORE ASSETS...</span>
+                <span class="preloader-percent" id="preloader-percent">00%</span>
+            </div>
+        </div>
+    </div>
+
     <div class="cursor-dot"></div>
     <div class="cursor-outline"></div>
 
     <nav class="navbar" id="site-navbar">
         <a href="index.html" class="logo">
-            <span>NETHULA SANVIDU</span>
-            <span class="badge">©2026</span>
+            <span class="logo-name">NETHULA SANVIDU</span><span class="logo-reg">®</span>
         </a>
         <div class="nav-menu" id="primary-nav-menu">
-            <a href="works.html" class="nav-link" id="nav-item-work">[ WORK ]</a>
-            <a href="tools.html" class="nav-link" id="nav-item-toolyard">[ TOOLYARD ]</a>
-            <a href="#about" class="nav-link" id="nav-item-profile">[ PROFILE ]</a>
-            <a href="#dossier" class="nav-link" id="nav-item-dossier">[ DOSSIER ]</a>
-            <a href="#contact" class="nav-link" id="nav-item-contact">[ CONTACT ]</a>
+            <a href="index.html" class="nav-link active" id="nav-item-home">Home</a>
+            <a href="#about" class="nav-link" id="nav-item-about">About</a>
+            <a href="works.html" class="nav-link" id="nav-item-projects">Projects</a>
+            <a href="#ventures" class="nav-link" id="nav-item-services">Services</a>
+            <a href="tools.html" class="nav-link" id="nav-item-toolyard">Toolyard</a>
+            <a href="#contact" class="nav-link" id="nav-item-contact">Contact</a>
         </div>
         <button class="menu-toggle" id="menu-toggle-btn" aria-label="Toggle navigation" type="button">
             <span class="line-1"></span>
             <span class="line-2"></span>
             <span class="line-3"></span>
         </button>
+        <div class="navbar-progress-bar" id="navbar-progress-bar"></div>
     </nav>
 
     <section class="hero-section">
         <div class="hero-image-wrapper">
-            <img src="bannertop.png" alt="Profile Background" class="hero-bg">
+            <img src="bannertop.png" alt="Profile Background" class="hero-bg" fetchpriority="high" decoding="async">
             <div class="overlay-gradient"></div>
         </div>
 
@@ -80,7 +98,7 @@
             <div class="venture-card">
                 <div class="venture-content">
                     <span class="venture-badge">FOUNDER OF</span>
-                    <img src="assets/lumelabslogo.webp" alt="Lume Labs" class="venture-logo-img">
+                    <img src="assets/lumelabslogo.webp" alt="Lume Labs" class="venture-logo-img" loading="lazy" decoding="async">
                     
                     <p class="venture-bio">
                         The creative engine behind the brands. Lume Labs is my full-service digital agency specializing in 
@@ -113,14 +131,14 @@
 </div>
                 </div>
                 <div class="venture-visual">
-                    <img src="assets/lume-branding.webp" alt="Lume Labs Aesthetic">
+                    <img src="assets/lume-branding.webp" alt="Lume Labs Aesthetic" loading="lazy" decoding="async">
                 </div>
             </div>
 
             <div class="venture-card">
                 <div class="venture-content">
                     <span class="venture-badge">FOUNDER OF</span>
-                    <img src="assets/apex-logo.webp" alt="Apex Cooling Solutions" class="venture-logo-img">
+                    <img src="assets/apex-logo.webp" alt="Apex Cooling Solutions" class="venture-logo-img" loading="lazy" decoding="async">
                     
                     <p class="venture-bio">
                         Apex Cooling Solutions provides dependable air conditioning services for homes and businesses, combining fast response, technical expertise, and reliable after-service support.
@@ -156,7 +174,7 @@
 </div>
                 </div>
                 <div class="venture-visual">
-                    <img src="assets/apex-branding.webp" alt="Apex Cooling Solutions Branding">
+                    <img src="assets/apex-branding.webp" alt="Apex Cooling Solutions Branding" loading="lazy" decoding="async">
                 </div>
             </div>
 
@@ -327,82 +345,27 @@
     </section>
 
     <!-- ==========================================================================
-         OFFLINE DOSSIER & PORTFOLIO DOWNLOAD SECTION
+         OFFLINE PORTFOLIO DOWNLOAD SECTION
          ========================================================================== -->
-    <section id="dossier" class="dossier-section">
-        <div class="dossier-container">
-            <div class="dossier-content-card">
-                <div class="dossier-left">
-                    <div class="dossier-badge">
-                        <span class="dossier-badge-dot"></span>
-                        <span class="dossier-badge-text">CURRICULUM VITAE &bull; 2026 EDITION</span>
-                    </div>
-
-                    <h2 class="dossier-title">
-                        DOWNLOAD<br>
-                        <span class="highlight-text">PORTFOLIO DOSSIER</span>
-                    </h2>
-
-                    <p class="dossier-desc">
-                        A curated offline overview compiling selected web experiences, brand identity systems, video motion works, and technical proficiencies into a unified archival document.
+    <section id="download" class="download-section">
+        <div class="download-container">
+            <div class="download-row">
+                <div class="download-text-col">
+                    <span class="label">CURRICULUM VITAE</span>
+                    <h2 class="download-headline">DOWNLOAD PORTFOLIO</h2>
+                    <p class="download-summary">
+                        A curated PDF archive containing selected branding systems, web experiences, and visual motion direction.
                     </p>
-
-                    <div class="dossier-meta-grid">
-                        <div class="meta-pill">
-                            <span class="meta-label">FORMAT</span>
-                            <span class="meta-val">PDF &bull; PRINT READY</span>
-                        </div>
-                        <div class="meta-pill">
-                            <span class="meta-label">STATUS</span>
-                            <span class="meta-val">VERIFIED &bull; 2026</span>
-                        </div>
-                        <div class="meta-pill">
-                            <span class="meta-label">SCOPE</span>
-                            <span class="meta-val">BRAND / WEB / VIDEO</span>
-                        </div>
-                    </div>
                 </div>
-
-                <div class="dossier-right">
-                    <div class="dossier-preview-box">
-                        <div class="dossier-paper-sheet">
-                            <div class="sheet-corner-fold"></div>
-                            <div class="sheet-top-bar">
-                                <span class="sheet-id">DOSSIER // 01</span>
-                                <span class="sheet-tag">PDF</span>
-                            </div>
-                            <div class="sheet-body-preview">
-                                <div class="sheet-logo-mark">NS</div>
-                                <div class="sheet-title">NETHULA SANVIDU</div>
-                                <div class="sheet-subtitle">SELECTED WORKS &bull; CREATIVE DIRECTION</div>
-                                <div class="sheet-decor-lines">
-                                    <div class="decor-line w-80"></div>
-                                    <div class="decor-line w-60"></div>
-                                    <div class="decor-line w-95"></div>
-                                    <div class="decor-line w-40"></div>
-                                </div>
-                            </div>
-                            <div class="sheet-bottom-bar">
-                                <span>AUTHENTICATED ARCHIVE</span>
-                                <i class="ri-shield-check-line"></i>
-                            </div>
-                        </div>
-
-                        <div class="dossier-actions">
-                            <a href="assets/Nethula_Sanvidu_Portfolio_2026.pdf" download="Nethula_Sanvidu_Portfolio_2026.pdf" class="btn-dossier-download" id="btn-download-portfolio">
-                                <span class="btn-icon"><i class="ri-download-2-line"></i></span>
-                                <span class="btn-text">
-                                    <strong>DOWNLOAD PORTFOLIO (PDF)</strong>
-                                    <small>DIRECT LOSSLESS ARCHIVE</small>
-                                </span>
-                            </a>
-
-                            <a href="assets/Nethula_Sanvidu_Portfolio_2026.pdf" target="_blank" rel="noopener noreferrer" class="btn-dossier-preview">
-                                <span>OPEN IN BROWSER</span>
-                                <i class="ri-external-link-line"></i>
-                            </a>
-                        </div>
-                    </div>
+                <div class="download-action-col">
+                    <a href="/api/download-cv?action=download" download="Nethula_Sanvidu_Portfolio_2026.pdf" class="btn-download-primary" id="btn-download-portfolio">
+                        <i class="ri-download-2-line"></i>
+                        <span>DOWNLOAD PDF</span>
+                    </a>
+                    <a href="/api/download-cv?action=view" target="_blank" rel="noopener noreferrer" class="btn-download-secondary" id="btn-view-portfolio">
+                        <span>VIEW ONLINE</span>
+                        <i class="ri-arrow-right-up-line"></i>
+                    </a>
                 </div>
             </div>
         </div>
@@ -470,8 +433,9 @@
         </div>
     </footer>
 
-    <!-- Supabase Client SDK -->
+    <!-- Lenis Smooth Scrolling & Supabase -->
+    <script src="https://unpkg.com/lenis@1.1.20/dist/lenis.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-    <script src="js/main.js?v=4"></script>
+    <script src="js/main.js?v=8"></script>
 </body>
 </html>

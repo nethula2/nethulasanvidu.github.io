@@ -1,6 +1,13 @@
 const { createClient } = require('@supabase/supabase-js');
 const fs = require('fs');
 const path = require('path');
+const {
+  getClientIp,
+  checkRateLimit,
+  handleCors,
+  escapeHtml,
+  sendSafeError
+} = require('./utils/security');
 
 const PRIMARY_FILE = path.join(__dirname, '..', 'data', 'reviews.json');
 const CACHE_FILE = path.join(__dirname, '..', 'data', 'reviews-cache.json');
@@ -27,28 +34,43 @@ function getCachedReviews() {
 
 const FAKE_NAMES = ['sarah jenkins', 'michael chen', 'kavindu perera', 'tharusha senanayake', 'dilan jayasuriya'];
 
-function filterOutFake(reviews) {
+function filterAndSanitize(reviews) {
   if (!Array.isArray(reviews)) return [];
-  return reviews.filter(r => {
-    if (!r || !r.name) return false;
-    const nameLower = r.name.toLowerCase().trim();
-    return !FAKE_NAMES.some(fake => nameLower.includes(fake));
-  });
+  return reviews
+    .filter(r => {
+      if (!r || !r.name) return false;
+      const nameLower = r.name.toLowerCase().trim();
+      return !FAKE_NAMES.some(fake => nameLower.includes(fake));
+    })
+    .map(r => ({
+      id: String(r.id || ''),
+      name: escapeHtml(String(r.name || 'Verified Client')),
+      role: escapeHtml(String(r.role || 'Client Transmission')),
+      avatar_url: String(r.avatar_url || ''),
+      rating: Math.max(1, Math.min(5, parseInt(r.rating, 10) || 5)),
+      comment: escapeHtml(String(r.comment || '')),
+      created_at: String(r.created_at || ''),
+      verified: Boolean(r.verified)
+    }));
 }
 
 module.exports = async (req, res) => {
-  // Enable CORS
-  res.setHeader('Access-Control-Allow-Credentials', 'true');
-  res.setHeader('Access-Control-Allow-Origin', '*');
-  res.setHeader('Access-Control-Allow-Methods', 'GET,OPTIONS,PATCH,DELETE,POST,PUT');
-  res.setHeader(
-    'Access-Control-Allow-Headers',
-    'X-CSRF-Token, X-Requested-With, Accept, Accept-Version, Content-Length, Content-MD5, Content-Type, Date, X-Api-Version'
-  );
+  // 1. Strict CORS & Preflight
+  if (handleCors(req, res)) return;
 
-  if (req.method === 'OPTIONS') {
-    return res.status(200).end();
+  if (req.method !== 'GET') {
+    return sendSafeError(res, 405, 'Method Not Allowed');
   }
+
+  // 2. Rate Limiting: Max 120 reads per minute
+  const clientIp = getClientIp(req);
+  const rateLimit = checkRateLimit(`rev-read:${clientIp}`, 120, 60 * 1000);
+  if (!rateLimit.allowed) {
+    res.setHeader('Retry-After', String(rateLimit.resetInSeconds));
+    return sendSafeError(res, 429, 'Rate limit exceeded');
+  }
+
+  res.setHeader('Cache-Control', 'public, max-age=30, stale-while-revalidate=60');
 
   try {
     const fetchPromise = supabase
@@ -67,7 +89,7 @@ module.exports = async (req, res) => {
     }
 
     if (data && Array.isArray(data)) {
-      const cleanData = filterOutFake(data);
+      const cleanData = filterAndSanitize(data);
       try {
         fs.mkdirSync(path.dirname(CACHE_FILE), { recursive: true });
         fs.writeFileSync(CACHE_FILE, JSON.stringify(cleanData, null, 2), 'utf8');
@@ -77,9 +99,7 @@ module.exports = async (req, res) => {
 
     return res.status(200).json([]);
   } catch (error) {
-    console.warn('Supabase fetch failed (project may be paused):', error.message);
-    // Never return fake reviews. Only return clean cached real reviews or empty array.
-    const cached = filterOutFake(getCachedReviews());
+    const cached = filterAndSanitize(getCachedReviews());
     return res.status(200).json(cached);
   }
 };

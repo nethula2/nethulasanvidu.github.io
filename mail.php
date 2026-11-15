@@ -1,37 +1,55 @@
 <?php
-if ($_SERVER["REQUEST_METHOD"] == "POST") {
+if ($_SERVER["REQUEST_METHOD"] === "POST") {
 
-    // 1. EDIT YOUR EMAIL HERE
-    $to = "contactnethula@gmail.com"; // Replace with your cPanel email
-    $subject = "New Portfolio Transmission from " . $_POST['name'];
+    // 1. Destination Email
+    $to = "contactnethula@gmail.com";
 
-    // 2. SANITIZE INPUTS
-    $name = strip_tags(trim($_POST["name"]));
-    $email = filter_var(trim($_POST["email"]), FILTER_SANITIZE_EMAIL);
-    $message = trim($_POST["message"]);
+    // 2. Strict Input Sanitization & Anti-Header-Injection Defense
+    $raw_name = isset($_POST["name"]) ? trim($_POST["name"]) : "";
+    $raw_email = isset($_POST["email"]) ? trim($_POST["email"]) : "";
+    $raw_message = isset($_POST["message"]) ? trim($_POST["message"]) : "";
 
-    // 3. EMAIL CONTENT
-    $email_content = "Name: $name\n";
-    $email_content .= "Email: $email\n\n";
-    $email_content .= "Message:\n$message\n";
+    // Strip carriage returns and newlines to prevent email header injection (CWE-93)
+    $clean_name = preg_replace('/[\r\n]+/', ' ', strip_tags($raw_name));
+    $clean_name = substr($clean_name, 0, 100);
 
-    // 4. EMAIL HEADERS
-    // Tip: Use a 'noreply' address from your domain as the 'From' to prevent Spam folder issues
-    $headers = "From: Website Form <noreply@nethula.com>\r\n";
-    $headers .= "Reply-To: $email\r\n";
+    $clean_email = preg_replace('/[\r\n]+/', '', $raw_email);
+    $clean_email = filter_var($clean_email, FILTER_SANITIZE_EMAIL);
 
-    // 5. SEND AND REDIRECT
+    // Validate email format
+    if (!filter_var($clean_email, FILTER_VALIDATE_EMAIL)) {
+        header("Location: index.html?status=invalid_email");
+        exit;
+    }
+
+    $clean_message = strip_tags($raw_message);
+    $clean_message = substr($clean_message, 0, 5000);
+
+    // 3. Email Content & Subject
+    $subject = "New Portfolio Transmission from " . $clean_name;
+    // Strip newlines from subject
+    $subject = preg_replace('/[\r\n]+/', ' ', $subject);
+
+    $email_content = "Name: " . $clean_name . "\n";
+    $email_content .= "Email: " . $clean_email . "\n\n";
+    $email_content .= "Message:\n" . $clean_message . "\n";
+
+    // 4. Secure Email Headers
+    $headers = "From: Website Form <noreply@nethulasanvidu.works>\r\n";
+    $headers .= "Reply-To: " . $clean_email . "\r\n";
+    $headers .= "X-Mailer: PHP/" . phpversion() . "\r\n";
+    $headers .= "Content-Type: text/plain; charset=UTF-8\r\n";
+
+    // 5. Send & Safe Redirect
     if (mail($to, $subject, $email_content, $headers)) {
-        // Success: Go back to home page with a success query (you can handle this in JS if you want)
         header("Location: index.html?status=success");
         exit;
     } else {
-        // Error
-        echo "Transmission Failed. Please try again.";
+        header("Location: index.html?status=failed");
+        exit;
     }
 
 } else {
-    // If someone tries to open mail.php directly
     header("Location: index.html");
     exit;
 }
