@@ -2,6 +2,19 @@
   "$schema": "https://openapi.vercel.sh/vercel.json",
   "cleanUrls": true,
   "trailingSlash": false,
+  "rewrites": [
+    { "source": "/api/get-web-projects", "destination": "/api/web-projects" },
+    { "source": "/api/save-web-project", "destination": "/api/web-projects" },
+    { "source": "/api/get-video-projects", "destination": "/api/video-projects" },
+    { "source": "/api/save-video-project", "destination": "/api/video-projects" },
+    { "source": "/api/get-vault-projects", "destination": "/api/vault-projects" },
+    { "source": "/api/save-vault-project", "destination": "/api/vault-projects" },
+    { "source": "/api/get-reviews", "destination": "/api/reviews" },
+    { "source": "/api/add-review", "destination": "/api/reviews" },
+    { "source": "/api/delete-review", "destination": "/api/reviews" },
+    { "source": "/api/get-cv", "destination": "/api/cv" },
+    { "source": "/api/upload-cv", "destination": "/api/cv" }
+  ],
   "headers": [
     {
       "source": "/(.*)",

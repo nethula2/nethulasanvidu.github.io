@@ -85,6 +85,24 @@ const server = http.createServer(async (req, res) => {
 
     // 1. API Route Handler (Vercel Serverless Function compatibility)
     if (reqPath.startsWith('/api/')) {
+        // Map legacy API routes to consolidated handlers (matching vercel.json rewrites)
+        const API_ROUTE_REWRITES = {
+            '/api/get-web-projects': '/api/web-projects',
+            '/api/save-web-project': '/api/web-projects',
+            '/api/get-video-projects': '/api/video-projects',
+            '/api/save-video-project': '/api/video-projects',
+            '/api/get-vault-projects': '/api/vault-projects',
+            '/api/save-vault-project': '/api/vault-projects',
+            '/api/get-reviews': '/api/reviews',
+            '/api/add-review': '/api/reviews',
+            '/api/delete-review': '/api/reviews',
+            '/api/get-cv': '/api/cv',
+            '/api/upload-cv': '/api/cv'
+        };
+        if (API_ROUTE_REWRITES[reqPath]) {
+            reqPath = API_ROUTE_REWRITES[reqPath];
+        }
+
         // Prevent path traversal in API path
         const normalizedApiPath = path.normalize(reqPath).replace(/^(\.\.[\/\\])+/, '').replace(/\\/g, '/');
         if (normalizedApiPath.includes('..') || normalizedApiPath.startsWith('/api/utils')) {
