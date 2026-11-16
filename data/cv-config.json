@@ -1,10 +1,10 @@
 {
-  "filename": "Nethula_Sanvidu_s_Resume.pdf",
+  "filename": "NETHULA_SANVIDUS_RESUME.PDF",
   "localUrl": "assets/uploaded_cv.pdf",
-  "cloudUrl": "https://res.cloudinary.com/dwcsjrhhl/raw/upload/v1794647254/portfolio_cv/nethula_cv_active.pdf",
+  "cloudUrl": "https://res.cloudinary.com/dwcsjrhhl/raw/upload/v1794822153/portfolio_cv/nethula_cv_active.dat",
   "downloadUrl": "/api/download-cv?action=download",
   "viewUrl": "/api/download-cv?action=view",
   "url": "/api/download-cv?action=download",
   "sizeBytes": 348300,
-  "uploadedAt": "2026-11-14T09:07:33.946Z"
+  "uploadedAt": "2026-11-16T09:42:35.483Z"
 }

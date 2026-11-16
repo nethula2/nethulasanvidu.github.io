@@ -46,6 +46,25 @@ module.exports = async (req, res) => {
         } catch (e) {}
       }
 
+      // Query Cloudinary for persistent production metadata
+      try {
+        const cloudResource = await cloudinary.api.resource(
+          'portfolio_cv/nethula_cv_active.dat',
+          { resource_type: 'raw', context: true }
+        );
+        if (cloudResource) {
+          const ctx = (cloudResource.context && cloudResource.context.custom) || cloudResource.context || {};
+          if (ctx.filename) config.filename = ctx.filename;
+          if (cloudResource.bytes) config.sizeBytes = cloudResource.bytes;
+          if (ctx.uploadedAt || cloudResource.created_at) {
+            config.uploadedAt = ctx.uploadedAt || cloudResource.created_at;
+          }
+          if (cloudResource.secure_url) config.cloudUrl = cloudResource.secure_url;
+        }
+      } catch (cloudErr) {
+        // Fallback to local config if Cloudinary is offline or not yet initialized
+      }
+
       config.downloadUrl = '/api/download-cv?action=download';
       config.viewUrl = '/api/download-cv?action=view';
       config.localUrl = 'assets/uploaded_cv.pdf';
@@ -66,7 +85,7 @@ module.exports = async (req, res) => {
     if (!admin) return;
 
     const clientIp = getClientIp(req);
-    const rateLimit = checkRateLimit(`admin-upload-cv:${clientIp}`, 10, 10 * 60 * 1000);
+    const rateLimit = checkRateLimit(`admin-upload-cv:${clientIp}`, 20, 10 * 60 * 1000);
     if (!rateLimit.allowed) {
       res.setHeader('Retry-After', String(rateLimit.resetInSeconds));
       return sendSafeError(res, 429, 'Rate limit exceeded. Please wait before uploading again.');
@@ -79,7 +98,8 @@ module.exports = async (req, res) => {
         return sendSafeError(res, 400, 'Invalid request: fileData (base64) is required');
       }
 
-      const base64PrefixMatch = fileData.match(/^data:application\/pdf;base64,/i);
+      // Robust prefix stripping for any mime variant: data:application/pdf;base64, data:application/octet-stream;base64, etc.
+      const base64PrefixMatch = fileData.match(/^data:[^;]+;base64,/i);
       const cleanBase64 = base64PrefixMatch ? fileData.slice(base64PrefixMatch[0].length) : fileData;
       const fileBuffer = Buffer.from(cleanBase64, 'base64');
 
@@ -102,37 +122,29 @@ module.exports = async (req, res) => {
         cleanFilename += '.pdf';
       }
 
-      const assetsDir = path.join(__dirname, '..', 'assets');
-      const dataDir = path.join(__dirname, '..', 'data');
-      if (!fs.existsSync(assetsDir)) fs.mkdirSync(assetsDir, { recursive: true });
-      if (!fs.existsSync(dataDir)) fs.mkdirSync(dataDir, { recursive: true });
-
-      const localTarget = path.join(assetsDir, 'uploaded_cv.pdf');
-      fs.writeFileSync(localTarget, fileBuffer);
-
-      try {
-        const defaultPortfolioPath = path.join(assetsDir, 'Nethula_Sanvidu_Portfolio_2026.pdf');
-        fs.writeFileSync(defaultPortfolioPath, fileBuffer);
-      } catch (mirrorErr) {}
-
-      let cloudUrl = null;
-      try {
-        const cloudResult = await cloudinary.uploader.upload(
-          `data:application/pdf;base64,${cleanBase64}`,
-          {
-            resource_type: 'raw',
-            folder: 'portfolio_cv',
-            public_id: 'nethula_cv_active.pdf',
-            overwrite: true
+      // 1. Upload to Cloudinary (Persistent cloud storage for Serverless)
+      // Using .dat extension to ensure delivery without default browser PDF-delivery restrictions
+      const cloudResult = await cloudinary.uploader.upload(
+        `data:application/octet-stream;base64,${cleanBase64}`,
+        {
+          resource_type: 'raw',
+          folder: 'portfolio_cv',
+          public_id: 'nethula_cv_active.dat',
+          access_mode: 'public',
+          overwrite: true,
+          tags: ['cv_document', 'portfolio_cv'],
+          context: {
+            filename: cleanFilename,
+            sizeBytes: String(fileBuffer.length),
+            uploadedAt: new Date().toISOString()
           }
-        );
-        cloudUrl = cloudResult.secure_url;
-      } catch (cloudErr) {}
+        }
+      );
 
       const activeCvConfig = {
         filename: cleanFilename,
         localUrl: 'assets/uploaded_cv.pdf',
-        cloudUrl: cloudUrl,
+        cloudUrl: cloudResult.secure_url,
         downloadUrl: '/api/download-cv?action=download',
         viewUrl: '/api/download-cv?action=view',
         url: '/api/download-cv?action=download',
@@ -140,8 +152,26 @@ module.exports = async (req, res) => {
         uploadedAt: new Date().toISOString()
       };
 
-      const configPath = path.join(dataDir, 'cv-config.json');
-      fs.writeFileSync(configPath, JSON.stringify(activeCvConfig, null, 2), 'utf-8');
+      // 2. Best-effort local file write (works in local Node dev, gracefully skips on read-only Vercel serverless)
+      try {
+        const assetsDir = path.join(__dirname, '..', 'assets');
+        if (fs.existsSync(assetsDir)) {
+          const localTarget = path.join(assetsDir, 'uploaded_cv.pdf');
+          fs.writeFileSync(localTarget, fileBuffer);
+        }
+      } catch (localErr) {
+        // Read-only filesystem on Vercel is expected and safe to ignore
+      }
+
+      try {
+        const dataDir = path.join(__dirname, '..', 'data');
+        if (fs.existsSync(dataDir)) {
+          const configPath = path.join(dataDir, 'cv-config.json');
+          fs.writeFileSync(configPath, JSON.stringify(activeCvConfig, null, 2), 'utf-8');
+        }
+      } catch (dataErr) {
+        // Read-only filesystem on Vercel is expected and safe to ignore
+      }
 
       console.log(`[SEC_AUDIT] New CV uploaded and activated: ${cleanFilename} (${fileBuffer.length} bytes) by admin IP ${clientIp}`);
 
@@ -152,6 +182,7 @@ module.exports = async (req, res) => {
       });
 
     } catch (err) {
+      console.error('[CV] Upload Error:', err);
       return sendSafeError(res, 500, 'Failed to process CV upload.', err);
     }
   }
