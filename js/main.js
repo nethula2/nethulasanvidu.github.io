@@ -648,6 +648,30 @@ async function loadWebProjects() {
             const card = document.createElement('div');
             card.className = 'web-card';
             
+            const hasMockup = project.has_mockup !== false && project.src;
+            const previewMediaHtml = hasMockup
+                ? `<div class="img-container" style="position: relative;">
+                    <img src="${project.src}" alt="${project.title}">
+                    <div class="watermark-text" style="position: absolute; bottom: 10px; right: 10px; font-size: 10px; opacity: 0.3; font-family: var(--font-display); color: #fff;">
+                        © NETHULA SANVIDU
+                    </div>
+                </div>`
+                : `<div class="img-container no-mockup-frame" style="position: relative; min-height: 260px; display: flex; flex-direction: column; align-items: center; justify-content: center; background: radial-gradient(circle at 50% 35%, rgba(255,255,255,0.06) 0%, rgba(10,10,12,0.96) 80%); border-bottom: 1px solid rgba(255,255,255,0.06); padding: 35px 20px; overflow: hidden;">
+                    <div style="position: absolute; inset: 0; background-image: linear-gradient(rgba(255, 255, 255, 0.03) 1px, transparent 1px), linear-gradient(90deg, rgba(255, 255, 255, 0.03) 1px, transparent 1px); background-size: 24px 24px; pointer-events: none; opacity: 0.45;"></div>
+                    <div style="width: 54px; height: 54px; border-radius: 50%; background: rgba(255,255,255,0.04); border: 1px solid rgba(255,255,255,0.12); display: flex; align-items: center; justify-content: center; margin-bottom: 14px; position: relative; z-index: 1;">
+                        <i class="ri-global-line" style="font-size: 1.6rem; color: #ffffff;"></i>
+                    </div>
+                    <div style="font-family: var(--font-display); font-size: 0.72rem; letter-spacing: 3px; color: rgba(255,255,255,0.5); text-transform: uppercase; position: relative; z-index: 1;">
+                        LIVE DIGITAL PLATFORM
+                    </div>
+                    <div style="font-family: var(--font-main); font-size: 0.95rem; color: #f4f4f5; font-weight: 500; margin-top: 6px; letter-spacing: 0.5px; position: relative; z-index: 1;">
+                        ${project.display_url || 'Active Web System'}
+                    </div>
+                    <div class="watermark-text" style="position: absolute; bottom: 10px; right: 10px; font-size: 10px; opacity: 0.25; font-family: var(--font-display); color: #fff;">
+                        © NETHULA SANVIDU
+                    </div>
+                </div>`;
+
             // Build the card HTML mimicking the browser look
             card.innerHTML = `
                 <div class="web-preview">
@@ -657,12 +681,7 @@ async function loadWebProjects() {
                         <div class="dot green"></div>
                         <span class="url">${project.display_url || 'project-preview.dev'}</span>
                     </div>
-                    <div class="img-container" style="position: relative;">
-                        <img src="${project.src}" alt="${project.title}">
-                        <div class="watermark-text" style="position: absolute; bottom: 10px; right: 10px; font-size: 10px; opacity: 0.3; font-family: var(--font-display); color: #fff;">
-                            © NETHULA SANVIDU
-                        </div>
-                    </div>
+                    ${previewMediaHtml}
                 </div>
                 <div class="web-info">
                     <div class="card-meta-tags">

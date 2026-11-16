@@ -485,8 +485,11 @@
                         </div>
 
                         <div class="input-group">
-                            <label>MOCKUP IMAGE</label>
-                            <button class="btn-action btn-secondary" id="btn-web-upload" onclick="uploadWebMockup()" style="margin-top: 0;">
+                            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 5px;">
+                                <label style="margin-bottom: 0;">MOCKUP IMAGE <span style="font-size: 0.68rem; color: #888; font-weight: normal; text-transform: none; letter-spacing: 0;">(Optional — leave empty to save storage)</span></label>
+                                <button type="button" id="btn-clear-web-mockup" onclick="clearWebMockup()" style="display: none; background: transparent; border: none; color: #ff5f56; font-size: 0.72rem; cursor: pointer; text-decoration: underline; padding: 0;">Remove Mockup</button>
+                            </div>
+                            <button type="button" class="btn-action btn-secondary" id="btn-web-upload" onclick="uploadWebMockup()" style="margin-top: 0;">
                                 SELECT MOCKUP IMAGE <i class="ri-image-add-line"></i>
                             </button>
                             <div id="web-mockup-status" style="font-size: 0.75rem; color: #888; margin-top: 8px; display: none;"></div>
@@ -1270,8 +1273,21 @@
                     statusText.textContent = `Mockup "${result.info.original_filename}" uploaded successfully!`;
                     statusText.style.color = "#27c93f";
                     statusText.style.display = "block";
+                    const clearBtn = document.getElementById("btn-clear-web-mockup");
+                    if (clearBtn) clearBtn.style.display = "inline-block";
                 }
             });
+        }
+
+        function clearWebMockup() {
+            uploadedMockupPublicId = null;
+            const statusText = document.getElementById("web-mockup-status");
+            if (statusText) {
+                statusText.style.display = "none";
+                statusText.textContent = "";
+            }
+            const clearBtn = document.getElementById("btn-clear-web-mockup");
+            if (clearBtn) clearBtn.style.display = "none";
         }
 
         async function saveWebProject() {
@@ -1281,10 +1297,6 @@
             const displayUrl = document.getElementById("web-display-url").value.trim();
             const saveBtn = document.getElementById("btn-save-project");
 
-            if (!uploadedMockupPublicId) {
-                alert("Please upload a mockup image first.");
-                return;
-            }
             if (!title) {
                 alert("Please enter a project title.");
                 return;
@@ -1298,7 +1310,7 @@
                     method: 'POST',
                     headers: getAdminHeaders(),
                     body: JSON.stringify({
-                        public_id: uploadedMockupPublicId,
+                        public_id: uploadedMockupPublicId || null,
                         title: title,
                         description: description,
                         url: url,
@@ -1317,8 +1329,7 @@
                     document.getElementById("web-description").value = "";
                     document.getElementById("web-url").value = "";
                     document.getElementById("web-display-url").value = "";
-                    document.getElementById("web-mockup-status").style.display = "none";
-                    uploadedMockupPublicId = null;
+                    clearWebMockup();
                     
                     loadAdminWebProjects();
                 } else {
@@ -1356,8 +1367,16 @@
                 projects.forEach(project => {
                     const card = document.createElement('div');
                     card.className = 'gallery-item-card';
+                    const hasMockup = project.has_mockup !== false && project.src;
+                    const mediaHtml = hasMockup 
+                        ? `<img src="${project.src}" alt="${project.title}">`
+                        : `<div style="height: 140px; background: rgba(255,255,255,0.03); display: flex; flex-direction: column; align-items: center; justify-content: center; border-bottom: 1px solid rgba(255,255,255,0.06); color: #888; position: relative;">
+                            <i class="ri-window-line" style="font-size: 2rem; color: #666; margin-bottom: 6px;"></i>
+                            <span style="font-size: 0.65rem; letter-spacing: 1.5px; font-family: var(--font-display); color: #888; text-transform: uppercase;">NO MOCKUP (STORAGE SAVER)</span>
+                           </div>`;
+
                     card.innerHTML = `
-                        <img src="${project.src}" alt="${project.title}">
+                        ${mediaHtml}
                         <div class="item-info" style="font-weight: 700; color: #fff; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;" title="${project.title}">${project.title}</div>
                         <div class="item-info" style="font-size: 0.65rem; opacity: 0.6; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;" title="${project.display_url || 'No URL'}">${project.display_url || 'No URL'}</div>
                         <button class="btn-delete" onclick="deleteWebProject('${project.public_id}', this)">
